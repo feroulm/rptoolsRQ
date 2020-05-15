@@ -1,0 +1,64 @@
+<NotepadPlus>
+    <UserLang name="maptoolMacro" ext="rqm" udlVersion="2.1">
+        <Settings>
+            <Global caseIgnored="no" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
+        </Settings>
+        <KeywordLists>
+            <Keywords name="Comments"></Keywords>
+            <Keywords name="Numbers, prefix1"></Keywords>
+            <Keywords name="Numbers, prefix2"></Keywords>
+            <Keywords name="Numbers, extras1"></Keywords>
+            <Keywords name="Numbers, extras2"></Keywords>
+            <Keywords name="Numbers, suffix1"></Keywords>
+            <Keywords name="Numbers, suffix2"></Keywords>
+            <Keywords name="Numbers, range"></Keywords>
+            <Keywords name="Operators1">- ! &amp; ( ) * , / : ; @ [ ] | + = &lt; &gt;</Keywords>
+            <Keywords name="Operators2"></Keywords>
+            <Keywords name="Folders in code1, open">{</Keywords>
+            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, close">}</Keywords>
+            <Keywords name="Folders in code2, open"></Keywords>
+            <Keywords name="Folders in code2, middle"></Keywords>
+            <Keywords name="Folders in code2, close"></Keywords>
+            <Keywords name="Folders in comment, open"></Keywords>
+            <Keywords name="Folders in comment, middle"></Keywords>
+            <Keywords name="Folders in comment, close"></Keywords>
+            <Keywords name="Keywords1">h e expanded&#x000D;&#x000A;h hide hidden&#x000D;&#x000A;r result&#x000D;&#x000A;t tooltip&#x000D;&#x000A;u unformatted</Keywords>
+            <Keywords name="Keywords2">count code&#x000D;&#x000A;frame for foreach&#x000D;&#x000A;if&#x000D;&#x000A;macro&#x000D;&#x000A;switch&#x000D;&#x000A;token&#x000D;&#x000A;while</Keywords>
+            <Keywords name="Keywords3">abort  abs  absolutevalue  add  addAllNPCsToInitiative  &#x000D;&#x000A;addAllPCsToInitiative  addAllToInitiative  addToInitiative  &#x000D;&#x000A;assert  average  avg  arg  argCount  &#x000D;&#x000A;band  bitwiseand  bitwisenot  bitwiseor  bitwisexor  bnot  &#x000D;&#x000A;bor  bringToFront  bxor  &#x000D;&#x000A;ceil  ceiling  clearLights  closeDialog  concat  countStrProp  &#x000D;&#x000A;createMacro  currentToken  &#x000D;&#x000A;decode  deleteStrProp  dialog  divide  defineFunction  &#x000D;&#x000A;encode  endsWith  eval  evalMacro  execMacro  &#x000D;&#x000A;findToken  floor  formatStrProp  &#x000D;&#x000A;getAllPlayerNames  getAllPropertyNames  getBar  getCurrentInitiative  &#x000D;&#x000A;getExposedTokenNames  getExposedTokens  getFindCount  getGMName  &#x000D;&#x000A;getGMNotes  getGroup  getGroupCount  getGroupEnd  getGroupStart  &#x000D;&#x000A;getHalo  getImage  getImpersonated  getImpersonatedName  &#x000D;&#x000A;getInitiative  getInitiativeHold  getInitiativeRound getInitiativeList  getLabel  &#x000D;&#x000A;getLayer  getLibProperty  getLights  getMacroButtonIndex  &#x000D;&#x000A;getMacroCommand  getMacroIndexes  getMacroLocation  getMacroName  &#x000D;&#x000A;getMacroProps  getMacros  getNPCNames  getNPCs  getName  getNotes  &#x000D;&#x000A;getOwned  getOwnedNames  getOwners  getPCNames  getPCs  &#x000D;&#x000A;getPlayerName  getProperty  getPropertyDefault  getPropertyNames  &#x000D;&#x000A;getPropertyType  getSelected  getSelectedNames  getSightType  &#x000D;&#x000A;getSize  getSpeech  getSpeechNames  getState  getStrProp  &#x000D;&#x000A;getTokenHandout  getTokenImage  getTokenNames  getTokenPortrait  &#x000D;&#x000A;getTokens  getVisible  getVisibleTokenNames  getVisibleTokens  &#x000D;&#x000A;getWithState  getWithStateNames  getRawPropert  getInitiativeToken  &#x000D;&#x000A;getTokenStates  getDistance  getDistanceToXY  getTokenX  getTokenY  &#x000D;&#x000A;getDrawOrder  getMacroGroup  getTokenFacing  goto  getStateImage  &#x000D;&#x000A;getRawProperty  &#x000D;&#x000A;hasImpersonated  hasLightSource  hasMacro  hasProperty  hasSight  &#x000D;&#x000A;hex  hypotenuse  hypot  &#x000D;&#x000A;if  indexKeyStrProp  indexOf  indexValueStrProp  initiativeSize  &#x000D;&#x000A;input  isBarVisible  isDialogVisible  isFrameVisible  isGM  isNPC  &#x000D;&#x000A;isNumber  isOwnedByAll  isOwner  isPC  isPropertyEmpty  isTrusted  &#x000D;&#x000A;isFunctionDefined  &#x000D;&#x000A;json.append  json.contains  json.fields  json.fromList  json.fromStrProp &#x000D;&#x000A;json.get  json.length  json.remove  json.set  json.sort  json.toList  &#x000D;&#x000A;json.toStrProp  json.type  json.reverse  json.indent  json.shuffle  &#x000D;&#x000A;json.isEmpty  json.equals  json.evaluate  &#x000D;&#x000A;lastIndexOf  length  listAppend  listContains  listCount  listDelete  &#x000D;&#x000A;listFind  listFormat  listGet  listInsert  listReplace  listSort  &#x000D;&#x000A;ln  log  log10  lower  &#x000D;&#x000A;macroLink  macroLinkText  matches  max  mean  median  min  &#x000D;&#x000A;multiply  moveToken  &#x000D;&#x000A;nextInitiative  number  &#x000D;&#x000A;pow  power &#x000D;&#x000A;removeAllFromInitiative  removeAllNPCsFromInitiative  removeAllPCsFromInitiative  &#x000D;&#x000A;removeFromInitiative  replace  resetProperty  removeMacro  removeTokenFacing  &#x000D;&#x000A;sendToBack  set  setAllStates  setBar  setBarVisible  setCurrentInitiative  &#x000D;&#x000A;setGMName  setGMNotes  setHalo  setHasSight  setInitiative  &#x000D;&#x000A;setInitiativeHold  setInitiativeRound  setLabel  setLayer  setLibProperty  &#x000D;&#x000A;setLight  setMacroCommand  setMacroProps  setName  setNotes  setPC  &#x000D;&#x000A;setProperty  setPropertyType  setSightType  setSize  setSpeech  setState  &#x000D;&#x000A;setStrProp  setTokenImage  setVisible  sortInitiative  sqr  sqrt  square  &#x000D;&#x000A;squareroot  startsWith  strPropFromVars  strfind  strformat  string  &#x000D;&#x000A;stringToList  substring  subtract  sum  switchToken  setDrawOrder  &#x000D;&#x000A;setTokenFacing  &#x000D;&#x000A;table  tableImage  tbl  tblImage  trim  &#x000D;&#x000A;upper  &#x000D;&#x000A;varsFromStrProp</Keywords>
+            <Keywords name="Keywords4">a&#x000D;&#x000A;body  &#x000D;&#x000A;html head &#x000D;&#x000A;link &#x000D;&#x000A;table tr td th</Keywords>
+            <Keywords name="Keywords5">class href rel type</Keywords>
+            <Keywords name="Keywords6"></Keywords>
+            <Keywords name="Keywords7"></Keywords>
+            <Keywords name="Keywords8"></Keywords>
+            <Keywords name="Delimiters">00&quot; 01 02&quot; 03&apos; 04 05&apos; 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+        </KeywordLists>
+        <Styles>
+            <WordsStyle name="DEFAULT" fgColor="707070" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="COMMENTS" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="LINE COMMENTS" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="NUMBERS" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS1" fgColor="400080" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS2" fgColor="800080" bgColor="FFFFFF" fontStyle="1" nesting="0" />
+            <WordsStyle name="KEYWORDS3" fgColor="0000FF" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS5" fgColor="8080FF" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS6" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS7" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS8" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="OPERATORS" fgColor="FF80FF" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE1" fgColor="0000A0" bgColor="EBEBEB" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN CODE2" fgColor="0080FF" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="FOLDER IN COMMENT" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS1" fgColor="008000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS2" fgColor="008040" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS3" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS4" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS5" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS6" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS7" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+            <WordsStyle name="DELIMITERS8" fgColor="000000" bgColor="FFFFFF" fontStyle="0" nesting="0" />
+        </Styles>
+    </UserLang>
+</NotepadPlus>

@@ -1,0 +1,8 @@
+[h:HP_Head = HP_init]
+[h:HP_Arm_L = HP_Head-1]
+[h:HP_Arm_R = HP_Head-1]
+[h:HP_Che = HP_Head+2]
+[h:HP_Abd = HP_Head+1]
+[h:HP_Leg_L = HP_Head]
+[h:HP_Leg_R = HP_Head]
+[h:hpInit = HP_Head]
