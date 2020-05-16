@@ -45,6 +45,5 @@ During a combat , the current CA can be different from its base value (modified 
 Set up specific UDL for rptools macro : Language > User Defined Language > Define your language
 Then import : rpToolsMacroUDL.xml
 
-
-[^1]: &trade;,&copy;,&reg;  Runequest and Glorantha are property , copyright, trademark of Chaosium Inc and/or   Moon Design Publications
+[^1]: &trade;,&copy;,&reg;  Runequest and Glorantha are property , copyright, trademark of Chaosium Inc and/or Moon Design Publications
 
