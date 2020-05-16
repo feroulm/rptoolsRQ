@@ -1,7 +1,7 @@
 # rptoolsRQ
 rpTools Macro for RuneQuest
 
-*Purpose* : I just discover the amazing job of the [RPTools team](https://www.rptools.net/)  thanks to them ! Now i want to try it on my current Runequest[^1] campaign, so time for me to learn development and immerse myself in the rptools macro world...
+*Purpose* : I just discover the amazing job of the [RPTools team](https://www.rptools.net/)  thanks to them ! Now i want to try it on my current Runequest [^1] campaign, so time for me to learn development and immerse myself in the rptools macro world...
 Hoping Lhankor Mhy will share a few drops of its knowldge to help me during this heroquest to achieve something useful.
 
 (!) *Still under dev, below is not yet a guide mainly cryptic notes that make sense for me at this stage*
