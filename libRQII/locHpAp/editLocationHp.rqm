@@ -1,21 +1,24 @@
+<!--
+ form to manage location HP. 
+ Enable to heal or damage HP.
+-->
 [h: id = macro.args]
 [r, if(listCount(id)!=1), code: {};{
  
 [h: link = macroLinkText("updateLocationHp@Lib:RQII", "all")]
 <form action="[r:link]" method="json">
  <input type="hidden" name="id" value="[r:id]">
-<h1>[r:getName(id)]</h1>
- 
+<h3>[r:getName(id)]</h3>
+<hr>
 <table width="*">
 <tr>
-  <th>Damage :
-  <input type="radio" name="hpAction" value="Damage" checked="checked">
-  </th>
-  <th>Heal :
-  <input type="radio" name="hpAction" value="Heal">
-  </th>
+  <td>Damage :</td>
+  <td><input type="radio" name="hpAction" value="Damage" checked="checked"></td>
 </tr>
-
+<tr>
+  <td>Heal :</td>
+  <td><input type="radio" name="hpAction" value="Heal"></td>
+</tr>
 <tr>
   <td><b>Amount :</b></td>
   <td><input type="text" name="Amount" size="3" align="right"></td>
@@ -33,7 +36,10 @@
     </select>
   </td>
 </tr>
- 
-<input type="submit" name="edit_btn" value="Submit changes">
+<tr>
+  <td><i>Update:</td> 
+  <td><input type="submit" name="dmgTarget" value="HP"></td>
+ </tr>
+</table>
 </form>
 }]
