@@ -1,4 +1,4 @@
-[h: link = macroLinkText("editLocationHp@Lib:RQII", "none")]
+[h: link = macroLinkText("openLocationHp@Lib:RQII", "none")]
 [frame("locHp"): {
 <html>
 <head>

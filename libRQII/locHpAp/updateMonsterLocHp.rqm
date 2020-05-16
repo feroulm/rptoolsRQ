@@ -1,25 +1,46 @@
+<!--
+  update (heal or damage) a monster location HP or AP 
+  - depends of combination of radio option (dmgAction = Heal or Damage) & selected submit button(dmgTarget = HP or AP) in editMonsterLocHp
+-->
 [h: arguments = macro.args] 
 [h: id = json.get(arguments, "id")]
 [h: locId = json.get(arguments, "MonsterLoc")]
-[h: hpAction = json.get(arguments, "hpAction")]
+[h: dmgTarget = json.get(arguments, "dmgTarget")]
+[h: dmgAction = json.get(arguments, "dmgAction")]
 [h: pLocHP = getProperty("locHP",id)]
-[h:	locOrig = getStrProp(getProperty("locHPorig",id),strformat("loc%{locId}"))]
+[h:	locHPorig = getStrProp(getProperty("locHPorig",id),strformat("loc%{locId}"))]
+[h: pLocAP = getProperty("locAP",id)]
 
-current HP: [r:	curHP = getStrProp(pLocHP,strformat("loc%{locId}"))]<br>
+current HP: [r:	curHP = getStrProp(pLocHP,strformat("loc%{locId}"))],&nbsp;
+current AP: [r:	curAP = getStrProp(pLocAP,strformat("loc%{locId}"))]<br>
 
-[r, if(hpAction == "Heal"), code: {	
-new HP: [r: newLoc = curHP + json.get(arguments, "Amount")]<br>
-};{
-new HP: [r: newLoc = curHP - json.get(arguments, "Amount")]<br>
-}]
+Action : [r: locAction = concat(dmgAction,dmgTarget)], [r: json.get(arguments, "Amount")]<br>
 
-update locHP to: [r: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLoc)]<br>
+[switch(locAction), code:
+  case "HealHP": {
+  	new HP: [r: newLocH = curHP + json.get(arguments, "Amount")]<br>
+  };
+  case "DamageHP": {
+  	new HP: [r: newLocH = curHP - json.get(arguments, "Amount")]<br>
+  };
+  case "HealAP": {
+  	new AP: [r: newLocA = curAP + json.get(arguments, "Amount")]<br>
+  };
+  case "DamageAP": {
+  	new AP: [r: newLocA = curAP - json.get(arguments, "Amount")]<br>
+  };
+]
 
-[h: setProperty("locHP", newLocHP, id)]
-
-[r, if((newLoc <= 0)&&(locOrig + newLoc)>0), code: { <b>Serious Wound</b><br>
+[if((dmgTarget == "HP")), code: {	
+  [h: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLocH)]
+  [h: setProperty("locHP", newLocHP, id)]
+  [r: if((newLocH <= 0)&&(locHPorig + newLocH)>0, "<b>Serious Wound</b><br>", "")]
+  [r: if((locHPorig + newLocH) <= 0, "<b>Major Wound</b><br>", "")]
 };{}]
-[r, if((locOrig + newLoc) <= 0), code: { <b>Major Wound</b><br>
+
+[if((dmgTarget == "AP")), code: {	
+  [h: newLocAP = setStrProp(pLocAP,strformat("loc%{locId}"),newLocA)]
+  [h: setProperty("locAP", newLocAP, id)]
 };{}]
 
 <br>Changes saved to [r: getName(id)]
