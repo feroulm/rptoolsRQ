@@ -1,0 +1,15 @@
+<!--
+  Returns the number for the next Missiles as well as updating the
+  the counter.
+  -->
+ 
+<!-- If Missiles token property is empty set it to a default value -->
+[h,if(isPropertyEmpty("Missiles")): Missiles = "NumMissiles=0;"]
+ 
+[h: numMissiles = getStrProp(Missiles, "NumMissiles") + 1]
+ 
+<!-- Now update our property -->
+[h: Missiles = setStrProp(Missiles, "NumMissiles", numMissiles)]
+ 
+<!-- Finally set out return value -->
+[h: macro.return = numMissiles]

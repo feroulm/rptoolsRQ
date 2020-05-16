@@ -1,0 +1,29 @@
+<!--
+  Adds a melee weapon to the Weapons property list
+ 
+  Parameters (in a string property list)
+  |=Name(Type) |=Size |=Reach |=Dmg |=AP/HP |=Manoe |=Spe.
+  |Bastard Sword ##(1H Sword)##|M|M|1D8+1|4/12|Bleed, Impale|+2 Enc, +5% to Parry skill with pommel guard (+10SP)
+
+  Test :
+   "Name='Bastard Sword';Type='1H Sword';Size=M;Reach=M;Damage=1D8+1;ApHp='4/12';Manoeuvre='Bleed,Impale';Special='+2 Enc, +5% to Parry skill with pommel guard (+10SP)'"] [macro.return]
+-->
+[h: num = getStrProp(macro.args, "Number")]
+[h: name = getStrProp(macro.args, "Name")]
+[h: type = getStrProp(macro.args, "Type")]
+[h: size = getStrProp(macro.args, "Size")]
+[h: reach = getStrProp(macro.args, "Reach")]
+[h: damage = getStrProp(macro.args, "Damage")]
+[h: aphp = getStrProp(macro.args, "ApHp")]
+[h: manoeuvre = getStrProp(macro.args, "Manoeuvre")]
+[h: special = getStrProp(macro.args, "Special")]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Name"), name)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Type"), type)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Size"), size)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Reach"), reach)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Damage"), damage)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}ApHp"), aphp)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Manoeuvre"), manoeuvre)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{num}Special"), special)]
+<!-- Increment Weapon Number -->
+[r, macro("nextWeaponNb@this"): ""]

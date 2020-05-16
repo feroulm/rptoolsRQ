@@ -1,0 +1,51 @@
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[h: id = macro.args]
+[r, if(listCount(id)!=1), code: {};{
+      <table>
+        <tr>
+          <td>
+            <h2><a href='http://172.16.92.12:8080/xwiki/bin/view/[r: getProperty("wiki", id)]'>[r: getName(id)]</a></h2><br>
+            <img src='[r:getTokenPortrait(100,id)]'></img><br>
+            <img src='[r: getTokenImage(100,id)]'></img>          
+          </td>
+          <td>
+            <table id="stats">
+              <tr>
+                <th>Name</th>
+                <th>Score</th>
+              </tr>
+              [h: class = "oddRow"]
+              [foreach(prop, propNames, ""), code: {
+                <tr class="[r:class]">
+                  <td>[r: prop]</td>
+                  <td>[r: getProperty(prop, id)]</td>
+                </tr>
+                [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+              }]
+            </table>
+          </td>
+          <td>
+            [r, macro("viewHpAp@this"): getSelected()]
+		    <table style="margin-top: 5px">
+              <tr>
+                <td style="text-align: left"><b>SR :</b> [r: getProperty("SR", id)] <b>CA :</b> [r: getProperty("CA", id)] <b>MP :</b> [r: getProperty("MP", id)]</td>
+              </tr>
+              <tr>
+                <td style="text-align: left"><b>Combat Styles :</b> [r: getProperty("ccStyles", id)]</td>
+              </tr>
+              <tr>
+                <td style="text-align: left"><b>Skills :</b> [r: getProperty("ccSkills", id)]</td>
+              </tr>
+            </table>    
+		  </td>
+		  <td style="text-align: left">
+            <b>Magic :</b> [r: getProperty("magicSkills", id)]
+            <br><br>
+            <b>Spells :</b> [r: getProperty("spells", id)]
+          </td>
+        </tr>
+      </table>
+  <hr>
+  [r, macro("viewWeapon@this"): getSelected()]<br>
+  [r, macro("viewMissile@this"): getSelected()]
+}]

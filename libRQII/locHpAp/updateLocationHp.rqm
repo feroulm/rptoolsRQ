@@ -1,0 +1,33 @@
+[h: arguments = macro.args] 
+[h: id = json.get(arguments, "id")]
+[h: loc = json.get(arguments, "CharLoc")]
+[h: hpInit = getProperty("hpInit",id)]
+[h: hpAction = json.get(arguments, "hpAction")]
+
+[r, if(hpAction == "Heal"), code: {
+[h: newLoc = getProperty(loc,id) + json.get(arguments, "Amount")]
+};{
+[h: newLoc = getProperty(loc,id) - json.get(arguments, "Amount")]
+}]
+
+Amount : [r: json.get(arguments, "Amount")]<br>
+
+[r: loc] <i>Before</i> : [r: getProperty(loc,id)]<br>
+[r: loc] <i>After [r: hpAction]</i> : [r: newLoc]<br>
+
+[h: setProperty(loc, newLoc, id)]
+
+[h, switch(loc):
+    case "HP_Arm_L": locOrig = hpInit-1;
+    case "HP_Arm_R": locOrig = hpInit-1;
+    case "HP_Che": locOrig = hpInit+2;
+    case "HP_Abd": locOrig = hpInit+1;
+   default: locOrig = hpInit
+]
+
+[r, if((newLoc <= 0)&&(locOrig + newLoc)>0), code: { <b>Serious Wound</b><br>
+};{}]
+[r, if((locOrig + newLoc) <= 0), code: { <b>Major Wound</b><br>
+};{}]
+
+Changes saved to [r: getName(id)]

@@ -1,0 +1,18 @@
+<!--
+  Deletes a missile from the Missiles property List.
+ 
+  Parameters
+    The missile number
+-->
+
+[h: num = macro.args]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Name"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Type"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Size"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Load"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Reach"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Damage"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Modif"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}ApHp"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Manoeuvre"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{num}Special"))]

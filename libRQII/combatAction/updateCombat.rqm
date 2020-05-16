@@ -1,0 +1,14 @@
+[h: arguments = macro.args] 
+[h: id = json.get(arguments, "id")]
+[r: inc = json.get(arguments, "inc")]
+[h: currentCa = number(getProperty("CA",id))]
+
+[h, switch(inc), code:
+  case "true"  : { [h: setProperty("CA",currentCA+1,id)] };
+  case "false" : { [h: setProperty("CA",currentCA-1,id)] };
+  case "reset" : {	[h: setProperty("CA",getProperty("ccCA",id),id)] };
+]
+
+Previous CA : [r: currentCa] new CA : [r: getProperty("CA",id)]<br>
+Changes saved to [r: getName(id)]
+[r, macro("openCombat@Lib:RQII"): ""]

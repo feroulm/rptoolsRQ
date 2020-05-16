@@ -1,0 +1,36 @@
+[h,macro("getMissileNb@this"): ""]
+[h: wpList = macro.return]
+<table>
+  <tr class="WeaponName">
+      <th>
+        Name(<i>Type</i>)
+      </th>
+    <th>Size</th>
+	<th>Load</th>
+	<th>Reach</th>
+    <th>Damage</th>
+	<th>Modif</th>
+	<th>AP/HP</th>
+    <th>Manoeuvre</th>
+	<th>Special</th>
+  </tr>
+  [h: class = "oddRow"]
+  [foreach(missile, wpList, ""), code: {
+    [h,macro("getMissile@this"): missile]
+    [h: wProp = macro.return]
+    <tr class="[r:class]">
+      <th>
+        [r: getStrProp(wProp, "Name")](<i>[r: getStrProp(wProp, "Type")]</i>)
+      </th>
+      <td>[r: getStrProp(wProp, "Size")]</td>
+	  <td>[r: getStrProp(wProp, "Load")]</td>
+      <td>[r: getStrProp(wProp, "Reach")]</td>
+      <td>[r: getStrProp(wProp, "Damage")]</td>
+	  <td>[r: getStrProp(wProp, "Modif")]</td>
+      <td>[r: getStrProp(wProp, "ApHp")]</td>
+      <td>[r: getStrProp(wProp, "Manoeuvre")]</td>
+      <td>[r: getStrProp(wProp, "Special")]</td>
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+</table>

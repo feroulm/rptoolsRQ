@@ -1,0 +1,25 @@
+[h: arguments = macro.args] 
+[h: id = json.get(arguments, "id")]
+[h: locId = json.get(arguments, "MonsterLoc")]
+[h: hpAction = json.get(arguments, "hpAction")]
+[h: pLocHP = getProperty("locHP",id)]
+[h:	locOrig = getStrProp(getProperty("locHPorig",id),strformat("loc%{locId}"))]
+
+current HP: [r:	curHP = getStrProp(pLocHP,strformat("loc%{locId}"))]<br>
+
+[r, if(hpAction == "Heal"), code: {	
+new HP: [r: newLoc = curHP + json.get(arguments, "Amount")]<br>
+};{
+new HP: [r: newLoc = curHP - json.get(arguments, "Amount")]<br>
+}]
+
+update locHP to: [r: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLoc)]<br>
+
+[h: setProperty("locHP", newLocHP, id)]
+
+[r, if((newLoc <= 0)&&(locOrig + newLoc)>0), code: { <b>Serious Wound</b><br>
+};{}]
+[r, if((locOrig + newLoc) <= 0), code: { <b>Major Wound</b><br>
+};{}]
+
+<br>Changes saved to [r: getName(id)]

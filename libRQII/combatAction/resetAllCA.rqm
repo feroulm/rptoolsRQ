@@ -1,0 +1,21 @@
+[h: tokens = json.get(macro.args, "tokens")]
+[h: action = json.get(macro.args, "action")]
+
+[h, switch(action), code:
+  case "combat"  : { 
+  	[r, foreach(item, tokens, ""), code: {
+      [h: tokenId = json.get(item, "tokenId")]
+      [h: setProperty("CA",getProperty("ccCA",tokenId),tokenId)]
+    }]
+  };
+  case "base" : { 
+  	[r, foreach(item, tokens, ""), code: {
+      [h: tokenId = json.get(item, "tokenId")]
+      [h: DEX = number(getProperty("DEX",tokenId))]
+      [h: INT = number(getProperty("INT",tokenId))]
+      [r: origCA = round((DEX+INT)/12))]
+      [h: setProperty("CA",origCA,tokenId)]
+    }]
+  };
+]
+[r, macro("openCombat@Lib:RQII"): ""]

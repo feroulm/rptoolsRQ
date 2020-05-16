@@ -1,0 +1,5 @@
+[h: id = json.get(macro.args, "tokenId")]
+[h: ccCA = json.get(macro.args, "ccCA")]
+
+[h: setProperty("ccCA",ccCA,id)]
+[r, macro("openCombat@Lib:RQII"): ""]

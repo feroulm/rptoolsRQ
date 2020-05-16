@@ -1,0 +1,16 @@
+<!--
+  Gets a string list of the valid missile numbers
+-->
+<!-- If Missiles token property is empty set it to a default value -->
+[h,if(isPropertyEmpty("Missiles")): Missiles = "NumMissiles=0;"]
+ 
+[h: maxNum = getStrProp(Missiles, "NumMissiles")]
+[h: wnumList=""]
+[h,c(maxNum), code: {
+  [h: wnum = roll.count+1]
+  [h: name = getStrProp(Missiles, strformat("Missile%{wnum}Name"))]
+  [if(name != ""):
+    wnumList = listAppend(string(wnumList), string(wnum))
+  ]
+}]
+[h: macro.return = wnumList]

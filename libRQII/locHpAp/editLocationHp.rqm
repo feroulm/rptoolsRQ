@@ -1,0 +1,39 @@
+[h: id = macro.args]
+[r, if(listCount(id)!=1), code: {};{
+ 
+[h: link = macroLinkText("updateLocationHp@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+ <input type="hidden" name="id" value="[r:id]">
+<h1>[r:getName(id)]</h1>
+ 
+<table width="*">
+<tr>
+  <th>Damage :
+  <input type="radio" name="hpAction" value="Damage" checked="checked">
+  </th>
+  <th>Heal :
+  <input type="radio" name="hpAction" value="Heal">
+  </th>
+</tr>
+
+<tr>
+  <td><b>Amount :</b></td>
+  <td><input type="text" name="Amount" size="3" align="right"></td>
+</tr>
+
+[h: locations = "HP_Head, HP_Arm_L, HP_Arm_R, HP_Che, HP_Abd, HP_Leg_L, HP_Leg_R"]
+
+<tr>
+  <td><b>Location :</b></td>
+  <td>
+    <select name="CharLoc" size="1">
+      [r, foreach(c, locations, ""), code: {
+          <option>[r:c]</option>
+      }]
+    </select>
+  </td>
+</tr>
+ 
+<input type="submit" name="edit_btn" value="Submit changes">
+</form>
+}]

@@ -1,0 +1,18 @@
+<!--
+  Gets a string list of the valid weapon numbers
+-->
+<!-- If Weapons token property is empty set it to a default value -->
+[h: id = macro.args]
+[h,if(isPropertyEmpty("Weapons",id)): setProperty("Weapons","NumWeapons=0;",id)]
+[h: Weapons = getProperty("Weapons",id)]
+ 
+[h: maxNum = getStrProp(Weapons, "NumWeapons")]
+[h: wnumList=""]
+[h,c(maxNum), code: {
+  [h: wnum = roll.count+1]
+  [h: name = getStrProp(Weapons, strformat("Weapon%{wnum}Name"))]
+  [if(name != ""):
+    wnumList = listAppend(string(wnumList), string(wnum))
+  ]
+}]
+[h: macro.return = wnumList]

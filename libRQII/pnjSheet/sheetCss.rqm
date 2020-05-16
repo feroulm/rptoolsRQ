@@ -1,0 +1,14 @@
+.oddRow { background-color: #FFFFFF }
+.evenRow { background-color: #EEEEAA }
+td.firstCol { text-align: left; font-weight: bold;}
+td { text-align: center; }
+
+
+#stats th { background-color: #113311; color: #FFFFFF }
+.WeaponName {
+    background-color: #55AA55;
+    color: white;
+    text-align: center;
+}
+#aphp th { text-align: center; background-color: #113311; color: #FFFFFF }
+

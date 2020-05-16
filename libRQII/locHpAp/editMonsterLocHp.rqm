@@ -1,0 +1,49 @@
+[h: id = macro.args]
+[r, if(listCount(id)!=1), code: {};{
+ 
+[h: link = macroLinkText("updateMonsterLocHp@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+ <input type="hidden" name="id" value="[r:id]">
+<h1>[r:getName(id)]</h1>
+ 
+<table width="*">
+<tr>
+  <th>Damage :
+  <input type="radio" name="hpAction" value="Damage" checked="checked">
+  </th>
+  <th>Heal :
+  <input type="radio" name="hpAction" value="Heal">
+  </th>
+</tr>
+<tr>
+  <th>target HP :
+  <input type="radio" name="dmgTarget" value="dmgHP" checked="checked">
+  </th>
+  <th>target AP :
+  <input type="radio" name="dmgTarget" value="dmgAP">
+  </th>
+</tr>
+
+<tr>
+  <td><b>Amount :</b></td>
+  <td><input type="text" name="Amount" size="3" align="right"></td>
+</tr>
+
+[h: pLocName= getProperty("locName", id)]
+
+<tr>
+  <td><b>Location :</b></td>
+  <td>
+    <select name="MonsterLoc" size="1">
+      [h: inc = 1]
+      [r, foreach(c, pLocName, ""), code: {
+          <option value="[r: inc]">[r: getStrProp(c, strformat("loc%{inc}"))]</option>
+          [h: inc = inc + 1]
+      }]
+    </select>
+  </td>
+</tr>
+ 
+<input type="submit" name="edit_btn" value="Submit changes">
+</form>
+}]

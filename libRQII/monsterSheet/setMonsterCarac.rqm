@@ -1,0 +1,7 @@
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA, MP, SR, CA, dmgMod, ccStyles, ccSkills, wiki"]
+
+[foreach(prop, propNames, ""), code: {
+	[h: num = getStrProp(macro.args, prop)]
+	[r: prop] : [r: num]
+	[h: setProperty(prop,num)]
+}]

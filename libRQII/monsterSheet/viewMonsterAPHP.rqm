@@ -1,0 +1,59 @@
+[h: id = macro.args]
+[h: pLocD20 = getProperty("locD20", id)]
+[h: pLocName= getProperty("locName", id)]
+[h: pLocAP = getProperty("locAP", id)]
+[h: pLocAPorig = getProperty("locAPorig", id)]
+[h: pLocHP = getProperty("locHP", id)]
+[h: pLocHPorig = getProperty("locHPorig", id)]
+[h: pLocNb = getProperty("locNb", id)]
+
+<table id="aphp">
+	<tr>
+	  <td>d20</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      <td>
+	    [r: getStrProp(pLocD20, strformat("loc%{i}"))]
+	  </td>
+      }]
+	</tr>
+	<tr>
+	  <th>Location</th>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      <th>
+	    [r: getStrProp(pLocName, strformat("loc%{i}"))]
+	  </th>
+      }]
+	</tr>
+	<tr>
+		<td style="text-align:left;">AP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocAP, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+	<tr style="background-color:#fffae6;">
+		<td style="text-align:left;">HP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocHP, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+	<tr>
+		<td style="text-align:left;">orig AP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocAPorig, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+		<tr style="background-color:#fffae6;">
+		<td style="text-align:left;">orig HP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocHPorig, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>	
+</table>

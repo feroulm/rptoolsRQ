@@ -1,0 +1,20 @@
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA, MP, SR, CA, ccStyles, ccSkills, magicSkills, spells, wiki"]
+
+[foreach(prop, propNames, ""), code: {
+	[h: num = getStrProp(macro.args, prop)]
+	[r: prop] : [r: num]
+	[h: setProperty(prop,num)]
+}]
+
+[h:HP_Head = getStrProp(macro.args, "hpInit")]
+[h:HP_Arm_L = HP_Head-1]
+[h:HP_Arm_R = HP_Head-1]
+[h:HP_Che = HP_Head+2]
+[h:HP_Abd = HP_Head+1]
+[h:HP_Leg_L = HP_Head]
+[h:HP_Leg_R = HP_Head]
+[h:hpInit = HP_Head]
+
+<!-- AP Init -->
+[h: apLst = getStrProp(macro.args, "AP")]
+[h: AP = stringToList(apLst, ",", ";")]

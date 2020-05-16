@@ -1,0 +1,11 @@
+[h: link = macroLinkText("openLocationHp@Lib:RQII", "none")]
+[frame("locHp"): {
+<html>
+<head>
+<link rel="onChangeSelection" type="macro" href="[r:link]">
+</head>
+<body>
+[r, macro("editLocationHp@Lib:RQII"): getSelected()]
+</body>
+</html>
+}]

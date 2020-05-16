@@ -1,0 +1,14 @@
+<!--
+  set location 
+-->
+[h: propNames = "locD20, locName, locAP, locHP"]
+
+[foreach(prop, propNames, ""), code: {
+	[h: loc = getStrProp(macro.args, prop)]
+	[r: prop] : [r: loc]<br>
+	[h: setProperty(prop,replace(loc,",",";"))]
+}]
+
+[h: setProperty("locAPorig",getProperty("locAP"))]
+[h: setProperty("locHPorig",getProperty("locHP"))]
+[h: setProperty("locNb",getStrProp(macro.args, "locNb"))]

@@ -1,0 +1,11 @@
+[h: link = macroLinkText("openCombat@Lib:RQII", "none")]
+[frame("Combat"): {
+<html>
+<head>
+<link rel="onChangeSelection" type="macro" href="[r:link]">
+</head>
+<body>
+[r, macro("editCombat@Lib:RQII"): getInitiativeList()]
+</body>
+</html>
+}]
