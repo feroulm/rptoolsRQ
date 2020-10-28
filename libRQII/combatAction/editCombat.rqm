@@ -6,7 +6,7 @@
   [h: tokenId = json.get(item, "tokenId")]
   [h: DEX = number(getProperty("DEX",tokenId))]
   [h: INT = number(getProperty("INT",tokenId))]
-  [h: CAorig = round((DEX+INT)/12))]
+  [h: CAorig = ceil((DEX+INT)/12)]
   <tr>
     <td> [r: getName(tokenId)] </td>
     <td> [r: getProperty("CA",tokenId)] / <b>[r: getProperty("ccCA",tokenId)]</b> <i>([r: CAorig])</i>&nbsp;</th>
