@@ -13,7 +13,7 @@
       [h: tokenId = json.get(item, "tokenId")]
       [h: DEX = number(getProperty("DEX",tokenId))]
       [h: INT = number(getProperty("INT",tokenId))]
-      [r: origCA = round((DEX+INT)/12))]
+      [r: origCA = ceil((DEX+INT)/12)]
       [h: setProperty("CA",origCA,tokenId)]
     }]
   };
