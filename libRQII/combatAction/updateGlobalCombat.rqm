@@ -1,25 +1,19 @@
 [h: tokens = json.get(macro.args, "tokens")]
 [h: action = json.get(macro.args, "action")]
-[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
 
 [r, switch(action), code:
   case "nxtcycle" : {
     [r, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
 	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
-	  [r, if(turnStatus == "delay"): getName(tokenId)+": Delayed CA was not used and is lost<br>"]
-	  [h, if(turnStatus == "delay"): currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
-	  [h, if(turnStatus == "off"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
-	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
+	  
+	  [h: turnStatus = json.get(currentCombatStatus, "turnStatus")]
+	  [h, if(turnStatus == "delay")]: currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
+  	  [h, if(turnStatus == "off")]: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+	  
+	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	  
     }]
 	<!-- Increment Cycle Number -->
-	[h: cycleNb = json.get(globalCombat, "cycle") + 1]
-	[h: globalCombat = json.set(globalCombat,"cycle",cycleNb)]
-	[h: setLibProperty("combat",globalCombat,"Lib:RQII")]
-	Cycle [r: cycleNb] is starting.<br>	
-	[h: msg = "New Cycle, First to act"]
   };
   case "rollinit" : {
     <!-- add a test - can only happen if no remaining CA left for the cycle -->
@@ -34,9 +28,8 @@
 	  <!-- roll Initiative -->
   	  [h: setInitiative(1d10+currentSR,tokenId)]
 	  [h: sortInitiative()]
-	  [h: msg = "Initiative rolled, First to act"]
     }] 
-  };
+ };
 ]
 
 <!-- select the token with the highest SR and set activeTurn to 1 -->
@@ -51,7 +44,7 @@
 [h: setCurrentInitiative(0)]
   
 <!-- Refresh / Open Combat Action Window for current Active Token-->
-[h: macroParam = json.set("{}", "id", firstToken,"msg",msg)]
+[h: macroParam = json.set("{}", "id", firstToken,"msg","Initiative rolled, First to act")]
 [r, macro("openCombatAction@Lib:RQII"): macroParam]
 <!-- Refresh Combat Window -->
 [r, macro("openCombat@Lib:RQII"): ""]

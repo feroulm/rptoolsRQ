@@ -1,0 +1,2 @@
+[h: defineFunction("getNextTurn", "getNextTurn@Lib:RQII")]
+[h: defineFunction("resetDelayedTurn", "resetDelayedTurn@Lib:RQII")]

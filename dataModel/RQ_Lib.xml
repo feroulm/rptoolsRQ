@@ -1,0 +1,15 @@
+<RQ_Lib desc="All properties desc">
+
+
+<combat desc="Keep track of MR & Cycle">
+
+combat = {"mr":0,"cycle":0,"cycleTotTurn":0,"mrTotCA":0}
+
+MR : current MR
+Cycle : current Cycle nb within an MR
+cycleTotTurn : nb of remaining turn to be played during the ycle. Initiate = nb of token where turnStatus != form out or disabled. Decremented each time a turn is played
+mtTotCA : total of CA that needs to be spent during a mr. Once it reach 0 it means we need to change the MR
+
+</combat>
+
+</RQ_Lib>

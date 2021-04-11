@@ -1,0 +1,49 @@
+<!-- Function to get next token which can play in the current cycle -->
+<!-- return a TokenId or 0 if no token is available -->
+[h: tokenId = arg(0)] 
+[r: getName(tokenId)] offset is [r: tokenOffset = getCurrentInitiative()]<br>
+[h: initList = getInitiativeList()]
+[h: currentOffset = 0]
+maxOffset : [r: maxOffset = initiativeSize()]
+
+[h: tokenFound = 0]
+[h: loopEnd = 0]
+<!-- start loop after current token unless it is the last -->
+[h: nextOffset = tokenOffset + 1]
+[h, if(tokenOffset == maxOffset): loopEnd = 1]
+
+<!-- search token after him -->
+[while (loopEnd == 0), code:
+{
+	[h: jsonPath = "tokens.["+nextOffset+"].tokenId"]
+	[h: nextTokenId = json.path.read(initList, jsonPath)]
+	[h: currentCombatStatus = getProperty("combatStatus",nextTokenId)]
+	[h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+	[h, if(turnStatus == "on"), code:{
+		[h: tokenFound = 1]	
+		[h: loopEnd = 1]		
+	}]
+	[h, if(nextOffset+1 == maxOffset): loopEnd = 1]
+	[h: nextOffset = nextOffset + 1]
+}]
+[r, if(tokenFound), code:{
+  Switch to token [r: getName(nextTokenId)]
+  [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
+  <form action="[r:linkUpdateCombat]" method="json">
+        <input type="hidden" name="id" value="[r:nextTokenId]">
+        <input type="hidden" name="inc" value="nextturn">
+        <input type="submit" name="edit_btn" value="next turn">
+  </form>
+};
+{
+ No more token 
+ <!-- build a json with only tokens having remaing CA-->
+ [r: tokens = json.get(initList,"tokens")]
+ [h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
+<form action="[r:linkUpdateGlobalCombat]" method="json">
+  <input type="hidden" name="tokens" value=[r: tokens]>
+  <input type="hidden" name="action" value="nxtcycle">
+  <input type="submit" name="edit_btn" value="Next Cycle">
+</form>
+}]
+

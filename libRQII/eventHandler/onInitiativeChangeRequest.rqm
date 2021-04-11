@@ -1,0 +1,13 @@
+[h: "<!-- onInitiativeChangeRequest -->"]
+[h: jsonArgs = macro.args]
+[h: oldInfo = json.get(jsonArgs, "old")]
+[h: oldToken = json.get(oldInfo, "token")]
+<!-- check activeTurn of old token to confirm is has taken an action before moving to next -->
+[h: currentCombatStatus = getProperty("combatStatus",oldToken)]
+[h, if(json.get(currentCombatStatus, "activeTurn")), code:{
+    [h: msg = "You have to select an action before switching to next token.")]
+    [r: init.denyChange = 1]
+    <!-- Refresh  Action Window for old token -->
+    [r: macroParam = json.set("{}", "id", oldToken,"msg",msg)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+}]

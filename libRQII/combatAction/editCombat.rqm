@@ -1,12 +1,13 @@
 [h: arguments = macro.args]
 [h: tokens = json.get(arguments, "tokens")]
 [h: link = macroLinkText("updateCombat@Lib:RQII", "all")]
+[h: linkCA = macroLinkText("openCombatAction@Lib:RQII", "all")]
 <table style="cellspacing:0px;">
 [r, foreach(item, tokens, ""), code: {
   [h: tokenId = json.get(item, "tokenId")]
   [h: DEX = number(getProperty("DEX",tokenId))]
   [h: INT = number(getProperty("INT",tokenId))]
-  [h: CAorig = round((DEX+INT)/12))]
+  [h: CAorig = ceil((DEX+INT)/12)]
   <tr>
     <td> [r: getName(tokenId)] </td>
     <td> [r: getProperty("CA",tokenId)] / <b>[r: getProperty("ccCA",tokenId)]</b> <i>([r: CAorig])</i>&nbsp;</th>
@@ -29,6 +30,20 @@
         <input type="hidden" name="id" value="[r:tokenId]">
         <input type="hidden" name="inc" value="reset">
         <input type="submit" name="edit_btn" value="r">
+      </form>
+    </td>
+    <td style="padding: 0px; cellspacing:0px;">
+      <form action="[r:linkCA]" method="json">
+        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="hidden" name="msg" value="">
+        <input type="submit" name="edit_btn" value="action">
+      </form>
+    </td>
+	<td style="padding: 0px; cellspacing:0px;">
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="hidden" name="inc" value="disable">
+        <input type="submit" name="edit_btn" value="disable">
       </form>
     </td>
   </tr>
@@ -68,4 +83,15 @@ ccCA =  nb de CA dispo pendant un combat suite à modif par un sort
 </tr>
 </table>
 <input type="submit" name="edit_btn" value="Update ccCA">
+</form>
+[h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
+<form action="[r:linkUpdateGlobalCombat]" method="json">
+  <input type="hidden" name="tokens" value=[r: tokens]>
+  <input type="hidden" name="action" value="nxtcycle">
+  <input type="submit" name="edit_btn" value="Next Cycle">
+</form>
+<form action="[r:linkUpdateGlobalCombat]" method="json">
+  <input type="hidden" name="tokens" value=[r: tokens]>
+  <input type="hidden" name="action" value="rollinit">
+  <input type="submit" name="edit_btn" value="Roll Initiative">
 </form>
