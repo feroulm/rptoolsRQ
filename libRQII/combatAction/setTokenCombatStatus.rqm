@@ -1,0 +1,33 @@
+<!-- combatStatus is a json object -->
+[h: tokenId = json.get(macro.args, "id")]
+
+[h: combatStatus = getProperty("combatStatus",tokenId)]
+[H: propList = ""]
+[h: inputStr = "tip|Modify combat status||LABEL|SPAN=TRUE"]
+[r, foreach(combatProp, combatStatus), CODE:{
+   <!-- make sure your combat properties has a valid variable format -->
+   [r: prop = "input." + replace(lower(combatProp),"[^a-zA-Z0-1_.]","")]
+   <!-- save the variable name for later use -->
+   [H: propList = json.set(propList,prop,combatProp)]
+   [H: value = json.get(combatStatus,combatProp)]
+   [H: inputStr = json.append(inputStr, strformat("%{prop}|%{value}|%{combatProp}|Text"))]
+}]
+
+<!-- get user input -->
+[H: abort(input(json.toList(inputStr,"##")))]
+
+<!-- validate and set new values -->
+[H: updatedCombatStatus = "{}"]
+[H, foreach(prop,propList), code: {
+   [H: combatProp = json.get(propList,prop)]
+   [H: value = eval(prop)]
+   <!-- validate value -->
+   [H, if(json.isEmpty(value)): value = 0]
+   <!-- set new value -->
+   [H: updatedCombatStatus = json.set(updatedCombatStatus,combatProp,value)]
+}]
+
+[H: combatStatus = updatedCombatStatus] 
+[h: setProperty("combatStatus",combatStatus,tokenId)]
+<!-- Refresh Combat Window -->
+[r, macro("openCombat@Lib:RQII"): ""]

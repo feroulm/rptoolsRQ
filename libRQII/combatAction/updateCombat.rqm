@@ -1,57 +1,79 @@
-[h: tokens = json.get(macro.args, "tokens")]
+[h: tokenId = json.get(macro.args, "id")]
 [h: action = json.get(macro.args, "action")]
-[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
+[h: nextTokenId = json.get(macro.args, "nextTokenId")]
+[h: nextTokenOffset = json.get(macro.args, "nextTokenOffset")]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: activeCA = json.get(currentCombatStatus,"activeCA")]
+[h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
+[h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
 
 [r, switch(action), code:
-  case "nxtcycle" : {
-    [r, foreach(item, tokens, ""), code: {
-      [h: tokenId = json.get(item, "tokenId")]
-	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
-	  [r, if(turnStatus == "delay"): getName(tokenId)+": Delayed CA was not used and is lost<br>"]
-	  [h, if(turnStatus == "delay"): currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
-	  [h, if(turnStatus == "off"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
-	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
-    }]
-	<!-- Increment Cycle Number -->
-	[h: cycleNb = json.get(globalCombat, "cycle") + 1]
-	[h: globalCombat = json.set(globalCombat,"cycle",cycleNb)]
-	[h: setLibProperty("combat",globalCombat,"Lib:RQII")]
-	Cycle [r: cycleNb] is starting.<br>	
-	[h: msg = "New Cycle, First to act"]
+  case "attack" : {
+    [h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "id", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
   };
-  case "rollinit" : {
-    <!-- add a test - can only happen if no remaining CA left for the cycle -->
-    [r, foreach(item, tokens, ""), code: {
-      [h: tokenId = json.get(item, "tokenId")]
-      <!-- reset activeTurn to 0 -->
-	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-	  [h: setState("CurrentTurn", 0, tokenId)]
-	  [h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",0),tokenId)]
-	  <!-- to do : compute SR base on current DEx & INt vlue and wether the token has armour penalty or not -->
-	  [h: currentSR = getProperty("SR",tokenId)]
-	  <!-- roll Initiative -->
-  	  [h: setInitiative(1d10+currentSR,tokenId)]
-	  [h: sortInitiative()]
-	  [h: msg = "Initiative rolled, First to act"]
-    }] 
+  case "delay" : {
+    [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","delay")]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "id", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "nxtturn" : {
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: setState("CurrentTurn", 0, tokenId)]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token with turnStatus == on (so it is not necessarly the consecutive token) -->
+    [h: setState("CurrentTurn", 1, nextTokenId)]
+    [h: nextCombatStatus = getProperty("combatStatus",nextTokenId)]
+    [h: nextCombatStatus = json.set(nextCombatStatus,"activeTurn",1)]
+    [h: setProperty("combatStatus",nextCombatStatus,nextTokenId)]
+    [h: setCurrentInitiative(nextTokenOffset)]
+    <!-- Refresh / Open Combat Action Window for new Active Token-->
+    [h: msg = "Direct switch from"+getName(tokenId)]
+    [h: macroParam = json.set("{}", "id", nextTokenId,"msg",msg)]
+    [h, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "parry" : {
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: reactiveCA = reactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",reactiveCA)]  
+
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+
+    [h: msg = "Parry is done, one reactive CA lost"]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- Refresh / Open Combat Action Window for current Active Token-->
+    [h: macroParam = json.set("{}", "id", tokenId,"msg",msg)]
+    [h, macro("openCombatAction@Lib:RQII"): macroParam]
   };
 ]
 
-<!-- select the token with the highest SR and set activeTurn to 1 -->
-[h: initList = getInitiativeList()]
-[h: firstToken = json.path.read(initList, "tokens.[0].tokenId")]
-  
-[r: getName(firstToken)] will start first.
- 
-[h: currentCombatStatus = getProperty("combatStatus",firstToken)]
-[h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",1),firstToken)]
-[h: setState("CurrentTurn", 1, firstToken)]
-[h: setCurrentInitiative(0)]
-  
-<!-- Refresh / Open Combat Action Window for current Active Token-->
-[h: macroParam = json.set("{}", "id", firstToken,"msg",msg)]
-[r, macro("openCombatAction@Lib:RQII"): macroParam]
+[r: getName(tokenId)] has done : [r: action]
 <!-- Refresh Combat Window -->
 [r, macro("openCombat@Lib:RQII"): ""]

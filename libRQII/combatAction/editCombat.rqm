@@ -2,36 +2,75 @@
 [h: tokens = json.get(arguments, "tokens")]
 [h: link = macroLinkText("updateCombat@Lib:RQII", "all")]
 [h: linkCA = macroLinkText("openCombatAction@Lib:RQII", "all")]
+
+[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
+[h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
+[h: initRoll = json.get(globalCombat, "initRoll")]
+<table>
+  <tr>
+    <td>Initiative</td>
+    <td>Cycle</td>
+    <td>Melee Round</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>
+      [r, if(initRoll > 0): "Rolled "+initRoll+" time(s)";"Not rolled !"]
+    </td>
+    <td><b>[r: json.get(globalCombat, "cycle")]</b></td>
+    <td><b>[r: json.get(globalCombat, "mr")]</b></td>
+    <td rowspan="2">
+      <form action="[r:linkUpdateGlobalCombat]" method="json">
+        <input type="hidden" name="tokens" value=[r: tokens]>
+        <input type="hidden" name="action" value="reset">
+        <input type="submit" name="edit_btn" value="Start / Reset">
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <form action="[r:linkUpdateGlobalCombat]" method="json">
+        <input type="hidden" name="tokens" value=[r: tokens]>
+        <input type="hidden" name="action" value="rollinit">
+        <input type="submit" name="edit_btn" value="Roll Initiative">
+      </form>
+    </td>    
+    <td>
+      <form action="[r:linkUpdateGlobalCombat]" method="json">
+        <input type="hidden" name="tokens" value=[r: tokens]>
+        <input type="hidden" name="action" value="nxtcycle">
+        <input type="submit" name="edit_btn" value="Next Cycle">
+      </form>
+    </td>
+    <td>
+      <form action="[r:linkUpdateGlobalCombat]" method="json">
+        <input type="hidden" name="tokens" value=[r: tokens]>
+        <input type="hidden" name="action" value="nxtmr">
+        <input type="submit" name="edit_btn" value="Next MR">
+      </form>
+    </td>
+  </tr>
+</table>
+<hr>
 <table style="cellspacing:0px;">
+  <tr>
+    <td>Token</td>
+    <td>CA</td>
+    <td>Turn status</td>
+    <td>Active Turn</td>
+    <td colspan="3"> </td>
+  </tr>
 [r, foreach(item, tokens, ""), code: {
   [h: tokenId = json.get(item, "tokenId")]
+  [h: combatStatus = getProperty("combatStatus",tokenId)]
   [h: DEX = number(getProperty("DEX",tokenId))]
   [h: INT = number(getProperty("INT",tokenId))]
   [h: CAorig = ceil((DEX+INT)/12)]
   <tr>
     <td> [r: getName(tokenId)] </td>
-    <td> [r: getProperty("CA",tokenId)] / <b>[r: getProperty("ccCA",tokenId)]</b> <i>([r: CAorig])</i>&nbsp;</th>
-    <td style="padding: 0px; cellspacing:0px;">    
-      <form action="[r:link]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="hidden" name="inc" value="true">
-        <input type="submit" name="edit_btn" value="+">
-      </form>
-    </td>
-    <td style="padding: 0px; cellspacing:0px;">
-      <form action="[r:link]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="hidden" name="inc" value="false">
-        <input type="submit" name="edit_btn" value="-">
-      </form>
-    </td>
-    <td style="padding: 0px; cellspacing:0px;">
-      <form action="[r:link]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="hidden" name="inc" value="reset">
-        <input type="submit" name="edit_btn" value="r">
-      </form>
-    </td>
+    <td> [r: json.get(combatStatus,"activeCA")] / <b>[r: json.get(combatStatus,"ccCA")]</b> </td>
+    <td> [r: json.get(combatStatus,"turnStatus")]</td>
+    <td> [r: json.get(combatStatus,"activeTurn")]</td>
     <td style="padding: 0px; cellspacing:0px;">
       <form action="[r:linkCA]" method="json">
         <input type="hidden" name="id" value="[r:tokenId]">
@@ -46,52 +85,13 @@
         <input type="submit" name="edit_btn" value="disable">
       </form>
     </td>
+    [h: linkSetCombatStatus = macroLinkText("setTokenCombatStatus@Lib:RQII", "")]
+    <td style="padding: 0px; cellspacing:0px;">
+      <form action="[r:linkSetCombatStatus]" method="json">
+        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="submit" name="edit_btn" value="updateCA">
+      </form>
+    </td>
   </tr>
 }]
 </table>
-<hr>
-[h: link2 = macroLinkText("resetAllCA@Lib:RQII", "all")]
-<form action="[r:link2]" method="json">
-  <input type="hidden" name="tokens" value=[r: tokens]>
-  <input type="hidden" name="action" value="combat">
-  <input type="submit" name="edit_btn" value="Reset All CA to Combat value">
-</form>
-<form action="[r:link2]" method="json">
-  <input type="hidden" name="tokens" value=[r: tokens]>
-  <input type="hidden" name="action" value="base">
-  <input type="submit" name="edit_btn" value="Reset All CA to Base value">
-</form>
-<br>
-ccCA =  nb de CA dispo pendant un combat suite à modif par un sort
-[h: link3 = macroLinkText("updateCcCA@Lib:RQII", "all")]
-<form action="[r:link3]" method="json">
-<table>
-<tr>
-  <td><b>ccCA :</b></td>
-  <td><input type="text" name="ccCA" size="3" align="right"></td>
-</tr>
-<tr>
-  <td><b>Location :</b></td>
-  <td>
-    <select name="tokenId" size="1">
-      [r, foreach(c, tokens, ""), code: {
-      	  [h: tokenId = json.get(c, "tokenId")]
-          <option value=[r: tokenId]>[r: getName(tokenId)]</option>
-      }]
-    </select>
-  </td>
-</tr>
-</table>
-<input type="submit" name="edit_btn" value="Update ccCA">
-</form>
-[h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
-<form action="[r:linkUpdateGlobalCombat]" method="json">
-  <input type="hidden" name="tokens" value=[r: tokens]>
-  <input type="hidden" name="action" value="nxtcycle">
-  <input type="submit" name="edit_btn" value="Next Cycle">
-</form>
-<form action="[r:linkUpdateGlobalCombat]" method="json">
-  <input type="hidden" name="tokens" value=[r: tokens]>
-  <input type="hidden" name="action" value="rollinit">
-  <input type="submit" name="edit_btn" value="Roll Initiative">
-</form>

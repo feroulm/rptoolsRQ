@@ -1,22 +1,94 @@
 [h: tokens = json.get(macro.args, "tokens")]
 [h: action = json.get(macro.args, "action")]
+[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
 
 [r, switch(action), code:
   case "nxtcycle" : {
+  	<!-- TO DO can only be launch if no turn status is on -->
+    [r, foreach(item, tokens, ""), code: {
+      [h: tokenId = json.get(item, "tokenId")]
+	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+	  [r, if(turnStatus == "delay"): getName(tokenId)+": Delayed CA was not used and is lost<br>"]
+	  [h, if(turnStatus == "delay"): currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
+	  [h, if(turnStatus == "off"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
+	  [h: setState("CurrentTurn", 0, tokenId)]
+    }]
+	<!-- Increment Cycle Number -->
+	[h: cycleNb = json.get(globalCombat, "cycle") + 1]
+	[h: globalCombat = json.set(globalCombat,"cycle",cycleNb)]
+	[h: setLibProperty("combat",globalCombat,"Lib:RQII")]
+	Cycle [r: cycleNb] is starting.<br>	
+	[h: msg = "New Cycle, First to act"]
+  };
+  case "nxtmr" : {
+  	<!-- All activeCa are reset to ccCA,  	
+  	proactiveCA & reactiveCa are reset to 0, 
+  	castCa & fumble lost CA are no reset they go other multiple round,
+  	all turnStatus (but disabled) are reset to on and activeTurn to 0 -->
+  	
+  	<!-- TO DO can only be launch if all turn status are either disable or out -->
+  	
     [r, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
 	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 	  
-	  [h: turnStatus = json.get(currentCombatStatus, "turnStatus")]
-	  [h, if(turnStatus == "delay")]: currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
-  	  [h, if(turnStatus == "off")]: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+	  [h: ccCA = json.get(currentCombatStatus,"ccCA")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
 	  
-	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	  
+	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+	  [h, if(turnStatus != "disabled"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
+	  
+	  <!-- reset All States, but disabled -->
+	  [h: setAllStates(0, tokenId)]
+	  [h, if(turnStatus == "disabled"): setState("Disabled", 1, tokenId)]
     }]
-	<!-- Increment Cycle Number -->
+    <!-- Reset Cycle Number -->
+    [h: globalCombat = json.set(globalCombat,"cycle",1)]
+	<!-- Increment MR Number -->
+	[h: mrNb = json.get(globalCombat, "mr") + 1]
+	[h: globalCombat = json.set(globalCombat,"mr",mrNb)]
+	[h: setLibProperty("combat",globalCombat,"Lib:RQII")]
+	MR [r: mrNb] is starting.<br>	
+	[h: msg = "New MR, First to act"]
+  };
+  case "reset" : {
+  	[h: res = input("junk|This will reset all CA value, cycle & mr Nb and reroll initiative. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+  	[h: abort(res)]
+    <!-- reset everything and reroll initiative -->
+    [h: globalCombat = json.set(globalCombat,"cycle",1)]
+    [h: globalCombat = json.set(globalCombat,"mr",1)]
+    [h: globalCombat = json.set(globalCombat,"initRoll",1)]
+    [h: setLibProperty("combat",globalCombat,"Lib:RQII")]
+    [r, foreach(item, tokens, ""), code: {
+      [h: tokenId = json.get(item, "tokenId")]
+	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)] 
+	  [h: ccCA = json.get(currentCombatStatus,"ccCA")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
+	  <!-- reset All States -->
+	  [h: setAllStates(0, tokenId)]
+	  <!-- roll Initiative -->
+	  [h: currentSR = getProperty("SR",tokenId)]
+  	  [h: setInitiative(1d10+currentSR,tokenId)]
+	  [h: sortInitiative()]
+    }]
+    [h: msg = "Initiative rolled, First to act"]
+	Combat is set (or reset) & initiative is rolled !<br>
   };
   case "rollinit" : {
-    <!-- add a test - can only happen if no remaining CA left for the cycle -->
+    <!-- add a test - can only happen before a new MR -->
     [r, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
       <!-- reset activeTurn to 0 -->
@@ -29,9 +101,15 @@
   	  [h: setInitiative(1d10+currentSR,tokenId)]
 	  [h: sortInitiative()]
     }] 
- };
+    <!-- Increment Init Roll Number -->
+	[h: initRoll = json.get(globalCombat, "initRoll") + 1]
+	[h: globalCombat = json.set(globalCombat,"initRoll",initRoll)]
+	[h: setLibProperty("combat",globalCombat,"Lib:RQII")]
+	[r: initRoll] serie of initiative rolls is done.
+	[h: msg = "Initiative rolled, First to act"]
+  };
 ]
-
+<!-- Each time we roll initiative, change cycle or change mr we focus on the token with highest SR -->
 <!-- select the token with the highest SR and set activeTurn to 1 -->
 [h: initList = getInitiativeList()]
 [h: firstToken = json.path.read(initList, "tokens.[0].tokenId")]
@@ -44,7 +122,7 @@
 [h: setCurrentInitiative(0)]
   
 <!-- Refresh / Open Combat Action Window for current Active Token-->
-[h: macroParam = json.set("{}", "id", firstToken,"msg","Initiative rolled, First to act")]
+[h: macroParam = json.set("{}", "id", firstToken,"msg",msg)]
 [r, macro("openCombatAction@Lib:RQII"): macroParam]
 <!-- Refresh Combat Window -->
 [r, macro("openCombat@Lib:RQII"): ""]

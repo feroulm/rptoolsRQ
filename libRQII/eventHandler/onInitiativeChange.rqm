@@ -2,16 +2,9 @@
 [h: jsonArgs = macro.args]
 [h: oldToken= json.get(json.get(jsonArgs, "old"), "token")]
 [h: newToken = json.get(json.get(jsonArgs, "new"), "token")]
-
-[h: currentCombatStatus = getProperty("combatStatus",newToken)]
-[r: turnStatus = json.get(currentCombatStatus,"turnStatus")]
-
 <!-- Switch visual state -->
 [h: setState("CurrentTurn", 0, oldToken)]
 [h: setState("CurrentTurn", 1, newToken)]
 <!-- Set activeTurn to newToken -->
-
+[h: currentCombatStatus = getProperty("combatStatus",newToken)]
 [h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",1),newToken)]
-<!-- Open Action Window for the new token -->
-[r: macroParam = json.set("{}", "id", newToken)]
-[r, macro("openCombatAction@Lib:RQII"): macroParam]

@@ -1,5 +1,5 @@
-[h: <!-- Function to get next token which can play in the current cycle -->]
-[h: <!-- return a newCurrentCombatStatus -->]
+[h: "<!-- Function to get next token which can play in the current cycle -->"]
+[h: "<!-- return a newCurrentCombatStatus -->"]
 [h: tokenId = arg(0)] 
 [h: currentCombatStatus = arg(1)]
 
@@ -10,6 +10,12 @@
 [h: proactiveCA = proactiveCA + 1]
 [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
 
-[h: <!-- reset the turn , unless no more CA - token is out for this MR -->]
-[h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+[h: "<!-- reset the turn , unless no more CA - token is out for this MR -->"]
+[h, if (remainingCA == 0), code: {
+  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
+  [h: setState("Out", 1, tokenId)]
+};
+{
+  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+}]
 [r: currentCombatStatus]

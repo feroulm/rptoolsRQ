@@ -9,21 +9,29 @@
 </head>
 <body>
 
+<!-- Combat Status variable -->
+[h: tCombatStatus = getProperty("combatStatus",tokenId)]
+
+[h: turnStatus = json.get(tCombatStatus,"turnStatus")]
+[h: activeTurn = json.get(tCombatStatus,"activeTurn")]
+[h: activeCA = json.get(tCombatStatus,"activeCA")]
+[h: ccCA = json.get(tCombatStatus,"ccCA")]
+[h: baseCA = json.get(tCombatStatus,"baseCA")]
+[h: bonusCA = json.get(tCombatStatus,"bonusCA")]
+[h: weaponCA = json.get(tCombatStatus,"weaponCA")]
+[h: magicCA = json.get(tCombatStatus,"magicCA")]
+[h: proactiveCA = json.get(tCombatStatus,"proactiveCA")]
+[h: reactiveCA = json.get(tCombatStatus,"reactiveCA")]
+[h: castCA = json.get(tCombatStatus,"castCA")]
+[h: lostProCA = json.get(tCombatStatus,"lostProCA")]
+[h: lostCA = json.get(tCombatStatus,"lostCA")]
+
+<b>[r: getName(tokenId)]</b>
+<hr>
 <!-- Show action based on combat status -->
 [r, if (msg != ""), code:{
 <b>[r: msg]</b><br>
 }]
-
-[h: tCombatStatus = getProperty("combatStatus",tokenId)]
-<b>[r: getName(tokenId)]</b> - Combat Status
-<hr>
-Turn Status : [r: turnStatus = json.get(tCombatStatus,"turnStatus")],
-Active Turn : [r: activeTurn = json.get(tCombatStatus,"activeTurn")]<br>
-Remaining CA : <b>[r: activeCA = json.get(tCombatStatus,"activeCA")]</b> / [r: ccCA = json.get(tCombatStatus,"ccCA")] ccCA <i>(baseCA : [r: baseCA = json.get(tCombatStatus,"baseCA")] )</i><br>
-CA used during current MR :<br>
-Proactive CA : [r: proactiveCA = json.get(tCombatStatus,"proactiveCA")], Reactive CA : [r: reactiveCA = json.get(tCombatStatus,"reactiveCA")]<br>
-Fumble effect :<br>
-Lost proactive CA : [r: lostProCA = json.get(tCombatStatus,"lostProCA")], Lost CA : [r: lostCA = json.get(tCombatStatus,"lostCA")]<br>
 <br>
 <!-- Compute condition based on various value -->
 [h: showProactiveAction = 0]
@@ -54,26 +62,34 @@ Lost proactive CA : [r: lostProCA = json.get(tCombatStatus,"lostProCA")], Lost C
 [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
 <!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
 [r, if (showProactiveAction), code :{
-  Proactives Actions<br>
-  <form action="[r:linkUpdateCombat]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="hidden" name="inc" value="attack">
-        <input type="submit" name="edit_btn" value="attack">
-  </form>
-  <form action="[r:linkUpdateCombat]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="hidden" name="inc" value="delay">
-        <input type="submit" name="edit_btn" value="delay">
-  </form>
+  Turn is active, token can take proactives actions :<br>
+  <table>
+    <tr>
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="id" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="attack">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="id" value="[r:tokenId]">
+          <input type="hidden" name="action" value="delay">
+          <input type="submit" name="edit_btn" value="delay">
+        </form>
+      </td>
+    </tr>
+  </table>
 
 
 }]
 <!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
 [r, if (showReactiveAction), code :{
-  Reactive  Actions<br>
+  Token can only take reactive actions<br>
   <form action="[r:linkUpdateCombat]" method="json">
         <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="hidden" name="inc" value="parry">
+        <input type="hidden" name="action" value="parry">
         <input type="submit" name="edit_btn" value="parry">
   </form>
   <!-- Check is any token can still play -->
@@ -89,9 +105,47 @@ Lost proactive CA : [r: lostProCA = json.get(tCombatStatus,"lostProCA")], Lost C
   Can only do free actions<br>
   No actions because :<ul>[r: noActionMsg]</ul>
   <!-- jump to next token which is not out or disabled -->
-  [h, if (activeTurn): getNextTurn(tokenId)]
+  [r, if (activeTurn): getNextTurn(tokenId)]
 }]
-
+<br>
+Combat status
+<hr>
+<table>
+  <tr>
+    <td colspan="2">Turn</td>
+    <td colspan="2">CA values</td>
+    <td colspan="2">compute CA values</td>
+    <td colspan="2">MR Used CA</td>
+    <td colspan="2">Fumble lost</td>
+  <tr>
+    <td>turnStatus</td><td> [r: turnStatus] </td>
+    <td>activeCA</td><td> [r: activeCA] </td>
+    <td>baseCA</td><td> [r: baseCA] </td>
+    <td>proactiveCA</td><td> [r: proactiveCA] </td>
+    <td>lostProCA</td><td> [r: lostProCA] </td>
+  </tr>
+  <tr>
+    <td>activeTurn</td><td> [r: activeTurn] </td> 
+    <td>ccCA</td><td> [r: ccCA] </td>
+    <td>bonusCA</td><td> [r: bonusCA] </td>
+    <td>reactiveCA</td><td> [r: reactiveCA] </td>
+    <td>lostCA</td><td> [r: lostCA] </td>
+  </tr>
+  <tr>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td>weaponCA</td><td> [r: weaponCA] </td>
+    <td>castCA</td> <td> [r: castCA] </td>
+    <td></td><td></td>
+  </tr>
+  <tr>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td>magicCA</td><td> [r: magicCA] </td>
+    <td></td><td></td>
+    <td></td><td></td>
+  </tr> 
+</table> 
 </body>
 </html>
 }]
