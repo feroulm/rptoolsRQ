@@ -74,11 +74,15 @@
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"lostCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
 	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
 	  <!-- reset All States -->
 	  [h: setAllStates(0, tokenId)]
+	  [h: setInitiativeHold(0,tokenId)]
 	  <!-- roll Initiative -->
 	  [h: currentSR = getProperty("SR",tokenId)]
   	  [h: setInitiative(1d10+currentSR,tokenId)]

@@ -39,6 +39,7 @@
 [h: showNoProactiveAction = 0]
 [h: showNoAction = 1]
 [h: noActionMsg = ""]
+[h: noProactiveActionMsg = ""]
 
 <!-- token can do a proactive action when it is his turn, if he has some CA left, if he has not played already during this cycle and if he has not lose proactiveCA -->
 [h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)),code:{
@@ -49,9 +50,18 @@
   [h: showNoProactiveAction = 1]
   [h: showNoAction = 0]
 }]
+[h, if ((activeTurn)&&(turnStatus == "disabled")),code:{
+  [h: showProactiveAction = 0]
+  [h: showNoProactiveAction = 0]
+  [h: showNoAction = 1]
+}]
 [h, if ((!activeTurn)&&(activeCA>0)),code:{
   [h: showReactiveAction = 1]
   [h: showNoAction = 0]
+}]
+[h, if ((!activeTurn)&&(turnStatus == "disabled")),code:{
+  [h: showReactiveAction = 0]
+  [h: showNoAction = 1]
 }]
 [h, if (activeCA<=0): noActionMsg = noActionMsg + "<li>no more CA for this MR</li>"]
 [h, if (lostProCA>0): noProactiveActionMsg = noProactiveActionMsg + "<li>no more CA for this cycle</li>"]
@@ -63,6 +73,7 @@
 <!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
 [r, if (showProactiveAction), code :{
   Turn is active, token can take proactives actions :<br>
+  [r, if(castCA > 0): "<b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br>"]
   <table>
     <tr>
       <td>
@@ -70,6 +81,15 @@
           <input type="hidden" name="id" value="[r:tokenId]">
           <input type="hidden" name="action" value="attack">
           <input type="submit" name="edit_btn" value="attack">
+        </form>
+      </td>
+      <td>
+      [h, if(castCA == 0): castAction = "firstCast"]
+      [h, if(castCA > 0): castAction = "pursueCast"]
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="id" value="[r:tokenId]">
+          <input type="hidden" name="action" value="[r:castAction]">
+          <input type="submit" name="edit_btn" value="[r:castAction]">
         </form>
       </td>
       <td>
@@ -81,8 +101,6 @@
       </td>
     </tr>
   </table>
-
-
 }]
 <!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
 [r, if (showReactiveAction), code :{
@@ -97,8 +115,13 @@
 }]
 
 [r, if (showNoProactiveAction), code :{
-  You have still [r: lostCA] lost because of an event, you can only do reactive actions<br>
-  You can delay your turn.
+  You have still [r: lostProCA] lost proactive CA because of an event, you can only do reactive actions<br>
+  You have to delay your turn.
+  <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="id" value="[r:tokenId]">
+          <input type="hidden" name="action" value="delay">
+          <input type="submit" name="edit_btn" value="delay">
+  </form>
 }]
 
 [r, if (showNoAction), code :{

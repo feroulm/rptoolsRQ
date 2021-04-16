@@ -1,21 +1,24 @@
 [h: arguments = macro.args] 
-[h: id = json.get(arguments, "id")]
+[h: tokenId = json.get(arguments, "id")]
 [h: loc = json.get(arguments, "CharLoc")]
-[h: hpInit = getProperty("hpInit",id)]
+[h: hpInit = getProperty("hpInit",tokenId)]
 [h: hpAction = json.get(arguments, "hpAction")]
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: woundLevel = "normal"]
+[h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
 
 [r, if(hpAction == "Heal"), code: {
-[h: newLoc = getProperty(loc,id) + json.get(arguments, "Amount")]
+[h: newLoc = getProperty(loc,tokenId) + json.get(arguments, "Amount")]
 };{
-[h: newLoc = getProperty(loc,id) - json.get(arguments, "Amount")]
+[h: newLoc = getProperty(loc,tokenId) - json.get(arguments, "Amount")]
 }]
 
 Amount : [r: json.get(arguments, "Amount")]<br>
 
-[r: loc] <i>Before</i> : [r: getProperty(loc,id)]<br>
+[r: loc] <i>Before</i> : [r: getProperty(loc,tokenId)]<br>
 [r: loc] <i>After [r: hpAction]</i> : [r: newLoc]<br>
 
-[h: setProperty(loc, newLoc, id)]
+[h: setProperty(loc, newLoc, tokenId)]
 
 [h, switch(loc):
     case "HP_Arm_L": locOrig = hpInit-1;
@@ -25,9 +28,37 @@ Amount : [r: json.get(arguments, "Amount")]<br>
    default: locOrig = hpInit
 ]
 
-[r, if((newLoc <= 0)&&(locOrig + newLoc)>0), code: { <b>Serious Wound</b><br>
+[r, if((newLoc <= 0)&&(locOrig + newLoc)>0), code: { 
+  <b>Serious Wound</b><br>
+  [h: woundLevel = "serious"]
+  [r, if(hpAction == "Damage"), code: {
+    Lost proactive CA (1d3) = [r: lostProCA = 1d3]<br>
+    [h: currentLostProCA = json.get(currentCombatStatus,"lostProCA")]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",currentLostProCA+lostProCA)]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
+  };{}]
 };{}]
-[r, if((locOrig + newLoc) <= 0), code: { <b>Major Wound</b><br>
+[r, if((locOrig + newLoc) <= 0), code: { 
+  <b>Major Wound</b><br>
+  [h: woundLevel = "major"]
+  [r, if(hpAction == "Damage"), code: {
+    Lost proactive CA (1d3) = [r: lostProCA = 1d3]<br>
+    [h: currentLostProCA = json.get(currentCombatStatus,"lostProCA")]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",currentLostProCA+lostProCA)]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
+    <!-- disable, loose all remaining CA till healed and nxtmr -->
+    [h: macroParam = json.set("{}", "id", tokenId, "action", "disable")]
+    [r, macro("updateCombat@Lib:RQII"): macroParam]
+  };{}]
+};{}]
+[r, if((turnStatus == "disabled")&&(woundLevel != "major")), code:{
+  <!-- disabled token that is healed can came back into play for next mr -->
+  [h: macroParam = json.set("{}", "id", tokenId, "action", "enable")]
+  [r, macro("updateCombat@Lib:RQII"): macroParam]
+  No more disabled ! Can act next mr.<br>
 };{}]
 
-Changes saved to [r: getName(id)]
+Changes saved to [r: getName(tokenId)]
+<!-- Refresh -->
+[h: macroParam2 = json.set("{}", "id", tokenId)]
+[r, macro("openLocationHp@Lib:RQII"): macroParam2]
