@@ -1,5 +1,79 @@
-[h: id = json.get(macro.args, "tokenId")]
-[h: ccCA = json.get(macro.args, "ccCA")]
+<!-- Update CA values in combatStatus properties when the following event are triggered
+- lose / grap a weapon
+- increase nb of CA because of magic
 
-[h: setProperty("ccCA",ccCA,id)]
-[r, macro("openCombat@Lib:RQII"): ""]
+Called by :  editHumCombatAttr@Lib:RQII
+Calling : 
+- UDF computeCcCA a.k.a computeCcCA@Lib:RQII (combatAction Group)
+- openHumCombatAttr@Lib:RQII   (sheetManagement Group)
+-->
+[h: tokenId = json.get(macro.args, "tokenId")]
+[h: action = json.get(macro.args, "action")]
+[h: newWeaponNb = json.get(macro.args, "newWeaponNb")]
+[h: newMagicCA = json.get(macro.args, "newMagicCA")]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: currActiveCA = json.get(currentCombatStatus,"activeCA")]
+[h: currCcCA = json.get(currentCombatStatus,"ccCA")]
+[h: currWeaponCA = json.get(currentCombatStatus,"weaponCA")]
+[h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
+[h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
+
+[r, switch(action), code:
+   case "weaponca" : {
+   	<!-- update weaponCA bonus -->
+    [h: newWeaponCA = newWeaponNb - 1]
+    <!-- could not be negative... -->
+    [h, if (newWeaponCA < 0): newWeaponCA = 0]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",newWeaponNb)]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
+    <!-- recompute ccCA, may impact current CA status -->
+    [h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus)] 
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- grab new value -->
+    [r: newWeaponCA = json.get(currentCombatStatus,"weaponCA")]
+    [h: newCcCA = json.get(currentCombatStatus,"ccCA")]
+    
+    [r, if(newWeaponNb>currWeaponNb), code: {
+      [r: getName(tokenId)] grab a new weapon<br>
+    };
+    {
+      [r: getName(tokenId)] loose a weapon<br>
+    }]
+    
+    [r, if(currWeaponCA == newWeaponCA), code: {	
+    	weaponBonus is unchanged, ccCA and activeCA are unchanged
+    };
+    {
+      ccCA switch from [r: currCcCA] to [r: newCcCA]<br>	
+      activeCA switch from [r: currActiveCA] to [r: json.get(currentCombatStatus,"activeCA")]<br>
+    }]
+    
+    <!-- Refresh edit Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+  };
+  case "magicca" : {
+    <!-- could not be negative... -->
+    [h, if (newMagicCA < 0): newMagicCA = 0]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"magicCA",newMagicCA)]
+    <!-- recompute ccCA, may impact current CA status -->
+    [h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus)] 
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- grab new value -->
+    [h: newCcCA = json.get(currentCombatStatus,"ccCA")]
+    
+    [r, if(currMagicCA == newMagicCA), code: {	
+    	magicCA bonus is unchanged, ccCA and activeCA are unchanged
+    };
+    {
+      magicCA switch from [r: currMagicCA] to [r: newMagicCA]<br>
+      ccCA switch from [r: currCcCA] to [r: newCcCA]<br>	
+      activeCA switch from [r: currActiveCA] to [r: json.get(currentCombatStatus,"activeCA")]<br>
+    }]
+    
+    <!-- Refresh edit Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+  };
+]

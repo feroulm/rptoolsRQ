@@ -1,0 +1,3 @@
+[h: tokenId = getSelected()]
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("initCharacJson@Lib:RQII"): macroParam]  

@@ -1,0 +1,15 @@
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[h: res = input("junk|This will reset all Charac properties value (base and tmp) using the main charac properties Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+[h: abort(res)]
+[h: newCharac = ""]
+[foreach(prop, propNames, ""), code: {
+    <!-- construct JSON varName based on prop Name -->
+    [h: basProp = "bas"+prop]
+    [h: tmpProp = "tmp"+prop]
+    [h: propValue = getProperty(prop, tokenId)]
+    [h: newCharac = json.set(newCharac,basProp,propValue,tmpProp,propValue)]
+}]
+[h: setProperty("Charac",newCharac,tokenId)]
+[r: getName(tokenId)] Charac propertie's has been updated to [r: newCharac]<br>

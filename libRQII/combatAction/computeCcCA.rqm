@@ -1,0 +1,28 @@
+[h: "<!-- Function to recompute ccCA -->"]
+[h: "<!-- Called by : updateCcCA@Lib:RQII (combatAction Group) -->"]
+[h: "<!-- return a newCurrentCombatStatus -->"]
+[h: tokenId = arg(0)] 
+[h: currentCombatStatus = arg(1)]
+
+[h: currActiveCA = json.get(currentCombatStatus,"activeCA")]
+[h: currCcCA = json.get(currentCombatStatus,"ccCA")]
+[h: baseCA = json.get(currentCombatStatus,"baseCA")]
+[h: bonusCA = json.get(currentCombatStatus,"bonusCA")]
+[h: weaponCA = json.get(currentCombatStatus,"weaponCA")]
+[h: magicCA = json.get(currentCombatStatus,"magicCA")]
+[h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+
+[h: newCcCA = baseCA + bonusCA + weaponCA + magicCA]
+[h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",newCcCA)]
+
+[h: "<!-- recompute activeCA, increase or decrease but can't be < 0 -->"]
+[h: newActiveCA = currActiveCA + (newCcCA - currCcCA)]
+[h, if (newActiveCA < 0): newActiveCA = 0]
+[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",newActiveCA)]
+
+[h: "if no more CA - token is out for this MR -->"]
+[h, if ((newActiveCA == 0)&&(turnStatus != "disabled")), code: {
+  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
+  [h: setState("Out", 1, tokenId)]
+};{}]
+[r: currentCombatStatus]

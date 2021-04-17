@@ -1,5 +1,9 @@
 ## RQ_Human
 
+### Charac
+```
+Charac = {"basSTR":11,"basCON":14,"basSIZ":12,"basINT":10,"basPOW":11,"basDEX":15,"basCHA":9,"tmpSTR":11,"tmpCON":14,"tmpSIZ":12,"tmpINT":10,"tmpPOW":11,"tmpDEX":15,"tmpCHA":9}
+```
 ### combatStatus
 Used on each token during a combat to track various status
 

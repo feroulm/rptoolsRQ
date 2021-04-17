@@ -1,0 +1,23 @@
+<!-- Open a form to manage token attribute that can have an impact during the combat
+
+Called by :  
+- editCombat@lib:RQII (combatAction Group)
+- updateCcCA@Lib:RQII (combatAction Group)
+Calling : 
+- editHumCombatAttr@Lib:RQII   (sheetManagement Group)
+-->
+[h: link = macroLinkText("openHumCombatAttr@Lib:RQII", "")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[dialog("Human Combat Attributes"): {
+  <html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <title>Human Combat Attributes</title>
+    </head>
+    <body>
+      [r, macro("editHumCombatAttr@Lib:RQII"): tokenId]
+    </body>
+</html>
+}]
