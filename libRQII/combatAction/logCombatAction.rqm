@@ -1,0 +1,29 @@
+[h: "<!-- update one type of combatLog entry for a specific token , return nothing -->"]
+[h: "<!-- logEntry action type = proactive, reactive or change -->"]
+[h: tokenId = arg(0)] 
+[h: logType = arg(1)]
+[h: logMsg = arg(2)]
+[h: "<!-- grab MR number and Cycle number -->"]
+[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
+[h: cycleNB = json.get(globalCombat, "cycle")]
+[h: mrNB = json.get(globalCombat, "mr")]
+[h: logEntry = logMsg+" (MR"+mrNB+"-C"+cycleNB+")"]
+
+[h: "<!-- update the entry -->"]
+[h: currentCombatLog = getProperty("combatLog",tokenId)]
+
+[h, switch(logType), code:
+  case "proactive" : {
+  	[h: newCombatLog = json.set(currentCombatLog,"lastProactiveAction",logEntry)]
+  };
+  case "reactive" : {
+  	[h: newCombatLog = json.set(currentCombatLog,"lastReactiveAction",logEntry)] 	
+  };
+  case "change" : {
+  	[h: newCombatLog = json.set(currentCombatLog,"lastTokenChange",logEntry)]
+  };
+  default: {
+  	
+  }
+]
+[h: setProperty("combatLog",newCombatLog,tokenId)]

@@ -1,5 +1,6 @@
 .oddRow { background-color: #FFFFFF }
 .evenRow { background-color: #EEEEAA }
+.leftBorder { border: solid 0 #060; border-left-width:1px }
 td.firstCol { text-align: left; font-weight: bold;}
 td { text-align: center; }
 
@@ -11,4 +12,3 @@ td { text-align: center; }
     text-align: center;
 }
 #aphp th { text-align: center; background-color: #113311; color: #FFFFFF }
-

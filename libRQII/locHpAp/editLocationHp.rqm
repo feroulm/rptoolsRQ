@@ -2,23 +2,23 @@
  form to manage location HP. 
  Enable to heal or damage HP.
 -->
-[h: id = macro.args]
-[r, if(listCount(id)!=1), code: {};{
- 
+[h: tokenId = macro.args]
+
 [h: link = macroLinkText("updateLocationHp@Lib:RQII", "all")]
 <form action="[r:link]" method="json">
- <input type="hidden" name="id" value="[r:id]">
-<h3>[r:getName(id)]</h3>
-<hr>
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+<h1>[r:getName(tokenId)]</h1>
+ 
 <table width="*">
 <tr>
-  <td>Damage :</td>
-  <td><input type="radio" name="hpAction" value="Damage" checked="checked"></td>
+  <th>Damage :
+  <input type="radio" name="hpAction" value="Damage" checked="checked">
+  </th>
+  <th>Heal :
+  <input type="radio" name="hpAction" value="Heal">
+  </th>
 </tr>
-<tr>
-  <td>Heal :</td>
-  <td><input type="radio" name="hpAction" value="Heal"></td>
-</tr>
+
 <tr>
   <td><b>Amount :</b></td>
   <td><input type="text" name="Amount" size="3" align="right"></td>
@@ -36,10 +36,9 @@
     </select>
   </td>
 </tr>
-<tr>
-  <td><i>Update:</td> 
-  <td><input type="submit" name="dmgTarget" value="HP"></td>
- </tr>
-</table>
+ 
+<input type="submit" name="edit_btn" value="Submit changes">
 </form>
-}]
+</table>
+<hr>
+[r, macro("viewHpAp@this"): tokenId]

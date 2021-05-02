@@ -1,23 +1,59 @@
 ## RQ_Human
 
 ### Charac
+
+bas<Charac> : used to keep the native / permanent value (defined during character creation and incresde / decreased during improvment)
+tmp<Charc> : used to keep the temproary value because of an magical artefect that can be removed, a spell etc.
+
+<charac> :  represent the current situation (usally equat to tmp<Charac>, but it can be rested to default value using the baseCharac. It Used to compute the skills.
 ```
 Charac = {"basSTR":11,"basCON":14,"basSIZ":12,"basINT":10,"basPOW":11,"basDEX":15,"basCHA":9,"tmpSTR":11,"tmpCON":14,"tmpSIZ":12,"tmpINT":10,"tmpPOW":11,"tmpDEX":15,"tmpCHA":9}
 ```
+
+### ArmorPenalty
+```
+ArmorPenalty = {"base":2,"current":2}
+```
+
+### StrikeRank
+```
+StrikeRank = {"base":2,"current":2}
+```
+### DamageMod
+```
+DamageMod = {"base":"+0+,"current":"+0"}
+```
+
+### MagicPoint
+
+MagicPoint is the sum POW - dedicatedPOW + other magicSrc (like cristal etc.)
+Number is managed staticaly using a counter powerSrcNb
+```
+MagicPoint = {"MP":{"base":18,"current":15},"dedPOW":1}
+
+{
+    "MP": {
+        "base": 18,
+        "current": 17
+    },
+    "dedPOW": 1
+}
+```
+
 ### combatStatus
 Used on each token during a combat to track various status
 
 ```
-combatStatus = {"activeCA":0,"ccCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"proactiveCA":0,"reactiveCA":0,"lostProCA":0,"lostCA":0,"castCA":0,"turnStatus":"disabled","activeTurn":0}
+combatStatus = {"activeCA":0,"ccCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"turnStatus":"disabled","activeTurn":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}
 ```
 
 TST_WARRIOR1 (two weapon + magCA + bon CA + activeTur = 1) : 
 ```
- {"activeCA":5,"ccCA":5,"baseCA":2,"bonusCA":1,"weaponCA":1,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"lostProCA":0,"lostCA":0,"castCA":0,"turnStatus":"on","activeTurn":1}
+ {"activeCA":5,"ccCA":5,"baseCA":2,"bonusCA":1,"weaponCA":1,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":1,"weaponReach":"ok","currWeaponNb":2,"defWeaponNb":2}
 ```
 TST_WARRIOR2 (one weapon + magCA) :
 ```
-{"activeCA":3,"ccCA":3,"baseCA":2,"bonusCA":0,"weaponCA":0,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"lostProCA":0,"lostCA":0,"castCA":0,"turnStatus":"on","activeTurn":0}
+{"activeCA":3,"ccCA":3,"baseCA":2,"bonusCA":0,"weaponCA":0,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}
 ```
 
 * **activeCA** : current remaining CA
@@ -31,17 +67,33 @@ TST_WARRIOR2 (one weapon + magCA) :
 * **lostProCA** : lost in case of fumble. Apply only to proactive action.
 * **lostCA** : lost in case of fumble. Apply to all CA.
 * **castCA** : CA counter needed to cast magic (casting time).
+* **reloadCA** : CA counter needed to reload range weapon
 * **turnStatus** : on, off, delay, out or disabled. 
   * (on, off) : Indicate wether the token has already taken is turn or not, 
   * (delay) : token has delayed it to keep a reactive action, 
   * (out) : token is out for this cycle (because is has no more remaining CA)
   * (disabled) : token can do nothing because is totally out of the combat : incapacitate, dead, etc.
 * **activeTurn** : 1 if it is the turn of the token , 0 otherwise.
+* **weaponReach** : indicate wether the token can strike or not.
+  * **ok** : nothing special. Default value.
+  * **outmanoeuvred** : the token can't attack nor take proactive action for this MR
+  * **closed** : the token cannot parry because is weapon is to long, he can only attack with a damage of 1d3+1 (representing the pommel / hilt of his weapon)
+  * **unreachable** : the token can only attack the weapon (or limb of the huge creature i.e a tentacle)
 * **currWeaponNb** : current nb of weapon hold by the token (could not be <0). Use to manage the lost weapon vent during a combat
 * **defWeaponNb** : def nb of weapon usually hold by the token (usually set during charchetr creation adn use to reste a token combat status before a new combat
 
 
+### combatLog
 
+- Store the last proactiveAction taken , the last reactiveAction taken and the last consequence (damage, status change etc.). It is prefixed with corresponding MR_Nb and Cycle_Nb
+
+```
+combatLog = {"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":""}
+```
+Example  : 
+- lastProactiveAction : MR_1, C_1 tokenname has done attack 
+- lastReactiveAction : MR_1, C_1 tokenname has done parry 
+- lastTokenChange : MR_1, C_1 tokenname has lost 3pts in L_ARM
 
 
 

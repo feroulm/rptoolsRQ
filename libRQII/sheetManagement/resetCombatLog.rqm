@@ -1,0 +1,7 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+[h: res = input("junk|This will reset all token combatLog properties value. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+[h: abort(res)]	
+[h: emptyLog = json.set("{}", "lastProactiveAction", "","lastReactiveAction","","lastTokenChange","")]
+[h: setProperty("combatLog",emptyLog,tokenId)]
+[r: getName(tokenId)] combatLog has been reset<br>

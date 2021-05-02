@@ -62,25 +62,22 @@
   </tr>
 [r, foreach(item, tokens, ""), code: {
   [h: tokenId = json.get(item, "tokenId")]
-  [h: combatStatus = getProperty("combatStatus",tokenId)]
-  [h: DEX = number(getProperty("DEX",tokenId))]
-  [h: INT = number(getProperty("INT",tokenId))]
-  [h: CAorig = ceil((DEX+INT)/12)]
+  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
   <tr>
     <td> [r: getName(tokenId)] </td>
-    <td> [r: json.get(combatStatus,"activeCA")] / <b>[r: json.get(combatStatus,"ccCA")]</b> </td>
-    <td> [r: json.get(combatStatus,"turnStatus")]</td>
-    <td> [r: json.get(combatStatus,"activeTurn")]</td>
+    <td> [r: json.get(currentCombatStatus,"activeCA")] / <b>[r: json.get(currentCombatStatus,"ccCA")]</b> </td>
+    <td> [r: json.get(currentCombatStatus,"turnStatus")]</td>
+    <td> [r: json.get(currentCombatStatus,"activeTurn")]</td>
     <td style="padding: 0px; cellspacing:0px;">
       <form action="[r:linkCA]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="hidden" name="msg" value="">
         <input type="submit" name="edit_btn" value="action">
       </form>
     </td>
 	<td style="padding: 0px; cellspacing:0px;">
       <form action="[r:link]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="hidden" name="action" value="disable">
         <input type="submit" name="edit_btn" value="disable">
       </form>
@@ -95,7 +92,7 @@
     [h: linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "")]
     <td style="padding: 0px; cellspacing:0px;">
       <form action="[r:linkDamageHeal]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="submit" name="edit_btn" value="Damage / Heal">
       </form>
     </td>

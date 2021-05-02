@@ -2,14 +2,13 @@
  form to manage location HP & AP. 
  Enable to heal or damage either HP or AP of a specific location.
 -->
-[h: id = macro.args]
-[r, if(listCount(id)!=1), code: {};{
+[h: tokenId = macro.args]
 
-[h: pLocNb = getProperty("locNb", id)]
+[h: pLocNb = getProperty("locNb", tokenId)]
 [h: link = macroLinkText("updateMonsterLocHp@Lib:RQII", "all")]
 <form action="[r:link]" method="json">
- <input type="hidden" name="id" value="[r:id]">
-<h3>[r:getName(id)]</h3>
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+<h3>[r:getName(tokenId)]</h3>
 <hr>
 <table width="*">
 <tr>
@@ -26,7 +25,7 @@
   <td><input type="text" name="Amount" size="3" align="right"></td>
 </tr>
 
-[h: pLocName= getProperty("locName", id)]
+[h: pLocName= getProperty("locName", tokenId)]
 
 <tr>
   <td><b>Location :</b></td>
@@ -44,4 +43,5 @@
 </tr> 
 </table>
 </form>
-}]
+<hr>
+[r, macro("viewMonsterAPHP@this"): tokenId]

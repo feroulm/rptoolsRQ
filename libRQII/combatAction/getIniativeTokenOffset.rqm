@@ -1,0 +1,6 @@
+[h: "<!-- Return the offset of the token in the initiative list->"]
+[h: tokenId = arg(0)]
+[h: initList = getInitiativeList()]
+[h: tokenArray = json.get(initList,"tokens")]
+[h: tokenIdArray = json.path.read(tokenArray,".tokenId")]
+[r: json.indexOf(tokenIdArray, tokenId)]

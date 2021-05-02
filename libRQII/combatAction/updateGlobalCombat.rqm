@@ -46,9 +46,10 @@
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
 	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
 	  
-	  <!-- reset All States, but disabled -->
-	  [h: setAllStates(0, tokenId)]
-	  [h, if(turnStatus == "disabled"): setState("Disabled", 1, tokenId)]
+	  <!-- reset States -->
+	  [h: setState("CurrentTurn", 0, tokenId)]
+	  [h: setState("Out", 0, tokenId)]
+
     }]
     <!-- Reset Cycle Number -->
     [h: globalCombat = json.set(globalCombat,"cycle",1)]

@@ -1,0 +1,114 @@
+<!-- updateCharac 
+Update token Charac json properties, it update only the current Value (tmpCharacName)
+Called by :  editHumCombatAttr@lib:RQII (sheetManagement Group)
+Calling : 
+- openHumCombatAttr@lib:RQII (sheetManagement Group)
+-->
+
+[h: tokenId = json.get(macro.args, "tokenId")]
+
+[h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[h: propCharac = getProperty("Charac",tokenId)]
+[h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+[h: propDamageMod = getProperty("DamageMod",tokenId)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+[h: propCombatStatus = getProperty("combatStatus",tokenId)]
+[h: damageModTbl = getLibProperty("damageMod","Lib:RQII")]
+
+<!-- keep previous value to indicate which one was changes -->
+[h: currSTR = json.get(propCharac,"tmpSTR")]
+[h: currCON = json.get(propCharac,"tmpCON")]
+[h: currSIZ = json.get(propCharac,"tmpSIZ")]
+[h: currINT = json.get(propCharac,"tmpINT")]
+[h: currPOW = json.get(propCharac,"tmpPOW")]
+[h: currDEX = json.get(propCharac,"tmpDEX")]
+[h: currCHA = json.get(propCharac,"tmpCHA")]
+
+[h: newCharac = propCharac]
+[h: newSTR = json.get(macro.args,"STR")]
+[h: newCON = json.get(macro.args,"CON")]
+[h: newSIZ = json.get(macro.args,"SIZ")]
+[h: newINT = json.get(macro.args,"INT")]
+[h: newPOW = json.get(macro.args,"POW")]
+[h: newDEX = json.get(macro.args,"DEX")]
+[h: newCHA = json.get(macro.args,"CHA")]
+
+<!-- Update Chacac -->
+[foreach(characName, characNames, ""), code: {
+  <!-- construct JSON varName based on prop Name -->
+  [h: tmpCharacName = "tmp"+characName]
+  [h: newCharacValue = json.get(macro.args, characName)]
+  [h: currCharacValue = json.get(propCharac, tmpCharacName)]
+  [r, if (currCharacValue != newCharacValue), code:{
+  	[r: characName] changed from [r: currCharacValue] to [r: newCharacValue]<br>
+  }]
+  [h: newCharac = json.set(newCharac,tmpCharacName,newCharacValue)]
+  [h: setProperty(characName,newCharacValue,tokenId)]
+}]
+
+[h: setProperty("Charac",newCharac,tokenId)]
+
+<!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->
+[h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
+[h: currentSR = json.get(propStrikeRank, "current")]
+[h: newSR = floor((newINT + newDEX)/2) - currentArmorPenalty]<br>
+[r, if(newSR != currentSR), code:{
+  SR Change from [r: currentSR] to [r: newSR], you should reroll initiative for next mr<br>
+  [h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
+  [h: setProperty("StrikeRank",newStrikeRank,tokenId)]
+};{}]
+
+<!-- recompute base CA roundup (=ceil) (DEX+INT)/12 -->
+[h: currentBaseCA = json.get(propCombatStatus,"baseCA")]
+[h: newBaseCA = ceil((newINT + newDEX)/12)]
+[r, if(newBaseCA != currentBaseCA), code:{
+  baseCA Change from [r: currentBaseCA] to [r: newBaseCA]<br>
+  <!-- recompute ccCA, may impact current CA status -->
+  [h: newCombatStatus = json.set(propCombatStatus,"baseCA",newBaseCA)]
+  [h: newCombatStatus = computeCcCA(tokenId,newCombatStatus)] 
+  [h: setProperty("combatStatus",newCombatStatus,tokenId)]
+};{}]
+
+<!-- recompute Damage (FOR+TAI) - table -->
+[h, if(newSTR+newSIZ>50), code:{
+  <!-- big damage mod progress by range of 10pts -->
+  [h: newDamageModIndex = ceil((newSTR + newSIZ)/10)+4]
+};
+{
+  <!-- damage progress mod by range of 5pts -->
+  [h: newDamageModIndex = ceil((newSTR + newSIZ)/5)-1]
+}]
+
+[h, if(newDamageModIndex<0): newDamageModIndex = 0]
+[r, if(newDamageModIndex>17), code:{
+	[h: newDamageModIndex = 17]
+	Damage Mod when STR + SIZ is above 130 is not implemented...continue the progession<br>
+}]
+[h: newDamageMod = json.get(damageModTbl,newDamageModIndex)]
+[h: currentDamageMod = json.get(propDamageMod,"current")]
+[r, if(currentDamageMod != newDamageMod), code:{
+	Damage Mod change from [r: currentDamageMod] to [r: newDamageMod]<br>
+	[h: newPropDamageMod = json.set(propDamageMod,"current",newDamageMod)]
+	[h: setProperty("damageMod",newPropDamageMod,tokenId)]
+};{}]
+
+<!-- recompute Magic Point -->
+<!-- base MP = newPOW, current MP = currentMP + (newPOW - prevPOW) -->
+[r, if(newPOW != currPOW), code:{
+  [h: newMP = newPOW - json.get(propMagicPoint,"dedPOW")]
+  [h: currMP = json.path.read(newMagicPoint,"MP.current")]
+  [h: newMagicPoint = json.path.set(propMagicPoint,"MP.base",newMP)]
+  [h: newCurrMP = currMP + (newPOW - currPOW)]
+  [h: newMagicPoint = json.path.set(newMagicPoint,"MP.current",newCurrMP)]
+  [h: setProperty("MagicPoint",newMagicPoint,tokenId)]
+  Current MP change from [r: currMP] to [r: newCurrMP]<br>
+};{}]
+
+<!-- recompute HP (CON+SIZ)/2 (rounded up) -->
+
+<!-- recompute Skills -->
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openHumCombatAttr@Lib:RQII"): macroParam]

@@ -1,11 +1,16 @@
 [h: link = macroLinkText("openLocationHp@Lib:RQII", "none")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[h, if(listCount(tokenId) != 1): abort(0)]
+[h: tokenType = getPropertyType(tokenId)]
+[h, if(tokenType != "RQ_Human"): abort(0)]
 [frame("locHp"): {
 <html>
 <head>
 <link rel="onChangeSelection" type="macro" href="[r:link]">
 </head>
 <body>
-[r, macro("editLocationHp@Lib:RQII"): getSelected()]
+[r, macro("editLocationHp@Lib:RQII"): tokenId]
 </body>
 </html>
 }]

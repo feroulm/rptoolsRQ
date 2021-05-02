@@ -1,3 +1,6 @@
 [h: defineFunction("getNextTurn", "getNextTurn@Lib:RQII")]
 [h: defineFunction("resetDelayedTurn", "resetDelayedTurn@Lib:RQII")]
+[h: defineFunction("showDelayedAction", "showDelayedAction@Lib:RQII")]
 [h: defineFunction("computeCcCA", "computeCcCA@Lib:RQII")]
+[h: defineFunction("getInitiativeTokenOffset","getInitiativeTokenOffset@Lib:RQII")]
+[h: defineFunction("logCombatAction","logCombatAction@Lib:RQII")]
