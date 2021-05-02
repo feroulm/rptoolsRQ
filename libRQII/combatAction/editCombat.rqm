@@ -25,6 +25,7 @@
         <input type="hidden" name="action" value="reset">
         <input type="submit" name="edit_btn" value="Start / Reset">
       </form>
+      [r: macroLink("Refresh", "openCombat@Lib:RQII", "all")]
     </td>
   </tr>
   <tr>
@@ -54,17 +55,22 @@
 <hr>
 <table style="cellspacing:0px;">
   <tr>
-    <td>Token</td>
-    <td>CA</td>
-    <td>Turn status</td>
-    <td>Active Turn</td>
-    <td colspan="3"> </td>
+    <td style="text-align:left">Token</td>
+    <td style="width:30px">CA</td>
+    <td style="text-align:center">Turn status</td>
+    <td style="text-align:center">Active Turn</td>
+    <td></td>
+    <td style="text-align:left">Last proactive action</td>
+    <td style="text-align:left">Last reactive action</td>
+    <td style="text-align:left">Last change after action</td>
   </tr>
+  [h: class = "oddRow"]
 [r, foreach(item, tokens, ""), code: {
   [h: tokenId = json.get(item, "tokenId")]
   [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-  <tr>
-    <td> [r: getName(tokenId)] </td>
+  [h: currentCombatLog = getProperty("combatLog",tokenId)]
+  <tr class="[r:class]">
+    <td style="text-align:left"> [r: getName(tokenId)] </td>
     <td> [r: json.get(currentCombatStatus,"activeCA")] / <b>[r: json.get(currentCombatStatus,"ccCA")]</b> </td>
     <td> [r: json.get(currentCombatStatus,"turnStatus")]</td>
     <td> [r: json.get(currentCombatStatus,"activeTurn")]</td>
@@ -72,37 +78,13 @@
       <form action="[r:linkCA]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="hidden" name="msg" value="">
-        <input type="submit" name="edit_btn" value="action">
+        <input type="submit" name="edit_btn" value="act">
       </form>
     </td>
-	<td style="padding: 0px; cellspacing:0px;">
-      <form action="[r:link]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="disable">
-        <input type="submit" name="edit_btn" value="disable">
-      </form>
-    </td>
-    [h: linkSetCombatStatus = macroLinkText("setTokenCombatStatus@Lib:RQII", "")]
-    <td style="padding: 0px; cellspacing:0px;">
-      <form action="[r:linkSetCombatStatus]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
-        <input type="submit" name="edit_btn" value="updateCA">
-      </form>
-    </td>
-    [h: linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "")]
-    <td style="padding: 0px; cellspacing:0px;">
-      <form action="[r:linkDamageHeal]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="submit" name="edit_btn" value="Damage / Heal">
-      </form>
-    </td>
-    <td style="padding: 2px; cellspacing:0px;">
-      [h: linkOpenHumCombatAttr = macroLinkText("openHumCombatAttr@Lib:RQII", "")]
-	  <form action="[r:linkOpenHumCombatAttr]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="submit" name="edit_btn" value="Change Charac & Weapon">
-      </form>
-    </td>
+    <td style="text-align:left">[r: json.get(currentCombatLog,"lastProactiveAction")]</td>
+    <td style="text-align:left">[r: json.get(currentCombatLog,"lastReactiveAction")]</td> 
+    <td style="text-align:left">[r: json.get(currentCombatLog,"lastTokenChange")]</td> 
   </tr>
+  [h: class = if(class=="oddRow", "evenRow", "oddRow")]
 }]
 </table>

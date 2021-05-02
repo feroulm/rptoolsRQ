@@ -1,5 +1,5 @@
 <!-- combatStatus is a json object -->
-[h: tokenId = json.get(macro.args, "id")]
+[h: tokenId = json.get(macro.args, "tokenId")]
 
 [h: combatStatus = getProperty("combatStatus",tokenId)]
 [H: propList = ""]
@@ -29,5 +29,10 @@
 
 [H: combatStatus = updatedCombatStatus] 
 [h: setProperty("combatStatus",combatStatus,tokenId)]
+
+<!-- Refresh Combat Action Window -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openCombatAction@Lib:RQII"): macroParam]
+
 <!-- Refresh Combat Window -->
 [r, macro("openCombat@Lib:RQII"): ""]

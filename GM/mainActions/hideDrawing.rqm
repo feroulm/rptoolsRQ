@@ -1,0 +1,5 @@
+[h:mapName = getCurrentMapName()]
+[h:drawId=findDrawings(mapName, drawName)]
+[h:setDrawingOpacity(mapName, drawId,1)]
+[h:setDrawingLayer(mapName, drawId,"BACKGROUND")]
+[h:refreshDrawing(mapName, drawId)]

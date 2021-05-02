@@ -142,6 +142,35 @@
   [r, if (activeTurn): getNextTurn(tokenId)]
 }]
 <br>
+Change after combat action
+<hr>
+<table>
+  <tr>
+    <td style="padding: 0px; cellspacing:0px;">
+      [h: linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "all")]
+      <form action="[r:linkDamageHeal]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="submit" name="edit_btn" value="Damage / Heal">
+      </form>
+    </td>
+    <td style="padding: 2px; cellspacing:0px;">
+      [h: linkOpenHumCombatAttr = macroLinkText("openHumCombatAttr@Lib:RQII", "all")]
+	  <form action="[r:linkOpenHumCombatAttr]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="submit" name="edit_btn" value="Change Charac & Weapon">
+      </form>
+    </td>
+    <td style="padding: 0px; cellspacing:0px;">
+      [h: linkDisable = macroLinkText("updateCombat@Lib:RQII", "all")]
+      <form action="[r:linkDisable]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="disable">
+        <input type="submit" name="edit_btn" value="disable">
+      </form>
+    </td>
+  </tr>
+</table>
+
 Combat status
 <hr>
 <table>
@@ -151,6 +180,8 @@ Combat status
     <td colspan="2">compute CA values</td>
     <td colspan="2">MR Used CA</td>
     <td colspan="2">Fumble lost</td>
+
+  </tr>
   <tr>
     <td>turnStatus</td><td> [r: turnStatus] </td>
     <td>activeCA</td><td> [r: activeCA] </td>
@@ -178,5 +209,14 @@ Combat status
     <td>magicCA</td><td> [r: magicCA] </td>
     <td>reloadCA</td><td>[r: reloadCA] </td>
     <td></td><td></td>
-  </tr> 
+  </tr>
+  <tr>
+    <td colspan="5">
+      [h: linkSetCombatStatus = macroLinkText("setTokenCombatStatus@Lib:RQII", "")]
+      <form action="[r:linkSetCombatStatus]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="submit" name="edit_btn" value="Edit Combat Status">
+      </form>
+    </td>
+  </tr>
 </table> 
