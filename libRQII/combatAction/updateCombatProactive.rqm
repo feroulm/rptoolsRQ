@@ -1,0 +1,161 @@
+<!-- Handle proactive action -->
+[h: tokenId = json.get(macro.args, "tokenId")]
+[h: action = json.get(macro.args, "action")]
+[h: nextTokenId = json.get(macro.args, "nextTokenId")]
+[h: nextTokenOffset = json.get(macro.args, "nextTokenOffset")]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: activeCA = json.get(currentCombatStatus,"activeCA")]
+[h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
+[h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
+
+[h: origAction = action]
+
+[r, switch(action), code:
+ case "parrydelayed" : {
+ 	[h: action = "attack"]
+ };
+ default: {
+ 	<!-- do nothing -->
+ }
+]
+
+[r, switch(action), code:
+  case "attack" : {
+    [h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+  
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "delay" : {
+    [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","delay")]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "firstCast" : {
+  	[h: input("castCA|1|Nb of CA to cast the spell|TEXT")]
+    [h: remainingCastCA = castCA - 1]
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",remainingCastCA)]
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    [h, if (remainingCastCA > 0): setState("Casting", 1, tokenId)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "pursueCast" : {
+  	[h: castCA = json.get(currentCombatStatus,"castCA")]
+    [h: remainingCastCA = castCA - 1]
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",remainingCastCA)]
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    [h, if (remainingCastCA == 0): setState("Casting", 0, tokenId)]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "Shoot" : {
+  	[h: input("reloadCA|1|Nb of CA to reload the weapon|TEXT")]
+    [h: remainingReloadCA = reloadCA]
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",remainingReloadCA)]
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    [h: setState("Reloading", 1, tokenId)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "Reload" : {
+  	[h: reloadCA = json.get(currentCombatStatus,"reloadCA")]
+    [h: remainingReloadCA = reloadCA - 1]
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",remainingReloadCA)]
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    [h, if (remainingReloadCA == 0): setState("Reloading", 0, tokenId)]
+    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    <!-- switch to next token -->
+    [h: nextInitiative()]
+    [h: newToken = getInitiativeToken()]
+    <!-- Refresh Action Window for the new token -->
+    [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unexistant action !<br>
+ }
+]
+
+<!-- log the action -->
+[h: logMsg = origAction]
+[h: logCombatAction(tokenId,"proactive",logMsg)]
+
+[r: getName(tokenId)] has done : [r: origAction]
+<!-- Refresh Combat Window -->
+[r, macro("openCombat@Lib:RQII"): ""]

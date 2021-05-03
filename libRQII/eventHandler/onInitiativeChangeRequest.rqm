@@ -8,6 +8,6 @@
     [h: msg = "You have to select an action before switching to next token.")]
     [r: init.denyChange = 1]
     <!-- Refresh  Action Window for old token -->
-    [h: macroParam = json.set("{}", "id", oldToken,"msg",msg)]
+    [h: macroParam = json.set("{}", "tokenId", oldToken,"msg",msg)]
     [r, macro("openCombatAction@Lib:RQII"): macroParam]
 }]

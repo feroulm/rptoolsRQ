@@ -2,9 +2,9 @@
 <!-- return a TokenId or 0 if no token is available -->
 [h: tokenId = arg(0)] 
 [h: initList = getInitiativeList()]
-[r: getName(tokenId)] offset is [r: tokenOffset = getCurrentInitiative()]<br>
+[h: tokenOffset = getCurrentInitiative()]
 [h: currentOffset = 0]
-maxOffset : [r: maxOffset = initiativeSize()]
+[h: maxOffset = initiativeSize()]
 
 [h: tokenFound = 0]
 [h: tokenNotFound = 1]
@@ -15,7 +15,7 @@ maxOffset : [r: maxOffset = initiativeSize()]
 [h, if(nextOffset == maxOffset): loopEnd = 1]
 
 <!-- search token after him -->
-[while (loopEnd == 0), code:
+[h, while (loopEnd == 0), code:
 {
 	[h: jsonPath = "tokens.["+nextOffset+"].tokenId"]
 	[h: nextTokenId = json.path.read(initList, jsonPath)]
@@ -27,8 +27,8 @@ maxOffset : [r: maxOffset = initiativeSize()]
 		[h: loopEnd = 1]
 		[h: nextTokenOffset = nextOffset]	
 	}]
-	[r, if(turnStatus == "out" || turnStatus == "disabled"), code:{
-		tokenOut [r: tokenOut = tokenOut + 1]		
+	[h, if(turnStatus == "out" || turnStatus == "disabled"), code:{
+		[h: tokenOut = tokenOut + 1]		
 	}]
 	[h, if(nextOffset+1 == maxOffset): loopEnd = 1]
 	[h: nextOffset = nextOffset + 1]
@@ -36,7 +36,7 @@ maxOffset : [r: maxOffset = initiativeSize()]
 [r, if(tokenFound), code:{
   [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
   <form action="[r:linkUpdateCombat]" method="json">
-        <input type="hidden" name="id" value="[r:tokenId]">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="hidden" name="action" value="nxtturn">
         <input type="hidden" name="nextTokenId" value="[r:nextTokenId]">
         <input type="hidden" name="nextTokenOffset" value="[r:nextTokenOffset]">

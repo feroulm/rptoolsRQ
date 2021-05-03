@@ -127,7 +127,7 @@
 [h: setCurrentInitiative(0)]
   
 <!-- Refresh / Open Combat Action Window for current Active Token-->
-[h: macroParam = json.set("{}", "id", firstToken,"msg",msg)]
+[h: macroParam = json.set("{}", "tokenId", firstToken,"msg",msg)]
 [r, macro("openCombatAction@Lib:RQII"): macroParam]
 <!-- Refresh Combat Window -->
 [r, macro("openCombat@Lib:RQII"): ""]

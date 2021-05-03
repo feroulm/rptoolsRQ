@@ -1,0 +1,58 @@
+[h: tokenId = json.get(macro.args, "tokenId")]
+[h: action = json.get(macro.args, "action")]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: activeCA = json.get(currentCombatStatus,"activeCA")]
+[h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
+
+[h: origAction = action]
+
+[r, switch(action), code:
+  case "parry" : {
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: reactiveCA = reactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",reactiveCA)]  
+
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+
+    [h: msg = "Parry is done, one reactive CA lost"]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+
+    <!-- Refresh / Open Combat Action Window for current Active Token-->
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg)]
+    [h, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "interrupt" : {
+  	<!-- remove current initiative to current token -->
+  	[h: oldTokenId = getInitiativeToken()]
+  	[h: setState("CurrentTurn", 0, oldTokenId)]
+  	[h: oldTokenCombatStatus = getProperty("combatStatus",oldTokenId)]
+  	[h: oldTokenCombatStatus = json.set(oldTokenCombatStatus,"activeTurn",0)]
+  	[h: setProperty("combatStatus",oldTokenCombatStatus,oldTokenId)]
+  	<!-- get current token offset in order to set Current Initiative (which is using only offset ...)-->
+  	[h: newTokenOffset = getInitiativeTokenOffset(tokenId)]
+   	[h: setCurrentInitiative(newTokenOffset)]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+   	[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",1)]
+   	[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+   	[h: setState("CurrentTurn", 1, tokenId)]
+   	<!-- Refresh / Open Combat Action Window for current Active Token-->
+   	[h: msg = "Interrupt is done, take your turn"]
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg)]
+    [h, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unexistant action !<br>
+ }
+]
+
+<!-- log the action -->
+[h: logMsg = origAction]
+[h: logCombatAction(tokenId,"reactive",logMsg)]
+    
+[r: getName(tokenId)] has done : [r: origAction]
+<!-- Refresh Combat Window -->
+[r, macro("openCombat@Lib:RQII"): ""]
