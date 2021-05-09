@@ -1,5 +1,4 @@
-
-[h: "<!-- Function to get next token which can play in the current cycle -->"]
+[h: "<!-- Update CA counter and malus if when delayed action has not been in the cycle -->"]
 [h: "<!-- return a newCurrentCombatStatus -->"]
 [h: tokenId = arg(0)] 
 [h: currentCombatStatus = arg(1)]
@@ -7,6 +6,7 @@
 [h: activeCA = json.get(currentCombatStatus,"activeCA")]
 [h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
 [h: lostProCA = json.get(currentCombatStatus,"lostProCA")]
+[h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 [h: remainingCA = activeCA - 1]
 [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
 [h: proactiveCA = proactiveCA + 1]
@@ -16,6 +16,10 @@
   [h: lostProCA = lostProCA -1 ]
   [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",lostProCA)]	
 };{}]
+[h: "<!-- disable evade malus if no action after delayed -->"]
+[h, if (firstEvade > 0),code:{
+  [h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
+}]
 [h: "<!-- reset the turn , unless no more CA - token is out for this MR -->"]
 [h, if (remainingCA == 0), code: {
   [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]

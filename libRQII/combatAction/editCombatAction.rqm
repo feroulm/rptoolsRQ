@@ -25,8 +25,28 @@
 [h: reloadCA = json.get(tCombatStatus,"reloadCA")]
 [h: lostProCA = json.get(tCombatStatus,"lostProCA")]
 [h: lostCA = json.get(tCombatStatus,"lostCA")]
+[h: firstEvade = json.get(tCombatStatus,"firstEvade")]
+[h: weaponReach = json.get(tCombatStatus,"weaponReach")]
+[h: currWeaponNb = json.get(tCombatStatus,"currWeaponNb")]
+[h: defWeaponNb = json.get(tCombatStatus,"defWeaponNb")]
 
-<b>[r: getName(tokenId)]</b>
+<!-- Combat Log -->
+[h: currentCombatLog = getProperty("combatLog",tokenId)]
+[h: turnDeclaration = json.get(currentCombatLog,"turnDeclaration")]
+
+<!-- Change button name and action based on various status -->
+[h, if(castCA == 0): castAction = "firstCast"]
+[h, if(castCA > 0): castAction = "pursueCast"]
+[h, if(reloadCA == 0): rangeAction = "Shoot"]
+[h, if(reloadCA > 0): rangeAction = "Reload"]
+[h, if(weaponReach == "outranged"): changeRangeAction = "Closing"]
+[h, if(weaponReach == "closed"): changeRangeAction = "Disengaging"]
+
+[r, if (activeTurn), code:{
+<span style="font-weight: bold;color:green">[r: getName(tokenId)] (Active Turn)</span>
+};{
+<span style="font-weight: bold;color:black">[r: getName(tokenId)] </span>	
+}]
 <hr>
 <!-- Show action based on combat status -->
 [r, if (msg != ""), code:{
@@ -42,11 +62,22 @@
 [h: noProactiveActionMsg = ""]
 
 <!-- token can do a proactive action when it is his turn, if he has some CA left, if he has not played already during this cycle and if he has not lose proactiveCA -->
-[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)),code:{
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReach != "outmanoeuvred")),code:{
   [h: showProactiveAction = 1]
   [h: showNoAction = 0]
 }]
+<!-- since we can make an OR in the if condition, we reapeat an if for each case noProactiveAction Case-->
 [h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA>0)),code:{
+  [h: showNoProactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+<!-- case when he made a first evade action before -->
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade>0)),code:{
+  [h: showNoProactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+<!-- case when outmanoeuvred -->
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(weaponReach == "outmanoeuvred")),code:{
   [h: showNoProactiveAction = 1]
   [h: showNoAction = 0]
 }]
@@ -64,30 +95,81 @@
   [h: showNoAction = 1]
 }]
 [h, if (activeCA<=0): noActionMsg = noActionMsg + "<li>no more CA for this MR</li>"]
-[h, if (lostProCA>0): noProactiveActionMsg = noProactiveActionMsg + "<li>no more CA for this cycle</li>"]
+
+<!-- Reason for noProactive action -->
+[h, if (lostProCA>0): noProactiveActionMsg = noProactiveActionMsg + "<li>You have still "+lostProCA+ " lost proactive CA because of an event, you can only do reactive actions for this turn</li>"]
+[h, if (firstEvade>0): noProactiveActionMsg = noProactiveActionMsg + "<li>first Evade done in previous turn, no proactive action for this turn</li>"]
+[h, if (weaponReach == "outmanoeuvred"): noProactiveActionMsg = noProactiveActionMsg + "<li>token is outmanoeuvred, no proactive action for this MR</li>"]
 [h, if (turnStatus == "disabled"): noActionMsg = noActionMsg + "<li>turn is disabled, token is out of combat</li>"]
 [h, if (turnStatus == "off"): noActionMsg = noActionMsg + "<li>Token has already play his turn during this cycle</li>"]
 
 <!-- Update action target -->
 [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
+[h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]
+[h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
+
+<!-- Display specific condition / status for the token -->
+[r, if(weaponReach != "ok"),code:{
+	Token is currently <i>[r: weaponReach]</i>.<br>
+}]
+
 <!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
 [r, if (showProactiveAction), code :{
-  Turn is active, token can take proactives actions :<br>
+  Turn is active.
+  [r, if(turnDeclaration == ""), code:{
+  	<b>Declare the action first :</b><br>  	
+  	<form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <select name="declaredAction" size="">
+             <option selected="selected">Attack</option>
+             <option>[r: castAction]</option>
+             <option>[r: rangeAction]</option>
+             <option>delay</option>
+             <option>Outmanoeuvre</option>
+          </select>
+          [r: htmlSelectCombatToken("actionTarget",tokenId)]
+          <input type="text" name="actionDesc" size="20">
+          <input type="hidden" name="action" value="declareProactive">
+          <input type="submit" name="edit_btn" value="Declare Action">
+    </form> 	
+  };{
+  	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
+     <br>
+  	 <form action="[r:linkUpdateCombatProactive]" method="json">
+       <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <select name="declaredAction" size="">
+             <option selected="selected">Attack</option>
+             <option>[r: castAction]</option>
+             <option>[r: rangeAction]</option>
+             [r, if(weaponReach != "ok"): <option>[r: changeRangeAction]</option>]
+             <option>delay</option>
+             <option>Outmanoeuvre</option>
+          </select>
+          [r: htmlSelectCombatToken("actionTarget",tokenId)]
+          <input type="text" name="actionDesc" size="20">
+          <input type="hidden" name="action" value="declareProactive">
+          <input type="submit" name="edit_btn" value="Change declared action">
+    </form> 
+
+  }]
+  Warning ! : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.<br>
+  <br>
+  Select the proactive action <b>that has been done</b>, this will end the turn :<br>
   [r, if(castCA > 0): "<b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br>"]
   [r, if(reloadCA > 0): "<b>!!</b> You have "+castCA+" remaining reloadCA, you should reload before shooting.<br>"]
   <table>
     <tr>
       <td>
-        <form action="[r:linkUpdateCombat]" method="json">
+        <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="attack">
-          <input type="submit" name="edit_btn" value="attack">
+          <input type="submit" name="edit_btn" value="Attack">
         </form>
       </td>
       <td>
       [h, if(castCA == 0): castAction = "firstCast"]
       [h, if(castCA > 0): castAction = "pursueCast"]
-        <form action="[r:linkUpdateCombat]" method="json">
+        <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="[r:castAction]">
           <input type="submit" name="edit_btn" value="[r:castAction]">
@@ -96,39 +178,110 @@
       <td>
       [h, if(reloadCA == 0): rangeAction = "Shoot"]
       [h, if(reloadCA > 0): rangeAction = "Reload"]
-        <form action="[r:linkUpdateCombat]" method="json">
+        <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="[r:rangeAction]">
           <input type="submit" name="edit_btn" value="[r:rangeAction]">
         </form>
       </td>
       <td>
-        <form action="[r:linkUpdateCombat]" method="json">
+        <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="delay">
           <input type="submit" name="edit_btn" value="delay">
         </form>
       </td>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="Outmanoeuvre">
+          <input type="submit" name="edit_btn" value="Outmanoeuvre">
+        </form>
+      </td>
+      [r, if(weaponReach != "ok"), code:{
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="changeRange">
+          <input type="submit" name="edit_btn" value="[r:changeRangeAction]">
+        </form>
+      </td>
+      }]
     </tr>
   </table>
 }]
 <!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
 [r, if (showReactiveAction), code :{
-  Token can only take reactive actions<br>
-  <form action="[r:linkUpdateCombat]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="parry">
-        <input type="submit" name="edit_btn" value="parry">
-  </form>
+  Turn is no active, token can only take reactive actions<br>
+  <table style="padding: 0px; cellspacing:0px; border-spacing:0 0px;">
+    <tr>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parry">
+          <input type="submit" name="edit_btn" value="Parry">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="evade">
+          <input type="submit" name="edit_btn" value="Evade">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="counterspell">
+          <input type="submit" name="edit_btn" value="Counter Spell">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parry">
+          <input type="submit" name="edit_btn" value="Outmanoeuvre: Resist">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parry">
+          <input type="submit" name="edit_btn" value="Change Range: Resist">
+        </form>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parry">
+          <input type="submit" name="edit_btn" value="Charge: Riposte">
+        </form>
+      </td>    
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parry">
+          <input type="submit" name="edit_btn" value="Change Range: Riposte">
+        </form>
+      </td>
+      <td></td>
+    </tr>
+  </table>
   <!-- Check is any token can still play -->
   [r, if(turnStatus == "delay"): showDelayedAction(tokenId)]
   
 }]
 
 [r, if (showNoProactiveAction), code :{
-  You have still [r: lostProCA] lost proactive CA because of an event, you can only do reactive actions<br>
-  You have to delay your turn.
-  <form action="[r:linkUpdateCombat]" method="json">
+  You have to delay your turn :<ul>
+  [r: noProactiveActionMsg]
+  </ul>
+  <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="delay">
           <input type="submit" name="edit_btn" value="delay">
@@ -144,23 +297,56 @@
 <br>
 Change after combat action
 <hr>
-<table>
+[h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
+[h: tokenType = getPropertyType(tokenId)]
+[h, switch(tokenType):
+  case "RQ_Human" : linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "all");
+  case "RQ_Monster" : linkDamageHeal = macroLinkText("openMonsterLocHp@Lib:RQII", "all");
+  default: linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "all");
+]
+<table style="padding: 0px; cellspacing:0px;">
   <tr>
-    <td style="padding: 0px; cellspacing:0px;">
-      [h: linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "all")]
+    <td>
       <form action="[r:linkDamageHeal]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="submit" name="edit_btn" value="Damage / Heal">
       </form>
     </td>
-    <td style="padding: 2px; cellspacing:0px;">
+    [r, if(weaponReach != "outmanoeuvred"), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="outmanoeuvred">
+          <input type="submit" name="edit_btn" value="Outmanoeuvred">
+        </form>
+      </td>
+    }]
+    [r, if(weaponReach != "outranged"), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="outranged">
+          <input type="submit" name="edit_btn" value="Outranged">
+        </form>
+      </td>
+    }]
+    [r, if(weaponReach != "closed"), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="closed">
+          <input type="submit" name="edit_btn" value="Closed">
+        </form>
+      </td>
+    }]
+    <td>
       [h: linkOpenHumCombatAttr = macroLinkText("openHumCombatAttr@Lib:RQII", "all")]
 	  <form action="[r:linkOpenHumCombatAttr]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="submit" name="edit_btn" value="Change Charac & Weapon">
       </form>
     </td>
-    <td style="padding: 0px; cellspacing:0px;">
+    <td>
       [h: linkDisable = macroLinkText("updateCombat@Lib:RQII", "all")]
       <form action="[r:linkDisable]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">
@@ -169,46 +355,74 @@ Change after combat action
       </form>
     </td>
   </tr>
+  <tr>
+    [r, if(weaponReach != "ok"), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="delreachmalus">
+          <input type="submit" name="edit_btn" value="Remove reach malus">
+        </form>
+      </td>
+    }]
+    [h: situationMod = "prone"]
+    [r, if(situationMod == "prone"), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="delprone">
+          <input type="submit" name="edit_btn" value="Remove Prone">
+        </form>
+      </td>
+    }]
+    <td >
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+  </tr>
 </table>
-
-Combat status
+<br>
+Combat status - Data
 <hr>
 <table>
   <tr>
     <td colspan="2">Turn</td>
     <td colspan="2">CA values</td>
-    <td colspan="2">compute CA values</td>
-    <td colspan="2">MR Used CA</td>
-    <td colspan="2">Fumble lost</td>
+    <td colspan="2">Compute CA</td>
+    <td colspan="4">Malus</td>
 
   </tr>
   <tr>
     <td>turnStatus</td><td> [r: turnStatus] </td>
     <td>activeCA</td><td> [r: activeCA] </td>
     <td>baseCA</td><td> [r: baseCA] </td>
-    <td>proactiveCA</td><td> [r: proactiveCA] </td>
+    <td>castCA</td><td> [r: castCA] </td>
     <td>lostProCA</td><td> [r: lostProCA] </td>
   </tr>
   <tr>
     <td>activeTurn</td><td> [r: activeTurn] </td> 
     <td>ccCA</td><td> [r: ccCA] </td>
     <td>bonusCA</td><td> [r: bonusCA] </td>
-    <td>reactiveCA</td><td> [r: reactiveCA] </td>
+    <td>reloadCA</td><td>[r: reloadCA] </td>
     <td>lostCA</td><td> [r: lostCA] </td>
   </tr>
   <tr>
     <td></td><td></td>
-    <td></td><td></td>
+    <td>proactiveCA</td><td> [r: proactiveCA] </td>
     <td>weaponCA</td><td> [r: weaponCA] </td>
-    <td>castCA</td><td> [r: castCA] </td>
-    <td></td><td></td>
+    <td>firstEvade</td><td> [r: firstEvade] </td>
+    <td>currWeaponNb</td><td> [r: currWeaponNb]</td>
   </tr>
   <tr>
     <td></td><td></td>
-    <td></td><td></td>
+    <td>reactiveCA</td><td> [r: reactiveCA] </td>
     <td>magicCA</td><td> [r: magicCA] </td>
-    <td>reloadCA</td><td>[r: reloadCA] </td>
-    <td></td><td></td>
+    <td>weaponReach</td><td> [r: weaponReach]</td>
+    <td>defWeaponNb</td><td> [r: defWeaponNb]</td>
   </tr>
   <tr>
     <td colspan="5">

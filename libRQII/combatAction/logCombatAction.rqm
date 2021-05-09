@@ -22,6 +22,18 @@
   case "change" : {
   	[h: newCombatLog = json.set(currentCombatLog,"lastTokenChange",logEntry)]
   };
+  case "turndeclare" : {
+  	[h: newCombatLog = json.set(currentCombatLog,"turnDeclaration",logEntry)]
+  };
+  case "turnreset" : {
+  	[h: newCombatLog = json.set(currentCombatLog,"turnDeclaration","")]
+  };
+  case "reset" : {
+  	[h: newCombatLog = json.set(currentCombatLog,"lastProactiveAction","")]
+  	[h: newCombatLog = json.set(newCombatLog,"lastReactiveAction","")] 
+  	[h: newCombatLog = json.set(newCombatLog,"lastTokenChange","")]
+  	[h: newCombatLog = json.set(newCombatLog,"turnDeclaration","")]
+  };
   default: {
   	
   }

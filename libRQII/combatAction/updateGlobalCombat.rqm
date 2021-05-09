@@ -9,7 +9,7 @@
       [h: tokenId = json.get(item, "tokenId")]
 	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
-	  [r, if(turnStatus == "delay"): getName(tokenId)+": Delayed CA was not used and is lost<br>"]
+	  [r, if(turnStatus == "delay"): getName(tokenId)+": Delayed CA was not used and is lost, existing proactiveCA Malus is decreased and existing evade malus is removed<br>"]
 	  [h, if(turnStatus == "delay"): currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
 	  [h, if(turnStatus == "off"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
@@ -40,6 +40,9 @@
 
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+      
+      [h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+      [h, if(weaponReach == "outmanoeuvred"): currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
 	  
 	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
 	  [h, if(turnStatus != "disabled"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
@@ -49,6 +52,7 @@
 	  <!-- reset States -->
 	  [h: setState("CurrentTurn", 0, tokenId)]
 	  [h: setState("Out", 0, tokenId)]
+	  [h: setState("Outmanoeuvred", 0, tokenId)]
 
     }]
     <!-- Reset Cycle Number -->
@@ -71,16 +75,35 @@
     [r, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
 	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)] 
-	  [h: ccCA = json.get(currentCombatStatus,"ccCA")]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"lostCA",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+	  <!-- reset weapon CA-->
+	  [h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",defWeaponNb)]
+	  [h: newWeaponCA = defWeaponNb - 1]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
+	  <!-- recompute ccA -->
+	  [h: baseCA = json.get(currentCombatStatus,"baseCA")]
+      [h: bonusCA = json.get(currentCombatStatus,"bonusCA")]
+      [h: magicCA = json.get(currentCombatStatus,"magicCA")]
+      
+	  [h: ccCA = baseCA + bonusCA + newWeaponCA + magicCA]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",ccCA)]
+
 	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
+	  <!-- reset All Log -->
+	  [h: logCombatAction(tokenId,"reset","")]
+	  
 	  <!-- reset All States -->
 	  [h: setAllStates(0, tokenId)]
 	  [h: setInitiativeHold(0,tokenId)]

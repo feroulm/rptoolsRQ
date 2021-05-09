@@ -4,13 +4,28 @@
 [h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]
 [h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
 Turn has been delayed, you can use it to either parry / evade or to take you turn just before the current player (interrupt) :<br>
-<form action="[r:linkUpdateCombatProactive]" method="json">
-  <input type="hidden" name="tokenId" value="[r:tokenId]">
-  <input type="hidden" name="action" value="parrydelayed">
-  <input type="submit" name="edit_btn" value="Parry(delayed)">
-</form>
-<form action="[r:linkUpdateCombatReactive]" method="json">
-  <input type="hidden" name="tokenId" value="[r:tokenId]">
-  <input type="hidden" name="action" value="interrupt">
-  <input type="submit" name="edit_btn" value="Interrupt">
-</form>
+<table>
+  <tr>
+    <td>
+      <form action="[r:linkUpdateCombatProactive]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="parrydelayed">
+        <input type="submit" name="edit_btn" value="Parry(delayed)">
+      </form>
+    </td>
+    <td>
+      <form action="[r:linkUpdateCombatProactive]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="evadedelayed">
+        <input type="submit" name="edit_btn" value="Evade(delayed)">
+      </form>
+    </td>
+    <td>
+      <form action="[r:linkUpdateCombatReactive]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="interrupt">
+        <input type="submit" name="edit_btn" value="Interrupt">
+      </form>
+    </td>
+  </tr>
+</table>

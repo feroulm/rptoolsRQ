@@ -3,24 +3,63 @@
 [h: action = json.get(macro.args, "action")]
 [h: nextTokenId = json.get(macro.args, "nextTokenId")]
 [h: nextTokenOffset = json.get(macro.args, "nextTokenOffset")]
+<!-- for log management -->
+[h: actionLabel = json.get(macro.args, "edit_btn")]
+[h: logMsg = ""]
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: activeCA = json.get(currentCombatStatus,"activeCA")]
 [h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
 [h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
+[h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 
-[h: origAction = action]
+
 
 [r, switch(action), code:
- case "parrydelayed" : {
+  case "parrydelayed" : {
  	[h: action = "attack"]
- };
- default: {
+  };
+  case "evadedelayed" : {
+  	<!-- toggle evade one time on two -->
+    [h, if (firstEvade == 0),code:{
+    	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",1)]
+    	[h: msg = "First "+actionLabel+" is done, next proactive CA lost."]
+    	[h: logMsg = "First "+actionLabel]
+    }]
+    [h, if (firstEvade > 0),code:{
+    	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
+    	[h: msg = "Second "+actionLabel+" is done, proactive action possible next turn."]
+    	[h: logMsg = "Second "+actionLabel]
+    }]
+ 	[h: action = "attack"]
+  };
+  case "Outmanoeuvre" : {
+  	[h: res = input("junk|Outmanoeuvre - Group opposed test of Evade skills are done ?|ignored|LABEL|SPAN=true")]
+    [h: abort(res)]
+  	[h: action = "attack"]
+  };
+  case "changeRange" : {
+  	[h: res = input("junk|Change Range - Group opposed test of Evade skills is done ?|ignored|LABEL|SPAN=true")]
+    [h: abort(res)]
+  	[h: action = "attack"]
+  };
+  default: {
  	<!-- do nothing -->
- }
+  }
 ]
 
 [r, switch(action), code:
+  case "declareProactive" : {
+  	[h: declaredAction = json.get(macro.args, "declaredAction")]
+  	[h: actionTarget = json.get(macro.args, "actionTarget")]
+  	[h: actionDesc = json.get(macro.args, "actionDesc")]
+  	[h: logMsg = declaredAction+" "+actionTarget+" "+actionDesc]
+
+  	[h: logCombatAction(tokenId,"turndeclare",logMsg)] 	
+  	<!-- Refresh Action Window for the current token -->
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
   case "attack" : {
     [h: remainingCA = activeCA - 1]
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
@@ -152,10 +191,15 @@
  }
 ]
 
-<!-- log the action -->
-[h: logMsg = origAction]
-[h: logCombatAction(tokenId,"proactive",logMsg)]
+<!-- log the action if it is not just a declaration -->
+[r, if (action != "declareProactive"), code:{
+  [h, if (logMsg == ""): logMsg = actionLabel]
+  [h: logCombatAction(tokenId,"proactive",logMsg)]
+  [h: logCombatAction(tokenId,"turnreset","")]
+  [r: getName(tokenId)] end its turn and has done : [r: logMsg]
+};{
+  [r: getName(tokenId)] is playing is turn and has declared : [r: logMsg]	
+}]
 
-[r: getName(tokenId)] has done : [r: origAction]
 <!-- Refresh Combat Window -->
 [r, macro("openCombat@Lib:RQII"): ""]

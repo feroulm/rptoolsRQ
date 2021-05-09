@@ -63,6 +63,7 @@
     <td style="text-align:left">Last proactive action</td>
     <td style="text-align:left">Last reactive action</td>
     <td style="text-align:left">Last change after action</td>
+    <td style="text-align:left">Turn Declaration</td>
   </tr>
   [h: class = "oddRow"]
 [r, foreach(item, tokens, ""), code: {
@@ -84,6 +85,7 @@
     <td style="text-align:left">[r: json.get(currentCombatLog,"lastProactiveAction")]</td>
     <td style="text-align:left">[r: json.get(currentCombatLog,"lastReactiveAction")]</td> 
     <td style="text-align:left">[r: json.get(currentCombatLog,"lastTokenChange")]</td> 
+    <td style="text-align:left">[r: json.get(currentCombatLog,"turnDeclaration")]</td>
   </tr>
   [h: class = if(class=="oddRow", "evenRow", "oddRow")]
 }]

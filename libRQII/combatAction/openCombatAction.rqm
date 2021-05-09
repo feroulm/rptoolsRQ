@@ -4,6 +4,8 @@
 	[h: tokenId = getSelected()]
     <!-- work only on one token -->
     [h, if(listCount(tokenId) != 1): abort(0)]
+    [h: tokenType = getPropertyType(tokenId)]
+    [h, if(tokenType != "RQ_Human" || tokenType != "RQ_Monster"): abort(0)]
 	[h: msg = ""]
 };
 {

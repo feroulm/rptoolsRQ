@@ -1,0 +1,15 @@
+[h: "<!-- update one type of combatLog entry for a specific token , return nothing -->"]
+[h: "<!-- logEntry action type = proactive, reactive or change -->"]
+[h: selectName = arg(0)] 
+[h: currentTokenId = arg(1)] 
+[h: tokensLst = json.get(getInitiativeList(), "tokens")]
+<select name="[r:selectName]" size="">
+[r, foreach(item, tokensLst, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+  [r, if(tokenId == currentTokenId), code:{
+  	<option selected="selected">[r: getName(tokenId)]</option>
+  };{
+  	<option>[r: getName(tokenId)]</option>
+  }]	 
+}]
+</select>

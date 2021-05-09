@@ -44,12 +44,36 @@ MagicPoint = {"MP":{"base":18,"current":15},"dedPOW":1}
 Used on each token during a combat to track various status
 
 ```
-combatStatus = {"activeCA":0,"ccCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"turnStatus":"disabled","activeTurn":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}
+{
+    "activeCA": 0,
+    "ccCA": 0,
+    "baseCA": 0,
+    "bonusCA": 0,
+    "weaponCA": 0,
+    "magicCA": 0,
+    "proactiveCA": 0,
+    "reactiveCA": 0,
+    "castCA": 0,
+    "reloadCA": 0,
+    "lostProCA": 0,
+    "lostCA": 0,
+    "firstEvade": 0,
+    "turnStatus": "disabled",
+    "activeTurn": 0,
+    "weaponReach": "ok",
+	"situationMod": "ok",
+    "currWeaponNb": 1,
+    "defWeaponNb": 1
+}
+```
+
+```
+combatStatus = {"activeCA":0,"ccCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"turnStatus":"disabled","activeTurn":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}
 ```
 
 TST_WARRIOR1 (two weapon + magCA + bon CA + activeTur = 1) : 
 ```
- {"activeCA":5,"ccCA":5,"baseCA":2,"bonusCA":1,"weaponCA":1,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":1,"weaponReach":"ok","currWeaponNb":2,"defWeaponNb":2}
+ {"activeCA":5,"ccCA":5,"baseCA":2,"bonusCA":1,"weaponCA":1,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":1,"weaponReach":"ok","currWeaponNb":2,"defWeaponNb":2}
 ```
 TST_WARRIOR2 (one weapon + magCA) :
 ```
@@ -78,7 +102,11 @@ TST_WARRIOR2 (one weapon + magCA) :
   * **ok** : nothing special. Default value.
   * **outmanoeuvred** : the token can't attack nor take proactive action for this MR
   * **closed** : the token cannot parry because is weapon is to long, he can only attack with a damage of 1d3+1 (representing the pommel / hilt of his weapon)
-  * **unreachable** : the token can only attack the weapon (or limb of the huge creature i.e a tentacle)
+  * **outranged** : the token can only attack the weapon of its opponent (or limb of the huge creature i.e a tentacle)
+* **situationMod** : indicate situation Combat modifier which can change during a combat (no global situation like darkness, etc.).
+  * **ok** : nothing special. Default value.
+  * **prone** : -20% malus for attack and parry
+  * **blinded** : -80% malus for attack and parry
 * **currWeaponNb** : current nb of weapon hold by the token (could not be <0). Use to manage the lost weapon vent during a combat
 * **defWeaponNb** : def nb of weapon usually hold by the token (usually set during charchetr creation adn use to reste a token combat status before a new combat
 
@@ -88,7 +116,7 @@ TST_WARRIOR2 (one weapon + magCA) :
 - Store the last proactiveAction taken , the last reactiveAction taken and the last consequence (damage, status change etc.). It is prefixed with corresponding MR_Nb and Cycle_Nb
 
 ```
-combatLog = {"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":""}
+combatLog = {"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":"","turnDeclaration":""}
 ```
 Example  : 
 - lastProactiveAction : MR_1, C_1 tokenname has done attack 

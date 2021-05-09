@@ -47,11 +47,22 @@
   [h: tokenNotFound = 0]	
   [h: tokens = json.get(initList,"tokens")]
   [h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
-  <form action="[r:linkUpdateGlobalCombat]" method="json">
-    <input type="hidden" name="tokens" value=[r: tokens]>
-    <input type="hidden" name="action" value="nxtmr">
-    <input type="submit" name="edit_btn" value="Next MR">
-  </form>
+  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+  [h: activeCA = json.get(currentCombatStatus,"activeCA")]
+  [r, if((turnStatus == "off")&&(activeCA>0)), code:{
+    <form action="[r:linkUpdateGlobalCombat]" method="json">
+      <input type="hidden" name="tokens" value=[r: tokens]>
+      <input type="hidden" name="action" value="nxtcycle">
+      <input type="submit" name="edit_btn" value="Next Cycle">
+    </form>
+  };{
+  	<form action="[r:linkUpdateGlobalCombat]" method="json">
+      <input type="hidden" name="tokens" value=[r: tokens]>
+      <input type="hidden" name="action" value="nxtmr">
+      <input type="submit" name="edit_btn" value="Next MR">
+    </form> 	
+  }]
 }]
 [r, if(tokenNotFound), code:{
   [h: tokens = json.get(initList,"tokens")]
