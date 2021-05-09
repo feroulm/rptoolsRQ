@@ -47,6 +47,8 @@ Used on each token during a combat to track various status
 {
     "turnStatus": "disabled",
     "activeTurn": 0,
+    "chargeStatus": "none",
+    "situationMod": "none",
     "activeCA": 0,
     "ccCA": 0,
     "proactiveCA": 0,
@@ -100,7 +102,7 @@ TST_WARRIOR2 (one weapon + magCA) :
   * **closed** : the token cannot parry because is weapon is to long, he can only attack with a damage of 1d3+1 (representing the pommel / hilt of his weapon)
   * **outranged** : the token can only attack the weapon of its opponent (or limb of the huge creature i.e a tentacle)
 * **situationMod** : indicate situation Combat modifier which can change during a combat (no global situation like darkness, etc.).
-  * **ok** : nothing special. Default value.
+  * **none** : nothing special. Default value.
   * **prone** : -20% malus for attack and parry
   * **blinded** : -80% malus for attack and parry
 * **chargeStatus** :

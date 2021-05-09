@@ -44,6 +44,22 @@
  
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
   };
+  case "evadeProne" : {
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: reactiveCA = reactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",reactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)] 
+
+    [h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","prone")]
+    [h: setState("Prone", 1, tokenId)]
+
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    [h: msg = "Evade is done, token is prone !"]
+    [h: logMsg = actionLabel]
+  };
   case "interrupt" : {
   	<!-- remove current initiative to current token -->
   	[h: oldTokenId = getInitiativeToken()]

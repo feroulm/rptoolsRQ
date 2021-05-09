@@ -14,14 +14,18 @@
 [h: turnStatus = json.get(tCombatStatus,"turnStatus")]
 [h: activeTurn = json.get(tCombatStatus,"activeTurn")]
 [h: chargeStatus = json.get(tCombatStatus,"chargeStatus")]
+[h: situationMod = json.get(tCombatStatus,"situationMod")]
+
 [h: activeCA = json.get(tCombatStatus,"activeCA")]
 [h: ccCA = json.get(tCombatStatus,"ccCA")]
+[h: proactiveCA = json.get(tCombatStatus,"proactiveCA")]
+[h: reactiveCA = json.get(tCombatStatus,"reactiveCA")]
+
 [h: baseCA = json.get(tCombatStatus,"baseCA")]
 [h: bonusCA = json.get(tCombatStatus,"bonusCA")]
 [h: weaponCA = json.get(tCombatStatus,"weaponCA")]
 [h: magicCA = json.get(tCombatStatus,"magicCA")]
-[h: proactiveCA = json.get(tCombatStatus,"proactiveCA")]
-[h: reactiveCA = json.get(tCombatStatus,"reactiveCA")]
+
 [h: castCA = json.get(tCombatStatus,"castCA")]
 [h: reloadCA = json.get(tCombatStatus,"reloadCA")]
 [h: lostProCA = json.get(tCombatStatus,"lostProCA")]
@@ -51,7 +55,13 @@
 <span style="font-weight: bold;color:black">[r: getName(tokenId)] </span>	
 }]
 <hr>
-<!-- Show action based on combat status -->
+<!-- Common info whatever the type of action, like situationModifier, range status -->
+[r, if(weaponReach != "ok"),code:{
+	Token is currently <i>[r: weaponReach]</i>.<br>
+}]
+[r, if(situationMod == "prone"): "<b>Token is prone, -20% malus on fighting action</b>"]<br>
+
+<!-- Show last action result (erased at each refresh) -->
 [r, if (msg != ""), code:{
 <b>[r: msg]</b><br>
 }]
@@ -118,16 +128,10 @@
 [h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]
 [h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
 
-<!-- Display specific condition / status for the token -->
-[r, if(weaponReach != "ok"),code:{
-	Token is currently <i>[r: weaponReach]</i>.<br>
-}]
-
 <!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
 [r, if (showProactiveAction), code :{
-  Turn is active.
   [r, if(turnDeclaration == ""), code:{
-  	<b>Declare the action first :</b><br>  	
+  	Declare the action first :<br>  	
   	<form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
@@ -256,6 +260,13 @@
       <td>
         <form action="[r:linkUpdateCombatReactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="counterspell">
+          <input type="submit" name="edit_btn" value="Counter Spell">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatReactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="evade">
           <input type="submit" name="edit_btn" value="Evade">
         </form>
@@ -263,8 +274,8 @@
       <td>
         <form action="[r:linkUpdateCombatReactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="counterspell">
-          <input type="submit" name="edit_btn" value="Counter Spell">
+          <input type="hidden" name="action" value="evadeProne">
+          <input type="submit" name="edit_btn" value="Evade (Prone)">
         </form>
       </td>
     </tr>
@@ -440,13 +451,21 @@ Change after combat action
         </form>
       </td>
     }]
-    [h: situationMod = "prone"]
     [r, if(situationMod == "prone"), code:{
       <td>
         <form action="[r:linkUpdateCombat]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="delprone">
           <input type="submit" name="edit_btn" value="Remove Prone">
+        </form>
+      </td>
+    }]
+    [r, if(situationMod != "prone"), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="prone">
+          <input type="submit" name="edit_btn" value="Prone">
         </form>
       </td>
     }]
@@ -493,7 +512,7 @@ Combat status - Data
     <td>currWeaponNb</td><td> [r: currWeaponNb]</td>
   </tr>
   <tr>
-    <td></td><td></td>
+    <td>situationMod</td><td>[r: situationMod]</td>
     <td>reactiveCA</td><td> [r: reactiveCA] </td>
     <td>magicCA</td><td> [r: magicCA] </td>
     <td>weaponReach</td><td> [r: weaponReach]</td>
