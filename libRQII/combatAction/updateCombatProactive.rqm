@@ -12,8 +12,7 @@
 [h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
 [h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
 [h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
-
-
+[h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
 
 [r, switch(action), code:
   case "parrydelayed" : {
@@ -41,6 +40,21 @@
   case "changeRange" : {
   	[h: res = input("junk|Change Range - Group opposed test of Evade skills is done ?|ignored|LABEL|SPAN=true")]
     [h: abort(res)]
+  	[h: action = "attack"]
+  };
+  case "chargeCrash" : {
+  	<!-- charge is finished -->
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+  	[h: setState("Charging", 0, tokenId)]
+ 	[h: action = "attack"]
+  };
+  case "chargePassage": {
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","passageDone")]
+  	[h: action = "attack"]
+  };
+  case "chargePrepare": {
+  	[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","prepareCharge")]
+  	[h: setState("Charging", 1, tokenId)]
   	[h: action = "attack"]
   };
   default: {
@@ -78,6 +92,21 @@
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
+    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+  };
+  case "chargeRiposte" : {
+  	<!-- no done during active Turn -->
+  	[h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]   
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+
+    <!-- Refresh Action Window for the current token -->
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
     [r, macro("openCombatAction@Lib:RQII"): macroParam]
   };
   case "delay" : {
@@ -196,7 +225,7 @@
   [h, if (logMsg == ""): logMsg = actionLabel]
   [h: logCombatAction(tokenId,"proactive",logMsg)]
   [h: logCombatAction(tokenId,"turnreset","")]
-  [r: getName(tokenId)] end its turn and has done : [r: logMsg]
+  [r: getName(tokenId)] has done : [r: logMsg]
 };{
   [r: getName(tokenId)] is playing is turn and has declared : [r: logMsg]	
 }]

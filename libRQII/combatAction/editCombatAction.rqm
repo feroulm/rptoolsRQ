@@ -13,6 +13,7 @@
 
 [h: turnStatus = json.get(tCombatStatus,"turnStatus")]
 [h: activeTurn = json.get(tCombatStatus,"activeTurn")]
+[h: chargeStatus = json.get(tCombatStatus,"chargeStatus")]
 [h: activeCA = json.get(tCombatStatus,"activeCA")]
 [h: ccCA = json.get(tCombatStatus,"ccCA")]
 [h: baseCA = json.get(tCombatStatus,"baseCA")]
@@ -41,6 +42,8 @@
 [h, if(reloadCA > 0): rangeAction = "Reload"]
 [h, if(weaponReach == "outranged"): changeRangeAction = "Closing"]
 [h, if(weaponReach == "closed"): changeRangeAction = "Disengaging"]
+[h, if(chargeStatus == "prepareCharge"): chargeAction = "Continue Charging"]
+[h, if(chargeStatus == "passageDone"): chargeAction = "Finishing Charge Passage"]
 
 [r, if (activeTurn), code:{
 <span style="font-weight: bold;color:green">[r: getName(tokenId)] (Active Turn)</span>
@@ -55,6 +58,7 @@
 <br>
 <!-- Compute condition based on various value -->
 [h: showProactiveAction = 0]
+[h: showOnlyChargingAction = 0]
 [h: showReactiveAction = 0]
 [h: showNoProactiveAction = 0]
 [h: showNoAction = 1]
@@ -62,7 +66,7 @@
 [h: noProactiveActionMsg = ""]
 
 <!-- token can do a proactive action when it is his turn, if he has some CA left, if he has not played already during this cycle and if he has not lose proactiveCA -->
-[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReach != "outmanoeuvred")),code:{
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReach != "outmanoeuvred")&&(chargeStatus == "none")),code:{
   [h: showProactiveAction = 1]
   [h: showNoAction = 0]
 }]
@@ -85,6 +89,12 @@
   [h: showProactiveAction = 0]
   [h: showNoProactiveAction = 0]
   [h: showNoAction = 1]
+}]
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(chargeStatus != "none")),code:{
+  [h: showProactiveAction = 0]
+  [h: showNoProactiveAction = 0]
+  [h: showNoAction = 0]
+  [h: showOnlyChargingAction = 1]
 }]
 [h, if ((!activeTurn)&&(activeCA>0)),code:{
   [h: showReactiveAction = 1]
@@ -124,8 +134,14 @@
              <option selected="selected">Attack</option>
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
+             [r, if(weaponReach != "ok"): "<option>"+changeRangeAction+"</option>"]
              <option>delay</option>
              <option>Outmanoeuvre</option>
+             [r, if(chargeStatus == "none"): "<option>Charging</option>"]
+             [r, if(chargeStatus == "prepareCharge"): "<option>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "passageDone"): "<option>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option>Charge: Passage</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option>Charge: Crash</option>"]
           </select>
           [r: htmlSelectCombatToken("actionTarget",tokenId)]
           <input type="text" name="actionDesc" size="20">
@@ -133,30 +149,35 @@
           <input type="submit" name="edit_btn" value="Declare Action">
     </form> 	
   };{
-  	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
-     <br>
-  	 <form action="[r:linkUpdateCombatProactive]" method="json">
-       <input type="hidden" name="tokenId" value="[r:tokenId]">
+  	<form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
              <option selected="selected">Attack</option>
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
-             [r, if(weaponReach != "ok"): <option>[r: changeRangeAction]</option>]
+             [r, if(weaponReach != "ok"): "<option>"+changeRangeAction+"</option>"]
              <option>delay</option>
              <option>Outmanoeuvre</option>
+             [r, if(chargeStatus == "none"): "<option>Charging</option>"]
+             [r, if(chargeStatus == "prepareCharge"): "<option>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "passageDone"): "<option>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option>Charge: Passage</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option>Charge: Crash</option>"]
           </select>
           [r: htmlSelectCombatToken("actionTarget",tokenId)]
           <input type="text" name="actionDesc" size="20">
           <input type="hidden" name="action" value="declareProactive">
           <input type="submit" name="edit_btn" value="Change declared action">
     </form> 
-
+    <br>	
+  	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
+     <br>
   }]
-  Warning ! : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.<br>
+  <b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.<br>
   <br>
   Select the proactive action <b>that has been done</b>, this will end the turn :<br>
   [r, if(castCA > 0): "<b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br>"]
-  [r, if(reloadCA > 0): "<b>!!</b> You have "+castCA+" remaining reloadCA, you should reload before shooting.<br>"]
+  [r, if(reloadCA > 0): "<b>!!</b> You have "+reloadCA+" remaining reloadCA, you should reload before shooting.<br>"]
   <table>
     <tr>
       <td>
@@ -207,11 +228,21 @@
         </form>
       </td>
       }]
+      [r, if(chargeStatus == "none"), code:{
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="chargePrepare">
+          <input type="submit" name="edit_btn" value="Charging">
+        </form>
+      </td>
+      }]
     </tr>
   </table>
 }]
 <!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
 [r, if (showReactiveAction), code :{
+  [r, if(chargeStatus=="prepareCharge"): "<b>!!Token is charging</b>. Doing an Evade will break the charge.<br>"]	
   Turn is no active, token can only take reactive actions<br>
   <table style="padding: 0px; cellspacing:0px; border-spacing:0 0px;">
     <tr>
@@ -256,9 +287,9 @@
     </tr>
     <tr>
       <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
+        <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parry">
+          <input type="hidden" name="action" value="chargeRiposte">
           <input type="submit" name="edit_btn" value="Charge: Riposte">
         </form>
       </td>    
@@ -275,6 +306,50 @@
   <!-- Check is any token can still play -->
   [r, if(turnStatus == "delay"): showDelayedAction(tokenId)]
   
+}]
+
+<!-- Charge specific case -->
+
+[r, if (showOnlyChargingAction), code :{
+  [r, if(chargeStatus == "chargeReady"), code:{
+  	 Charge is ready, select either Passage or Crash Action :
+  }]
+  [r, if(chargeStatus == "passageDone"), code:{
+  	 Charge as passed, continue moving till end of the MR :
+  }]
+  [r, if(chargeStatus == "prepareCharge"), code:{
+  	 Token is charging, continue moving till end of the MR :
+  }]
+  <table>
+    <tr>
+      [r, if(chargeStatus == "chargeReady"), code:{
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="chargePassage">
+          <input type="submit" name="edit_btn" value="Charge: Passage">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="chargeCrash">
+          <input type="submit" name="edit_btn" value="Charge: Crash">
+        </form>
+      </td>
+      }]
+      [r, if((chargeStatus == "passageDone")||(chargeStatus == "prepareCharge")), code:{
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="[r:chargeAction]">
+        </form>
+      </td>
+      }]
+    </tr>
+  </table>
+	
 }]
 
 [r, if (showNoProactiveAction), code :{
@@ -411,7 +486,7 @@ Combat status - Data
     <td>lostCA</td><td> [r: lostCA] </td>
   </tr>
   <tr>
-    <td></td><td></td>
+    <td>chargeStatus</td><td>[r: chargeStatus]</td>
     <td>proactiveCA</td><td> [r: proactiveCA] </td>
     <td>weaponCA</td><td> [r: weaponCA] </td>
     <td>firstEvade</td><td> [r: firstEvade] </td>

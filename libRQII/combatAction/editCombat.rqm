@@ -58,7 +58,7 @@
     <td style="text-align:left">Token</td>
     <td style="width:30px">CA</td>
     <td style="text-align:center">Turn status</td>
-    <td style="text-align:center">Active Turn</td>
+	<td style="text-align:center">Reach</td>
     <td></td>
     <td style="text-align:left">Last proactive action</td>
     <td style="text-align:left">Last reactive action</td>
@@ -70,11 +70,14 @@
   [h: tokenId = json.get(item, "tokenId")]
   [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
   [h: currentCombatLog = getProperty("combatLog",tokenId)]
+  [h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+  [h: activeTurn = json.get(currentCombatStatus,"activeTurn")]
+  [h,if(activeTurn) : class = "activeRow"]
   <tr class="[r:class]">
     <td style="text-align:left"> [r: getName(tokenId)] </td>
     <td> [r: json.get(currentCombatStatus,"activeCA")] / <b>[r: json.get(currentCombatStatus,"ccCA")]</b> </td>
     <td> [r: json.get(currentCombatStatus,"turnStatus")]</td>
-    <td> [r: json.get(currentCombatStatus,"activeTurn")]</td>
+	<td> [r,if( weaponReach != "ok") : weaponReach ]</td>
     <td style="padding: 0px; cellspacing:0px;">
       <form action="[r:linkCA]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">

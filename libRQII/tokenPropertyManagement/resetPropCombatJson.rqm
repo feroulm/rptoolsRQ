@@ -1,0 +1,61 @@
+<!-- Principe , on ajoute les nouveau champ et on remet les valeur des anciens champs "important" si il existe
+
+- Dans la macro definir la nouvelle structure dans newCombatStatusModel
+- Copier l'ancienne structure dans oldCombatStatus
+- mettre à jour la nouvelle structuer
+- recopier si elle existe les valeurs suivantes :
+-- defWeaponNb
+-- bonusCA
+-- magicCA
+- ensuite on appelle la methode resetCombat status qui recalcule les valeurs :
+-- baseCA : sur base de la dex+int
+-- currWeaponNb = defWeaponNb
+-- weaponCA = defWeaponNb -1
+-- ccCa : sommme de baseCA + bonusCA + weaponCA + 
+- ce qui est du param "spécifique" c'est uniquement defWeaponNb , bonusCA magicCA
+-->
+
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+[h: res = input("junk|This will reset all token combatStatus properties value. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+[h: abort(res)]	
+
+[h: newCombatStatusModel = '{
+    "turnStatus": "disabled",
+    "activeTurn": 0,
+    "chargeStatus": "none",
+    "activeCA": 0,
+    "ccCA": 0,
+    "proactiveCA": 0,
+    "reactiveCA": 0,
+    "baseCA": 0,
+    "bonusCA": 0,
+    "weaponCA": 0,
+    "magicCA": 0,
+    "castCA": 0,
+    "reloadCA": 0,
+    "lostProCA": 0,
+    "lostCA": 0,
+    "firstEvade": 0,
+    "weaponReach": "ok",
+    "currWeaponNb": 1,
+    "defWeaponNb": 1
+}']
+
+[h: oldCombatStatus = getProperty("combatStatus",tokenId)]
+
+<!-- copy value which can be specific to each token and not computable -->
+[h: defWeaponNb = json.get(oldCombatStatus,"defWeaponNb")]
+[h: magicCA = json.get(oldCombatStatus,"magicCA")]
+[h: bonusCA = json.get(oldCombatStatus,"bonusCA")]
+
+[h: newCombatStatusModel = json.set(newCombatStatusModel,"defWeaponNb",defWeaponNb)]
+[h: newCombatStatusModel = json.set(newCombatStatusModel,"magicCA",magicCA)]
+[h: newCombatStatusModel = json.set(newCombatStatusModel,"bonusCA",bonusCA)]
+
+<!-- recompute value using un UDF function -->
+<pre>
+[r: newCombatStatusModel = computeCombatStatus(newCombatStatusModel,tokenId)]
+</pre>
+
+[h: setProperty("combatStatus",newCombatStatusModel,tokenId)]

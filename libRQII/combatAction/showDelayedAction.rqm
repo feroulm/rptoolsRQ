@@ -28,4 +28,45 @@ Turn has been delayed, you can use it to either parry / evade or to take you tur
       </form>
     </td>
   </tr>
+  <tr>
+    <td>
+      <form action="[r:linkUpdateCombatProactive]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="parrydelayed">
+        <input type="submit" name="edit_btn" value="Outmanoeuvre: Resist(delayed)">
+      </form>
+    </td>
+    <td>
+      <form action="[r:linkUpdateCombatProactive]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="parrydelayed">
+        <input type="submit" name="edit_btn" value="Change Range: Resist(delayed)">
+      </form>
+    </td>
+    <td>
+      <form action="[r:linkUpdateCombatProactive]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="action" value="parrydelayed">
+        <input type="submit" name="edit_btn" value="Counter Spell(delayed)">
+      </form>
+    </td>
+  </tr>
+    <tr>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parrydelayed">
+          <input type="submit" name="edit_btn" value="Charge: Riposte(delayed)">
+        </form>
+      </td>    
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="parrydelayed">
+          <input type="submit" name="edit_btn" value="Change Range: Riposte(delayed)">
+        </form>
+      </td>
+      <td></td>
+      <td></td>
+    </tr>
 </table>

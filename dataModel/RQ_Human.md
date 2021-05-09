@@ -45,31 +45,27 @@ Used on each token during a combat to track various status
 
 ```
 {
+    "turnStatus": "disabled",
+    "activeTurn": 0,
     "activeCA": 0,
     "ccCA": 0,
+    "proactiveCA": 0,
+    "reactiveCA": 0,
     "baseCA": 0,
     "bonusCA": 0,
     "weaponCA": 0,
     "magicCA": 0,
-    "proactiveCA": 0,
-    "reactiveCA": 0,
     "castCA": 0,
     "reloadCA": 0,
     "lostProCA": 0,
     "lostCA": 0,
     "firstEvade": 0,
-    "turnStatus": "disabled",
-    "activeTurn": 0,
     "weaponReach": "ok",
-	"situationMod": "ok",
     "currWeaponNb": 1,
     "defWeaponNb": 1
 }
 ```
 
-```
-combatStatus = {"activeCA":0,"ccCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"turnStatus":"disabled","activeTurn":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}
-```
 
 TST_WARRIOR1 (two weapon + magCA + bon CA + activeTur = 1) : 
 ```
@@ -107,6 +103,11 @@ TST_WARRIOR2 (one weapon + magCA) :
   * **ok** : nothing special. Default value.
   * **prone** : -20% malus for attack and parry
   * **blinded** : -80% malus for attack and parry
+* **chargeStatus** :
+  * **none** : default value. no charge declared
+  * **prepareCharge** : charge has been declared, token is moving during one MR. 
+  * **chargeReady** : token has been moving during one mr he must select a type of charge passage or crash at its first turn.
+  * **passageDone** : token as done its charge and conitnue moving till end of the turn.
 * **currWeaponNb** : current nb of weapon hold by the token (could not be <0). Use to manage the lost weapon vent during a combat
 * **defWeaponNb** : def nb of weapon usually hold by the token (usually set during charchetr creation adn use to reste a token combat status before a new combat
 

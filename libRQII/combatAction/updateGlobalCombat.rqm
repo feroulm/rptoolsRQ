@@ -47,6 +47,13 @@
 	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
 	  [h, if(turnStatus != "disabled"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+
+	  <!-- Manage charging status -->
+	  [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
+	  [h, if(chargeStatus == "prepareCharge"): currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","chargeReady")]
+	  [h, if(chargeStatus == "passageDone"): currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+	  [h, if(chargeStatus == "passageDone"): setState("Charging", 0, tokenId)]
+	  
 	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
 	  
 	  <!-- reset States -->
