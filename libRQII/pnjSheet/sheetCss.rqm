@@ -4,6 +4,8 @@
 .leftBorder { border: solid 0 #060; border-left-width:1px }
 td.firstCol { text-align: left; font-weight: bold;}
 td { text-align: center; }
+ul { margin-left: 0px; padding-left: 0px;line-height: 0;text-align: left;}
+li { margin-left: 0px; padding-left: 0px;line-height: 0;text-align: left;}
 
 
 #stats th { background-color: #113311; color: #FFFFFF }

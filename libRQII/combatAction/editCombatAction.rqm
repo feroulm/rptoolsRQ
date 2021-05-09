@@ -260,7 +260,7 @@
       <td>
         <form action="[r:linkUpdateCombatReactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="counterspell">
+          <input type="hidden" name="action" value="parry">
           <input type="submit" name="edit_btn" value="Counter Spell">
         </form>
       </td>
