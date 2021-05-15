@@ -1,0 +1,15 @@
+[h: link = macroLinkText("openAddMeleeWeapon@Lib:RQII", "none")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): abort(0)]
+[frame("Add Melee Weapon"): {
+<html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <title>Add Melee Weapon(s)</title>
+    </head>
+<body>
+[r, macro("editAddMeleeWeapon@Lib:RQII"): arguments]
+</body>
+</html>
+}]

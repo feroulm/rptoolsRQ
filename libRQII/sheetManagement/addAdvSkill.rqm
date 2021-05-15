@@ -1,0 +1,47 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+
+[h: aSkills = getProperty("advSkills", tokenId)]
+[r: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+
+<!-- get charc value to compute skill base -->
+[h: STR = getProperty("STR",tokenId)]
+[h: CON = getProperty("CON",tokenId)]
+[h: SIZ = getProperty("SIZ",tokenId)]
+[h: INT = getProperty("INT",tokenId)]
+[h: POW = getProperty("POW",tokenId)]
+[h: DEX = getProperty("DEX",tokenId)]
+[h: CHA = getProperty("CHA",tokenId)]
+
+[r, foreach(param,arguments),code :{
+  [h: skillExist = json.contains(aSkills,param)]
+  <!-- add only new skill -->
+  [r, if((param != "tokenId")&&(param != "edit_btn")&&(! skillExist)), code :{
+  	<!-- get skill model -->
+  	[h: skRef = json.get(advSkDb,param)]
+  	[h: newSkCode = json.get(skRef,"code")]
+  	[h: skSubType = json.get(skRef,"subtype")]
+  	[h: skCulture = 0]
+  	[h: skProfession = 0]
+  	[h: skExperience = 0]
+  	<!-- works because we have properties with the name DEX, INT etc... -->
+  	[r: skBase = eval(newSkCode)]
+  	[h: skCurrent = skBase + skCulture + skProfession + skExperience]
+  	[h: newAdvSkillValues = json.set("{}","code",newSkCode)]
+  	[h: newAdvSkillValues = json.set(newAdvSkillValues,"subtype",skSubType)]
+  	[h: newAdvSkillValues = json.set(newAdvSkillValues,"current",skCurrent)]
+  	[h: newAdvSkillValues = json.set(newAdvSkillValues,"base",skBase)]
+  	[h: newAdvSkillValues = json.set(newAdvSkillValues,"culture",skCulture)]
+  	[h: newAdvSkillValues = json.set(newAdvSkillValues,"profession",skProfession)]
+  	[h: newAdvSkillValues = json.set(newAdvSkillValues,"experience",skExperience)]
+  	[h: aSkills = json.set(aSkills,param,newAdvSkillValues)]
+  }]
+
+}]
+
+[h: setProperty("advSkills",aSkills, tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openHumSheetMgt@Lib:RQII"): macroParam]

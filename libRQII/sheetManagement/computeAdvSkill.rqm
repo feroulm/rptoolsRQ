@@ -1,0 +1,27 @@
+[h: "<!-- Function to recompute advSkill -->"]
+[h: "<!-- return a newAdvSkill Json object -->"]
+[h: currAdvSkill = arg(0)]
+[h: tokenId = arg(1)] 
+
+[h: "<!-- get charac value to compute skill base -->"]
+[h: STR = getProperty("STR",tokenId)]
+[h: CON = getProperty("CON",tokenId)]
+[h: SIZ = getProperty("SIZ",tokenId)]
+[h: INT = getProperty("INT",tokenId)]
+[h: POW = getProperty("POW",tokenId)]
+[h: DEX = getProperty("DEX",tokenId)]
+[h: CHA = getProperty("CHA",tokenId)]
+
+[h, foreach(skill,currAdvSkill),code :{
+  [h: skCode = json.get(skill,"code")]
+  [h: skCulture = json.get(skill,"culture")]
+  [h: skProfession = json.get(skill,"profession")]
+  [h: skExperience = json.get(skill,"experience")]
+  [h: newSkBase = eval(skCode)]
+  [h: newSkCurrent = newSkBase + skCulture + skProfession + skExperience]
+  [h: newAdvSkillValues = json.set(skill,"base",newSkBase)]
+  [h: newAdvSkillValues = json.set(newAdvSkillValues,"current",newSkCurrent)]
+  [h: currAdvSkill = json.set(currAdvSkill,skill,newAdvSkillValues)]
+}]
+
+[r: currAdvSkill]

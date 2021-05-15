@@ -1,0 +1,77 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+[h, if(nameFilter == "") : nameFilter = ".*"]
+[h, if(typeFilter == "") : typeFilter = ".*"]
+
+[h: rangeWeaponDb = getLibProperty("rangeWeaponDb", "Lib:RQII")]
+
+[h: link = macroLinkText("openAddRangeWeapon@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <table>
+    <tr>
+       <th>Weapon Name</th>
+       <th>Weapon Type</th>
+       <th></th>
+    </tr>
+    <tr>
+      <td><input type="text" name="nameFilter" value="[r: nameFilter]"></td>
+      <td><input type="text" name="typeFilter" value="[r: typeFilter]"></td>
+      <td><input type="submit" name="edit_btn" value="Filter"></td>
+    </tr>
+  </table>
+</form>
+
+[h: linkAddWeapon = macroLinkText("addRangeWeapon@Lib:RQII", "all")]
+<form action="[r:linkAddWeapon]" method="json">
+<input type="hidden" name="tokenId" value="[r:tokenId]">
+<table id="stats" cellpadding="2" cellspacing="0" border="0">
+  [h: class = "oddRow"]
+  [r, foreach(weapon, rangeWeaponDb, ""), code:{
+	[h: weaponAttr = json.get(rangeWeaponDb,weapon)]
+	[h: weaponType = json.get(weaponAttr,"Type")]
+	[r, if(matches(weapon,nameFilter) && matches(weaponType,typeFilter)), code:{
+	<tr class="[r:class]">
+      <td class="leftBorder">
+        [r: weapon] 
+      </td>
+      <td>
+        <input type="checkbox" name="[r:weapon]"/>
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Type")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Size")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Load")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Range")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Damage")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"DmgMod")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"ApHp")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Manoeuvre")]
+      </td>
+      <td>
+        [r: json.get(weaponAttr,"Special")]
+      </td>     
+    </tr>
+	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+	};{}]
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Add Weapon">
+</form>

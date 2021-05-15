@@ -1,0 +1,45 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponDb = getLibProperty("rangeWeaponDb", "Lib:RQII")]
+
+[r, foreach(param,arguments,""),code :{
+  <!-- add only new skill -->
+  [r, if((param != "tokenId")&&(param != "edit_btn")), code :{
+  	<!-- get skill model -->
+  	[h: weaponRef = json.get(weaponDb,param)]
+  	<!-- Increment Weapon Number -->
+    [r, macro("nextMissileNb@this"): tokenId]
+    [h: num = macro.return]
+
+    [h: Missiles = getProperty("Missiles",tokenId)]
+
+    [h: type = json.get(weaponRef, "Type")]
+    [h: size = json.get(weaponRef, "Size")]
+    [h: load = json.get(weaponRef, "Load")]
+    [h: reach = json.get(weaponRef, "Range")]
+    [h: damage = json.get(weaponRef, "Damage")]
+    [h: modif = json.get(weaponRef, "DmgMod")]
+    [h: aphp = json.get(weaponRef, "ApHp")]
+    [h: manoeuvre = json.get(weaponRef, "Manoeuvre")]
+    [h: special = json.get(weaponRef, "Special")]
+	
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Name"), param)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Type"), type)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Size"), size)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Load"), load)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Reach"), reach)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Damage"), damage)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Modif"), modif)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}ApHp"), aphp)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Manoeuvre"), manoeuvre)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{num}Special"), special)]
+
+    [h: setProperty("Missiles",Missiles,tokenId)]
+  }]
+
+}]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openHumSheetMgt@Lib:RQII"): macroParam]

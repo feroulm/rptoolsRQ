@@ -1,0 +1,40 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: num = json.get(arguments, "num")]
+[h: Weapons = getProperty("Missiles",tokenId)]
+[h: link = macroLinkText("updateRangeWeapon@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+<input type="hidden" name="tokenId" value="[r:tokenId]">
+<input type="hidden" name="weaponNum" value="[r:num]">
+<table>
+  <tr class="WeaponName">
+    <th>Name</th>
+    <th>Type</th>
+    <th>Size</th>
+	<th>Load</th>
+	<th>Reach</th>
+    <th>Damage</th>
+	<th>Modif</th>
+	<th>AP/HP</th>
+    <th>Manoeuvre</th>
+	<th>Special</th>
+  </tr>
+
+  [h,macro("getMissile@Lib:RQII"): "weaponNb="+num+"; tokId="+tokenId]
+  [h: wProp = macro.return]
+  <tr>
+    <td><input type="text" name="Name" value='[r:getStrProp(wProp, "Name")]'></td>
+    <td><input type="text" name="Type" value='[r:getStrProp(wProp, "Type")]'></td>
+    <td><input type="text" name="Size" value='[r:getStrProp(wProp, "Size")]'></td>
+	<td><input type="text" name="Load" value='[r:getStrProp(wProp, "Load")]'></td>
+    <td><input type="text" name="Reach" value='[r:getStrProp(wProp, "Reach")]'></td>
+    <td><input type="text" name="Damage" value='[r:getStrProp(wProp, "Damage")]'></td>
+	<td><input type="text" name="Modif" value='[r:getStrProp(wProp, "Modif")]'></td>
+    <td><input type="text" name="ApHp" value='[r:getStrProp(wProp, "ApHp")]'></td>
+    <td><input type="text" name="Manoeuvre" value='[r:getStrProp(wProp, "Manoeuvre")]'></td>
+    <td><input type="text" name="Special" value='[r:getStrProp(wProp, "Special")]'></td>  
+  </tr>
+</table>
+<input type="submit" name="edit_btn" value="Update Weapon">
+</form>

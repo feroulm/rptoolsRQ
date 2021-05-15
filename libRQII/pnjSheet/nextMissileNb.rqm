@@ -4,12 +4,15 @@
   -->
  
 <!-- If Missiles token property is empty set it to a default value -->
-[h,if(isPropertyEmpty("Missiles")): Missiles = "NumMissiles=0;"]
+[h: id = macro.args]
+[h,if(isPropertyEmpty("Missiles",id)): setProperty("Missiles","NumMissiles=0;",id)]
+[h: Missiles = getProperty("Missiles",id)]
  
 [h: numMissiles = getStrProp(Missiles, "NumMissiles") + 1]
  
 <!-- Now update our property -->
 [h: Missiles = setStrProp(Missiles, "NumMissiles", numMissiles)]
+[h: setProperty("Missiles",Missiles,id)]
  
 <!-- Finally set out return value -->
 [h: macro.return = numMissiles]

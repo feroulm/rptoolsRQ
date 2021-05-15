@@ -1,0 +1,349 @@
+[h: tokenId = macro.args]
+
+[h,macro("getWeaponNb@this"): tokenId]
+[h: wpList = macro.return]
+[h: linkUpdateCcCA = macroLinkText("updateCcCA@Lib:RQII", "all")]
+[h: linkUpdateCharac = macroLinkText("updateCharac@Lib:RQII", "all")]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: currentCharac = getProperty("Charac",tokenId)]
+[h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
+[h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
+[h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
+[h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+[h: propDamageMod = getProperty("DamageMod",tokenId)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+[h: propDedicatedPow = getProperty("DedicatedPow",tokenId)]
+
+<table>
+ <tr>
+   <td style="text-align:left;" valign="top">
+   <b>[r: getName(tokenId)]</b> ([r: macroLink("Refresh", "openHumSheetMgt@Lib:RQII", "all")])<br><br>
+   Armor Penalty : [r: json.get(propArmorPenalty, "current")]<br>
+   Current SR : [r: json.get(propStrikeRank, "current")]<br>
+   Current Damage Mod : [r: json.get(propDamageMod, "current")]<br>
+   Current Dedicated POW : [r: json.get(propMagicPoint, "dedPOW")]<br>
+   Current PM : <b>[r: json.path.read(propMagicPoint,"MP.current")]</b> / [r: json.path.read(propMagicPoint,"MP.base")]<br>
+
+<!-- Manage Ca change -->
+<form action="[r:linkUpdateCcCA]" method="json">
+<table style="cellspacing:0px">
+  <tr>   
+    <td style="text-align:left">Active weapon(s) :</td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="weaponca">
+      <input type="text" name="newWeaponNb" value="[r:currWeaponNb]" size="2" align="right">
+    </td>
+    <td>
+      <input type="submit" name="edit_btn" value="change">
+    </td> 
+  </tr>
+</table>
+</form>
+<form action="[r:linkUpdateCcCA]" method="json">
+<table>
+  <tr>
+    <td style="text-align:left">Magic CA </td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="magicca">
+      <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
+    </td>
+    <td>
+      <input type="submit" name="edit_btn" value="change">
+    </td>
+  </tr>
+</table>
+</form>
+<!-- End Manage Ca change -->
+    </td>
+    <td>
+<!-- Manage Characteristics Change -->
+
+<form action="[r:linkUpdateCharac]" method="json">
+<table id="stats" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td></td>
+    <td class="leftBorder"><b>Base</b></td>
+    <td class="leftBorder"><b>Current</b></td>
+  </r>
+  [h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+  [h: class = "oddRow"]
+  [foreach(characName, characNames, ""), code: {
+  	[h: basProp = "bas"+characName]
+    [h: tmpProp = "tmp"+characName]
+	<tr class="[r:class]">
+	  <td>[r: characName]</td>
+	  <td class="leftBorder">[r: json.get(currentCharac,basProp)]</td>
+	  <td class="leftBorder">
+	   <input type="text" name="[r: characName]" value="[r: json.get(currentCharac,tmpProp)]" size="2" align="right">
+	  </td>
+	</tr>
+	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+  }]
+  <tr>
+    <td colspan="3">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="srcWindow" value="openHumSheetMgt">
+      <input type="submit" name="edit_btn" value="change">
+    </td>
+  </tr>
+</table>
+</form>
+<!-- End Manage Charac Change -->
+    </td>
+    <td valign="top">
+<!-- Start Manage Dedicated POW -->
+[h: linkUpdateDedPow = macroLinkText("updateDedPow@Lib:RQII", "all")]
+<form action="[r:linkUpdateDedPow]" method="json">
+<table cellpadding="2" cellspacing="0" border="0">
+  <tr class="headRow">
+    <th>Pact</th>
+    <th>Ded POW</th>
+  </tr>
+  [h: class = "oddRow"]
+  [foreach(pact, propDedicatedPow, ""), code: {
+  	<tr class="[r:class]">
+  	<td>[r: pact]</td>
+  	<td><input type="text" name="[r: pact]" value="[r: json.get(propDedicatedPow,pact)]" size="2" align="right">
+  	</tr>
+  	[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+  <tr>
+    <td colspan="2">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="srcWindow" value="openHumSheetMgt">
+      <input type="submit" name="edit_btn" value="Update">
+    </td>
+  </tr>
+</table>
+</form>
+<!-- End Manage Dedicated POW -->
+    </td>
+    <td>
+       [r, macro("editHumanSheetMeleeWeapon@Lib:RQII"): tokenId]<br>
+       [r, macro("editHumanSheetRangeWeapon@Lib:RQII"): tokenId]
+    </td>
+  </tr>
+</table> <!-- Global window table -->
+
+<!--Manage Advanced Attribute -->
+ 
+[h: link = macroLinkText("updateHumanSheet@Lib:RQII", "all")]
+
+<table>
+  <tr>
+    <td valign="top">
+    
+<form action="[r:link]" method="json">
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+ <input type="hidden" name="skType" value="common">
+
+<table width="*">
+<tr class="headRow">
+    <th>
+        Common Skill
+    </th>
+    <th>Subtype</th>
+    <th>Current</th>
+    <th>Base</th>
+    <th>Culture</th>
+    <th>Profession</th>
+    <th>Experience</th>
+    <th>Current New</th>
+    <th>Experience New</th>
+  </tr>
+  [h: class = "oddRow"]
+  [h: aSkills = getProperty("commonSkills", tokenId)]
+
+  [foreach(skill, aSkills, ""), code: {
+  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	[h: skillValues = json.get(aSkills,skill)]
+  	[h: skillSubtype = json.get(skillValues,"subtype")]
+    <tr class="[r:class]">
+      <th>
+        [r: skill] ([r: json.get(skillValues,"code")])
+      </th>
+      <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
+      <td>[r: json.get(skillValues,"current")]</td>
+      <td>[r: json.get(skillValues,"base")]</td>
+      <td>[r: json.get(skillValues,"culture")]</td>
+      <td>[r: json.get(skillValues,"profession")]</td>
+      <td>[r: json.get(skillValues,"experience")]</td>
+      <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
+      <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Update">
+</form>
+
+    </td>
+    <td valign="top">
+<!-- Magic Skills -->
+<form action="[r:link]" method="json">
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+ <input type="hidden" name="skType" value="magic">
+
+<table width="*">
+<tr class="headRow">
+    <th>
+        Magic Skill
+    </th>
+    <th>Subtype</th>
+    <th>Current</th>
+    <th>Base</th>
+    <th>Culture</th>
+    <th>Profession</th>
+    <th>Experience</th>
+    <th>Current New</th>
+    <th>Experience New</th>
+    <th></th>
+  </tr>
+  [h: class = "oddRow"]
+  [h: aSkills = getProperty("magicSkills", tokenId)]
+
+  [foreach(skill, aSkills, ""), code: {
+  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	[h: skillValues = json.get(aSkills,skill)]
+  	[h: skillSubtype = json.get(skillValues,"subtype")]
+    <tr class="[r:class]">
+      <th>
+        [r: skill] ([r: json.get(skillValues,"code")])
+      </th>
+      <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
+      <td>[r: json.get(skillValues,"current")]</td>
+      <td>[r: json.get(skillValues,"base")]</td>
+      <td>[r: json.get(skillValues,"culture")]</td>
+      <td>[r: json.get(skillValues,"profession")]</td>
+      <td>[r: json.get(skillValues,"experience")]</td>
+      <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
+      <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","magic","skillName",skill)]
+      <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Update">
+</form>
+[h: linkAddAdvSkill = macroLinkText("openAddAdvSkill@Lib:RQII", "all")]
+<form action="[r:linkAddAdvSkill]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <input type="hidden" name="skType" value="magic">
+  <input type="submit" name="edit_btn" value="Add Magic Skill">
+</form>
+
+<!-- Combat Skills -->
+<form action="[r:link]" method="json">
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+ <input type="hidden" name="skType" value="combat">
+
+<table width="*">
+<tr class="headRow">
+    <th>
+        Combat Skill
+    </th>
+    <th>Subtype</th>
+    <th>Current</th>
+    <th>Base</th>
+    <th>Culture</th>
+    <th>Profession</th>
+    <th>Experience</th>
+    <th>Current New</th>
+    <th>Experience New</th>
+    <th></th>
+  </tr>
+  [h: class = "oddRow"]
+  [h: aSkills = getProperty("combatSkills", tokenId)]
+
+  [foreach(skill, aSkills, ""), code: {
+  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	[h: skillValues = json.get(aSkills,skill)]
+  	[h: skillSubtype = json.get(skillValues,"subtype")]
+    <tr class="[r:class]">
+      <th>
+        [r: skill] ([r: json.get(skillValues,"code")])
+      </th>
+      <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
+      <td>[r: json.get(skillValues,"current")]</td>
+      <td>[r: json.get(skillValues,"base")]</td>
+      <td>[r: json.get(skillValues,"culture")]</td>
+      <td>[r: json.get(skillValues,"profession")]</td>
+      <td>[r: json.get(skillValues,"experience")]</td>
+      <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
+      <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","magic","skillName",skill)]
+      <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Update">
+</form>
+[h: linkAddAdvSkill = macroLinkText("openAddAdvSkill@Lib:RQII", "all")]
+<form action="[r:linkAddAdvSkill]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <input type="hidden" name="skType" value="combat">
+  <input type="submit" name="edit_btn" value="Add Combat Skill">
+</form>
+    
+<!-- Advanced Skills -->
+<form action="[r:link]" method="json">
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+ <input type="hidden" name="skType" value="advanced">
+
+<table width="*">
+<tr class="headRow">
+    <th>
+        Advanced Skill
+    </th>
+    <th>Subtype</th>
+    <th>Current</th>
+    <th>Base</th>
+    <th>Culture</th>
+    <th>Profession</th>
+    <th>Experience</th>
+    <th>Current New</th>
+    <th>Experience New</th>
+    <th></th>
+  </tr>
+  [h: class = "oddRow"]
+  [h: aSkills = getProperty("advSkills", tokenId)]
+
+  [foreach(skill, aSkills, ""), code: {
+  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	[h: skillValues = json.get(aSkills,skill)]
+  	[h: skillSubtype = json.get(skillValues,"subtype")]
+    <tr class="[r:class]">
+      <th>
+        [r: skill] ([r: json.get(skillValues,"code")])
+      </th>
+      <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
+      <td>[r: json.get(skillValues,"current")]</td>
+      <td>[r: json.get(skillValues,"base")]</td>
+      <td>[r: json.get(skillValues,"culture")]</td>
+      <td>[r: json.get(skillValues,"profession")]</td>
+      <td>[r: json.get(skillValues,"experience")]</td>
+      <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
+      <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","magic","skillName",skill)]
+      <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Update">
+</form>
+[h: linkAddAdvSkill = macroLinkText("openAddAdvSkill@Lib:RQII", "all")]
+<form action="[r:linkAddAdvSkill]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <input type="submit" name="edit_btn" value="Add Advanced Skill">
+</form>
+
+    </td>
+  </tr>
+</table>

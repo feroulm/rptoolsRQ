@@ -1,0 +1,59 @@
+[h: arguments = macro.args] 
+[h: id = json.get(arguments, "id")]
+
+[h: aSkills = getProperty("advSkills", id)]
+[h: newAdvSkills = "{}"]
+<br>
+[foreach(skill, aSkills, ""), code: {
+	<!-- get existing value -->
+	[h: skillValues = json.get(aSkills,skill)]
+	[h: skCurrent = json.get(skillValues, "current")]
+	[h: skBase = json.get(skillValues, "base")]
+	[h: skCulture = json.get(skillValues, "culture")]
+	[h: skProfession = json.get(skillValues, "profession")]
+
+	<!-- grab new value from param -->
+  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	[h: newSkSubtype = json.get(arguments, strformat("%{skillName}Subtype"))]
+  	[h: newSkCurrent = json.get(arguments, strformat("%{skillName}Current"))]
+  	[h: newSkExperience = json.get(arguments, strformat("%{skillName}Experience"))]
+
+  	<!-- validate value, it must be a number -->
+    [h, if(json.isEmpty(newSkCurrent)): newSkCurrent = 0]
+    [h, if(! isNumber(newSkCurrent)): newSkCurrent = 0]
+    [h, if(json.isEmpty(newSkExperience)): newSkExperience = 0]
+    [h, if(! isNumber(newSkExperience)): newSkExperience = 0]
+
+    <!-- update subtype -->
+    [h: newAdvSkillValues = json.set(skillValues,"subtype",newSkSubtype)]
+  	<!-- build the new Json to update advSkills -->
+  	[r, if ((newSkExperience == 0)&&(newSkCurrent != 0)), code: {
+  		[h: calcNewSkEperience = newSkCurrent - skBase - skCulture - skProfession]
+  		[h: newAdvSkillValues = json.set(newAdvSkillValues,"current",newSkCurrent)]
+  		[h: newAdvSkillValues = json.set(newAdvSkillValues,"experience",calcNewSkEperience)]
+  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		
+  		Update [r: skill] : Current to [r: newSkCurrent] and Experience to : [r: calcNewSkEperience]<br>
+  		
+  	}]
+  	[r, if ((newSkExperience != 0)&&(newSkCurrent == 0)), code: {
+  		[h: calcNewSkCurrent = skBase + skCulture + skProfession + newSkExperience]
+
+  		[h: newAdvSkillValues = json.set(newAdvSkillValues,"current",calcNewSkCurrent)]
+  		[h: newAdvSkillValues = json.set(newAdvSkillValues,"experience",newSkExperience)]
+  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		
+  		Update [r: skill] : Current to [r: calcNewSkCurrent] and Experience to [r: newSkExperience]<br>
+  	}]
+  	[r, if ((newSkExperience != 0)&&(newSkCurrent != 0)), code: {
+
+  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		no % update ! use either Current New or Experience New but not both !<br>
+  	}]
+  	[r, if ((newSkExperience == 0)&&(newSkCurrent == 0)), code: {
+  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		no % update ! <br>
+  	}]
+}]
+
+New JSON : [r: newAdvSkills]

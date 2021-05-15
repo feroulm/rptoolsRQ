@@ -1,0 +1,42 @@
+<!-- Sub section of editHumanSheet -->
+[h: tokenId = macro.args]
+
+[h,macro("getWeaponNb@this"): tokenId]
+[h: wpList = macro.return]
+<table>
+  <tr class="WeaponName">
+      <th>
+        Name(<i>Type</i>)
+      </th>
+    <th>Size</th>
+	<th>Reach</th>
+      <th>Damage</th>
+	<th>AP/HP</th>
+      <th>Manoeuvre</th>
+	<th>Special</th>
+  </tr>
+  [h: class = "oddRow"]
+  [foreach(weapon, wpList, ""), code: {
+  	
+    [h,macro("getWeapon@this"): "weaponNb="+weapon+"; tokId="+tokenId]
+    [h: wProp = macro.return]
+    <tr class="[r:class]">
+      <th>
+        [r: getStrProp(wProp, "Name")](<i>[r: getStrProp(wProp, "Type")]</i>)
+      </th>
+      <td>[r: getStrProp(wProp, "Size")]</td>
+      <td>[r: getStrProp(wProp, "Reach")]</td>
+      <td>[r: getStrProp(wProp, "Damage")]</td>
+      <td>[r: getStrProp(wProp, "ApHp")]</td>
+      <td>[r: getStrProp(wProp, "Manoeuvre")]</td>
+      <td>[r: getStrProp(wProp, "Special")]</td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"num",weapon)]
+      <td>[r: macroLink("Edit", "openMeleeWeapon@Lib:RQII", "all",macroParam)] <br> [r: macroLink("Del", "delWeapon@this", "all",macroParam)]</td>
+      
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+  }]
+</table>
+<br>
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r: macroLink("Add a new weapon", "openAddMeleeWeapon@Lib:RQII", "all",macroParam)]

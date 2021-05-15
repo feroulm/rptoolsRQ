@@ -1,0 +1,27 @@
+[h: param = macro.args]
+
+[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+
+[h: tokenId = json.get(param,"tokenId")]
+[h: newSkillName = json.get(param,"advSkillName")]
+[h: newSkillCode = json.get(param,"advSkillCode")]
+[h: newSkillSubtype = json.get(param,"advSkillSubtype")]
+[h: newSkillLnk = json.get(param,"advSkillLnk")]
+
+[h: skillExist = json.contains(advSkDb,newSkillName)]
+
+[r, if(! skillExist), code:{
+  [h: newAdvSkillValues = json.set("{}","code",newSkillCode)]
+  [h: newAdvSkillValues = json.set(newAdvSkillValues,"subtype",newSkillSubtype)]
+  [h: newAdvSkillValues = json.set(newAdvSkillValues,"lnk",newSkillLnk)]
+  [h: advSkDb = json.set(advSkDb,newSkillName,newAdvSkillValues)]		
+  [h: setLibProperty("AdvSkills", advSkDb, "Lib:RQII")]
+  Add advanced Skill : [r: newSkillName] 
+};
+{
+	Not created, Skill exists already !
+}]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openAddAdvSkill@Lib:RQII"): macroParam]

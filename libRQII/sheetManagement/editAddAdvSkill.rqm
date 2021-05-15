@@ -1,0 +1,69 @@
+[h: tokenId = macro.args]
+
+[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+
+<!-- global layout table -->
+<table>
+  <tr>
+    <td>
+    
+[h: linkAddAdvSkill = macroLinkText("addAdvSkill@Lib:RQII", "all")]
+<form action="[r:linkAddAdvSkill]" method="json">
+<input type="hidden" name="tokenId" value="[r:tokenId]">
+<table id="stats" cellpadding="2" cellspacing="0" border="0">
+  [h: class = "oddRow"]
+  [r, foreach(skillName, advSkDb, ""), code:{
+	[h: advSkill = json.get(advSkDb,skillName)]
+	[h: advSkCode = json.get(advSkill,"code")]
+	<tr class="[r:class]">
+      <td class="leftBorder">
+        [r: skillName] ([r: advSkCode])
+      </td>
+      <td>
+        <input type="checkbox" name="[r:skillName]" value="[r:skillName]"/>
+      </td>
+    </tr>
+	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Add Adv Skill">
+</form>
+
+    </td>
+    <td>
+
+[h: linkCreateAdvSkill = macroLinkText("createAdvSkill@Lib:RQII", "all")]
+<form action="[r:linkCreateAdvSkill]" method="json">
+<input type="hidden" name="tokenId" value="[r:tokenId]">
+<table id="stats" cellpadding="2" cellspacing="0" border="0">
+  <tr class = "oddRow">
+    <td class="leftBorder">Name : </td>
+    <td>
+      <input type="text" name="advSkillName" size="20" align="right">
+    </td>
+  </tr>
+  <tr class = "evenRow">
+    <td class="leftBorder">Subtype : </td>
+    <td>
+      <input type="text" name="advSkillSubtype" size="20" align="right">
+    </td>
+  </tr>
+  <tr class = "oddRow">
+    <td class="leftBorder">Code : </td>
+    <td>
+      <input type="text" name="advSkillCode" size="10" align="right">
+    </td>
+  </tr>
+  <tr class = "evenRow">
+    <td class="leftBorder">Link : </td>
+    <td>
+      <input type="text" name="advSkillLnk" size="20" align="right">
+    </td>
+  </tr>
+</table>
+<input type="submit" name="edit_btn" value="Create Adv Skill">
+</form>
+
+    </td>
+  </tr>
+</table>

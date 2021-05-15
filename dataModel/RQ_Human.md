@@ -126,5 +126,198 @@ Example  :
 - lastReactiveAction : MR_1, C_1 tokenname has done parry 
 - lastTokenChange : MR_1, C_1 tokenname has lost 3pts in L_ARM
 
+### commonSkills
 
+```
+{
+    "Athletics": {
+        "code": "STR+DEX",
+        "subtype": "",
+        "current": 53,
+        "base": 23,
+        "culture": 0,
+        "profession": 0,
+        "experience": 30
+    },
+    "Brawn": {
+        "code": "STR+SIZ",
+        "subtype": "",
+        "current": 33,
+        "base": 23,
+        "culture": 0,
+        "profession": 0,
+        "experience": 10
+    },
+    "Culture (Own)": {
+        "code": "INT*2",
+        "subtype": "Jrusteli",
+        "current": 50,
+        "base": 20,
+        "culture": 30,
+        "profession": 0,
+        "experience": 0
+    },
+    "Dance": {
+        "code": "DEX+CHA",
+        "subtype": "",
+        "current": 21,
+        "base": 21,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Drive": {
+        "code": "DEX+POW",
+        "subtype": "",
+        "current": 23,
+        "base": 23,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Evade": {
+        "code": "DEX*2",
+        "subtype": "",
+        "current": 44,
+        "base": 24,
+        "culture": 0,
+        "profession": 0,
+        "experience": 20
+    },
+    "Evaluate": {
+        "code": "INT+CHA",
+        "subtype": "",
+        "current": 49,
+        "base": 19,
+        "culture": 0,
+        "profession": 0,
+        "experience": 30
+    },
+    "First Aid": {
+        "code": "INT+DEX",
+        "subtype": "",
+        "current": 22,
+        "base": 22,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Influence": {
+        "code": "CHA*2",
+        "subtype": "",
+        "current": 18,
+        "base": 18,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Insight": {
+        "code": "INT+POW",
+        "subtype": "",
+        "current": 21,
+        "base": 21,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Lore (Regional)": {
+        "code": "INT*2",
+        "subtype": "Kethaela",
+        "current": 50,
+        "base": 20,
+        "culture": 30,
+        "profession": 0,
+        "experience": 0
+    },
+    "Perception": {
+        "code": "POW+INT",
+        "subtype": "",
+        "current": 31,
+        "base": 21,
+        "culture": 0,
+        "profession": 0,
+        "experience": 10
+    },
+    "Persistence": {
+        "code": "POW*2",
+        "subtype": "",
+        "current": 52,
+        "base": 22,
+        "culture": 0,
+        "profession": 0,
+        "experience": 30
+    },
+    "Resilience": {
+        "code": "CON*2",
+        "subtype": "",
+        "current": 48,
+        "base": 28,
+        "culture": 0,
+        "profession": 0,
+        "experience": 20
+    },
+    "Ride": {
+        "code": "DEX+POW",
+        "subtype": "",
+        "current": 23,
+        "base": 23,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Sing": {
+        "code": "CHA+POW",
+        "subtype": "",
+        "current": 20,
+        "base": 20,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Sleight": {
+        "code": "DEX+CHA",
+        "subtype": "",
+        "current": 31,
+        "base": 21,
+        "culture": 0,
+        "profession": 0,
+        "experience": 10
+    },
+    "Stealth": {
+        "code": "INT+DEX",
+        "subtype": "",
+        "current": 22,
+        "base": 22,
+        "culture": 0,
+        "profession": 0,
+        "experience": 0
+    },
+    "Swim": {
+        "code": "STR+CON",
+        "subtype": "",
+        "current": 35,
+        "base": 25,
+        "culture": 0,
+        "profession": 0,
+        "experience": 10
+    },
+    "Unarmed": {
+        "code": "STR+DEX",
+        "subtype": "",
+        "current": 33,
+        "base": 23,
+        "culture": 0,
+        "profession": 0,
+        "experience": 10
+    }
+}
+```
+
+### Weapons
+
+* Manage using str property (not json) - because i start by using an example in rptool wiki ;)
+* the NumWeapons property is used to manage a unique number for each weapon.
+  * it is used in each weaponAttribute property fields : ```Weapon1Name = "Sabre"```
+  * It is never decreased (otherwise each weapon must be renumbered when one is deleted !)
+  
 
