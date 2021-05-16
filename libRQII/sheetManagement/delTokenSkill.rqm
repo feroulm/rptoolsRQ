@@ -1,0 +1,31 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[r: skType = json.get(arguments, "skType")]
+[r: skillName = json.get(arguments, "skillName")]
+
+[r, switch(skType), code:
+  case "advanced" :{
+  	[h: aSkills = getProperty("advSkills", tokenId)]
+  	[h: aSkills = json.remove(aSkills, skillName)]
+    [h: setProperty("advSkills", aSkills, tokenId)]
+  };
+  case "combat" :{
+  	[h: aSkills = getProperty("combatSkills", tokenId)]
+  	[h: aSkills = json.remove(aSkills, skillName)]
+    [h: setProperty("combatSkills", aSkills, tokenId)]
+  };
+  case "magic" :{
+  	[h: aSkills = getProperty("magicSkills", tokenId)]
+  	[h: aSkills = json.remove(aSkills, skillName)]
+    [h: setProperty("magicSkills", aSkills, tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

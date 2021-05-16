@@ -1,0 +1,17 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: pLocNb = getProperty("locNb", tokenId)]
+[h: newLocHP = getProperty("locHP",tokenId)]
+[h: newLocHPorig = getProperty("locHPorig",tokenId)]
+
+[for(i,1,pLocNb+1,1,""), code:{
+  [h: newLocHP = setStrProp(newLocHP,strformat("loc%{i}"),json.get(arguments, strformat("loc%{i}hp")))]
+  [h: newLocHPorig = setStrProp(newLocHPorig,strformat("loc%{i}"),json.get(arguments, strformat("loc%{i}hp")))]
+ }]
+ 
+[h: setProperty("locHP", newLocHP, tokenId)]
+[h: setProperty("locHPorig", newLocHPorig, tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

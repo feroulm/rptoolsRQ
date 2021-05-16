@@ -1,0 +1,45 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+[h: currDedPOW = json.get(propMagicPoint,"dedPOW")]
+[h: POW = getProperty("POW",tokenId)]
+
+[h: lore1 = json.get(arguments, "godlore1")]
+[h: lore2 = json.get(arguments, "godlore2")]
+[h: lore3 = json.get(arguments, "godlore3")]
+[h: lore4 = json.get(arguments, "godlore4")]
+[h: lore5 = json.get(arguments, "godlore5")]
+[h: newDedPOW = lore1 + lore2 + lore3 + lore4 + lore5]
+
+[h: propDedicatedPow = json.set("{}","godlore1",lore1)]
+[h: propDedicatedPow = json.set(propDedicatedPow,"godlore2",lore2)]
+[h: propDedicatedPow = json.set(propDedicatedPow,"godlore3",lore3)]
+[h: propDedicatedPow = json.set(propDedicatedPow,"godlore4",lore4)]
+[h: propDedicatedPow = json.set(propDedicatedPow,"godlore5",lore5)]
+
+[h: newPropMagicPoint = json.set(propMagicPoint,"dedPOW",newDedPOW)]
+
+<!-- recompute Magic Point -->
+[h: newMP = POW - newDedPOW]
+[h: currMP = json.path.read(propMagicPoint,"MP.current")]
+[h: newPropMagicPoint = json.path.set(newPropMagicPoint,"MP.base",newMP)]
+[h: newCurrMP = currMP + (currDedPOW - newDedPOW)]
+[h: newPropMagicPoint = json.path.set(newPropMagicPoint,"MP.current",newCurrMP)]
+
+[h: setProperty("MagicPoint",newPropMagicPoint,tokenId)]
+[h: setProperty("DedicatedPow",propDedicatedPow,tokenId)]
+
+<!-- recompute magic Skill -->
+[h: currSkill = getProperty("magicSkills",tokenId)]
+[h: newSkill = computeSkill(currSkill,tokenId)]
+[h: setProperty("magicSkills",newSkill,tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+
+[h, if(srcWindow == "openSheetMgt"), code:{
+  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+};{
+  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+}]

@@ -1,7 +1,26 @@
 [h: arguments = macro.args] 
-[h: id = json.get(arguments, "id")]
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: skType = json.get(arguments, "skType")]
 
-[h: aSkills = getProperty("advSkills", id)]
+[r, switch(skType), code:
+  case "common" :{
+  	[h: aSkills = getProperty("commonSkills", tokenId)]
+  };
+  case "advanced" :{
+  	[h: aSkills = getProperty("advSkills", tokenId)]
+  };
+  case "combat" :{
+  	[h: aSkills = getProperty("combatSkills", tokenId)]
+  };
+  case "magic" :{
+  	[h: aSkills = getProperty("magicSkills", tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
 [h: newAdvSkills = "{}"]
 <br>
 [foreach(skill, aSkills, ""), code: {
@@ -31,7 +50,7 @@
   		[h: calcNewSkEperience = newSkCurrent - skBase - skCulture - skProfession]
   		[h: newAdvSkillValues = json.set(newAdvSkillValues,"current",newSkCurrent)]
   		[h: newAdvSkillValues = json.set(newAdvSkillValues,"experience",calcNewSkEperience)]
-  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		[h: newAdvSkills = json.set(newAdvSkills,skill,newAdvSkillValues)]
   		
   		Update [r: skill] : Current to [r: newSkCurrent] and Experience to : [r: calcNewSkEperience]<br>
   		
@@ -41,19 +60,40 @@
 
   		[h: newAdvSkillValues = json.set(newAdvSkillValues,"current",calcNewSkCurrent)]
   		[h: newAdvSkillValues = json.set(newAdvSkillValues,"experience",newSkExperience)]
-  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		[h: newAdvSkills = json.set(newAdvSkills,skill,newAdvSkillValues)]
   		
   		Update [r: skill] : Current to [r: calcNewSkCurrent] and Experience to [r: newSkExperience]<br>
   	}]
   	[r, if ((newSkExperience != 0)&&(newSkCurrent != 0)), code: {
 
-  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		[h: newAdvSkills = json.set(newAdvSkills,skill,newAdvSkillValues)]
   		no % update ! use either Current New or Experience New but not both !<br>
   	}]
   	[r, if ((newSkExperience == 0)&&(newSkCurrent == 0)), code: {
-  		[h: newAdvSkills = json.set(newAdvSkills,skillName,newAdvSkillValues)]
+  		[h: newAdvSkills = json.set(newAdvSkills,skill,newAdvSkillValues)]
   		no % update ! <br>
   	}]
 }]
 
-New JSON : [r: newAdvSkills]
+[r, switch(skType), code:
+  case "common" :{
+  	[h: setProperty("commonSkills", newAdvSkills, tokenId)]
+  };
+  case "advanced" :{
+  	[h: setProperty("advSkills", newAdvSkills, tokenId)]
+  };
+  case "combat" :{
+  	[h: setProperty("combatSkills", newAdvSkills, tokenId)]
+  };
+  case "magic" :{
+  	[h: setProperty("magicSkills", newAdvSkills, tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

@@ -1,0 +1,54 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: spellType = json.get(arguments, "spellType")]
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spells = getProperty("spells", tokenId)]
+  };
+  case "divine" :{
+  	[h: spells = getProperty("divineSpells", tokenId)]
+  };
+  case "sorcery" :{
+  	[h: spells = getProperty("sorcerySpells", tokenId)]
+  };
+  case "draconic" :{
+  	[h: spells = getProperty("draconicSpells", tokenId)]
+  };
+  case "draconicPrepared" :{
+  	[h: spells = getProperty("draconicPrepared", tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown spelle type !<br>
+  }
+]
+
+
+
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spells = getProperty("spells", tokenId)]
+  };
+  case "divine" :{
+  	[h: spells = getProperty("divineSpells", tokenId)]
+  };
+  case "sorcery" :{
+  	[h: spells = getProperty("sorcerySpells", tokenId)]
+  };
+  case "draconic" :{
+  	[h: spells = getProperty("draconicSpells", tokenId)]
+  };
+  case "draconicPrepared" :{
+  	[h: spells = getProperty("draconicPrepared", tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown spelle type !<br>
+  }
+]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpellMgt@Lib:RQII"): macroParam]

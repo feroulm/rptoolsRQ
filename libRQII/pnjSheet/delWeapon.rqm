@@ -9,6 +9,7 @@
 
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: num = json.get(arguments, "num")]
+
 [h: Weapons = getProperty("Weapons",tokenId)]
 
 [h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{num}Name"))]
@@ -24,4 +25,4 @@
 
 <!-- Refresh edit Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openHumSheetMgt@Lib:RQII"): macroParam]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

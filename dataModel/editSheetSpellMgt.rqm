@@ -1,0 +1,43 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+Spell Management<br>
+
+<table>
+  <tr>
+    <td>
+
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="common">
+        <table>
+          <tr class="headRow">
+            <th>Common Spell</th>
+            <th>Magnitude</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("spells", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="10" align="right"></td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+
+</table>
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",nameFilter,"typeFilter",typeFilter)]
+[r, macro("editAddSpells@Lib:RQII"): macroParam]

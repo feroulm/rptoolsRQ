@@ -1,0 +1,40 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: hpInit = json.get(arguments, "initHp")]
+
+[h: locOrigHP_Head = hpInit]
+[h: locOrigHP_Arm_L = hpInit-1]
+[h: locOrigHP_Arm_R = hpInit-1]
+[h: locOrigHP_Che = hpInit+2]
+[h: locOrigHP_Abd = hpInit+1]
+[h: locOrigHP_Leg_L = hpInit]
+[h: locOrigHP_Leg_R = hpInit]
+
+[h: newLocHP = getProperty("locHP", tokenId)]
+
+[h: newLocHP = setStrProp(newLocHP,strformat("loc1"),locOrigHP_Head)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc2"),locOrigHP_Arm_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc3"),locOrigHP_Arm_R)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc4"),locOrigHP_Che)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc5"),locOrigHP_Abd)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc6"),locOrigHP_Leg_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc7"),locOrigHP_Leg_R)]
+
+[h: setProperty("locHP", newLocHP, tokenId)]
+
+[h: newLocHP = getProperty("locHPorig", tokenId)]
+
+[h: newLocHP = setStrProp(newLocHP,strformat("loc1"),locOrigHP_Head)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc2"),locOrigHP_Arm_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc3"),locOrigHP_Arm_R)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc4"),locOrigHP_Che)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc5"),locOrigHP_Abd)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc6"),locOrigHP_Leg_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc7"),locOrigHP_Leg_R)]
+
+[h: setProperty("locHPorig", newLocHP, tokenId)]
+[h: setProperty("hpInit", hpInit, tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

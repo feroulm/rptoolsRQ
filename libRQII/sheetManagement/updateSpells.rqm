@@ -1,0 +1,60 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: spellType = json.get(arguments, "spellType")]
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spells = getProperty("spells", tokenId)]
+  };
+  case "divine" :{
+  	[h: spells = getProperty("divineSpells", tokenId)]
+  };
+  case "sorcery" :{
+  	[h: spells = getProperty("sorcerySpells", tokenId)]
+  };
+  case "draconic" :{
+  	[h: spells = getProperty("draconicSpells", tokenId)]
+  };
+  case "draconicPrepared" :{
+  	[h: spells = getProperty("draconicPrepared", tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown spell type !<br>
+  }
+]
+
+[foreach(spell, spells, ""), code: {
+
+  [h:spellValues = json.get(spells,spell)]
+  [h: newMagnitude = json.get(arguments, strformat("%{spell}Magnitude")]
+  [h: spellValues = json.set(spellValues,"magnitude",newMagnitude)]
+  [h: spells = json.set(spells,spell,spellValues)]
+
+}]
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spells = setProperty("spells", spells, tokenId)]
+  };
+  case "divine" :{
+  	[h: spells = setProperty("divineSpells", spells, tokenId)]
+  };
+  case "sorcery" :{
+  	[h: spells = setProperty("sorcerySpells", spells, tokenId)]
+  };
+  case "draconic" :{
+  	[h: spells = setProperty("draconicSpells", spells, tokenId)]
+  };
+  case "draconicPrepared" :{
+  	[h: spells = setProperty("draconicPrepared", spells, tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown spell type !<br>
+  }
+]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpellMgt@Lib:RQII"): macroParam]

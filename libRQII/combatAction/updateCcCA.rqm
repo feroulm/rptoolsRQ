@@ -11,6 +11,7 @@ Calling :
 [h: action = json.get(macro.args, "action")]
 [h: newWeaponNb = json.get(macro.args, "newWeaponNb")]
 [h: newMagicCA = json.get(macro.args, "newMagicCA")]
+[h: srcWindow = json.get(macro.args, "srcWindow")]
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: currActiveCA = json.get(currentCombatStatus,"activeCA")]
@@ -36,9 +37,13 @@ Calling :
     
     [r, if(newWeaponNb>currWeaponNb), code: {
       [r: getName(tokenId)] grab a new weapon<br>
+      <!-- log message -->
+      [h: logMsg = "Grab a new weapon"]
     };
     {
       [r: getName(tokenId)] loose a weapon<br>
+      <!-- log message -->
+      [h: logMsg = "Grab a new weapon"]
     }]
     
     [r, if(currWeaponCA == newWeaponCA), code: {	
@@ -51,7 +56,6 @@ Calling :
     
     <!-- Refresh edit Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", tokenId)]
-    [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
   };
   case "magicca" : {
     <!-- could not be negative... -->
@@ -71,9 +75,20 @@ Calling :
       ccCA switch from [r: currCcCA] to [r: newCcCA]<br>	
       activeCA switch from [r: currActiveCA] to [r: json.get(currentCombatStatus,"activeCA")]<br>
     }]
+
+    <!-- log message -->
+    [h: logMsg = "Change magicCA"]
     
     <!-- Refresh edit Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", tokenId)]
-    [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
   };
 ]
+
+<!-- log the change -->
+[h: logCombatAction(tokenId,"change",logMsg)]
+
+[h, if(srcWindow == "openSheetMgt"), code:{
+  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+};{
+  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+}]

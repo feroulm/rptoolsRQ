@@ -1,5 +1,8 @@
-<!-- Sub section of editHumanSheet -->
+<!-- Sub section of editSheet -->
 [h: tokenId = macro.args]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
 
 [h,macro("getWeaponNb@this"): tokenId]
 [h: wpList = macro.return]
@@ -37,6 +40,25 @@
     [h: class = if(class=="oddRow", "evenRow", "oddRow")]
   }]
 </table>
-<br>
-[h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r: macroLink("Add a new weapon", "openAddMeleeWeapon@Lib:RQII", "all",macroParam)]
+<table style="cellspacing:0px" cellpadding="2">
+  <tr>  
+    <!-- Manage Ca change -->
+    [h: link = macroLinkText("updateCcCA@Lib:RQII", "all")]
+    <form action="[r:link]" method="json">
+      <td style="text-align:left">Active weapon(s) :</td>
+      <td> 
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="srcWindow" value="openSheetMgt">
+        <input type="hidden" name="action" value="weaponca">
+        <input type="text" name="newWeaponNb" value="[r:currWeaponNb]" size="2" align="right">
+      </td>
+      <td>
+        <input type="submit" name="edit_btn" value="change">
+      </td> 
+    </form>
+    <td class="leftBorder">
+      [h: macroParam = json.set("{}", "tokenId", tokenId)]
+      &nbsp;[r: macroLink("Add a new weapon", "openAddMeleeWeapon@Lib:RQII", "all",macroParam)]
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,52 @@
+<!-- Sub section of editSheet -->
+
+[h: tokenId = macro.args]
+
+[h: pLocName= getProperty("locName", tokenId)]
+[h: pLocHP = getProperty("locHP", tokenId)]
+[h: pLocHPorig = getProperty("locHPorig", tokenId)]
+[h: pLocMod = getProperty("locMod", tokenId)]
+[h: pLocNb = getProperty("locNb", tokenId)]
+[h: pHpInit = getProperty("hpInit", tokenId)]
+
+[h: link = macroLinkText("updateHP@Lib:RQII", "all")]
+<!-- compute width -->
+[h: tblWidth = pLocNb * 30 + 100]
+<form action="[r:link]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <table width="[r: tblWidth]px" cellpadding="2" cellspacing="0" border="0">
+    <tr class="headRow">
+      <th width="80px">Location</th>
+	  [for(i,1,pLocNb+1,1,""), code:{
+        <td>[r: getStrProp(pLocName, strformat("loc%{i}"))]</td>
+	  }]
+    </tr>
+	<tr class="oddRow">
+	  <td>locHP (current)</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+        <td>[r: getStrProp(pLocHP, strformat("loc%{i}"))]</td>
+	  }]
+	</tr>
+	<tr class="evenRow">
+	  <td>locHP (orig)</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+        <td><input type="text" name='[r: strformat("loc%{i}hp")]' value='[r: getStrProp(pLocHPorig, strformat("loc%{i}"))]' align="right"></td>
+	  }]
+	</tr>
+	<tr>
+	  [h: colSpan = pLocNb+1]
+	  <td colspan="[r: colSpan]"><input type="submit" name="edit_btn" value="Update"></td>
+	</tr>
+  </table>
+</form>
+[h: link = macroLinkText("resetFromHPinit@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <table valign="middle">
+    <tr>
+	  <td>Reset HP from hpInit (for human only): </td>
+	  <td><input type="text" name="initHp" value="[r: pHpInit]" size="2" align="right"></td>
+	  <td><input type="submit" name="edit_btn" value="reset"></td>
+	</tr>
+  </table>
+</form>

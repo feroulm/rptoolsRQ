@@ -2,8 +2,6 @@
 
 [h,macro("getWeaponNb@this"): tokenId]
 [h: wpList = macro.return]
-[h: linkUpdateCcCA = macroLinkText("updateCcCA@Lib:RQII", "all")]
-[h: linkUpdateCharac = macroLinkText("updateCharac@Lib:RQII", "all")]
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: currentCharac = getProperty("Charac",tokenId)]
@@ -19,56 +17,51 @@
 <table>
  <tr>
    <td style="text-align:left;" valign="top">
-   <b>[r: getName(tokenId)]</b> ([r: macroLink("Refresh", "openHumSheetMgt@Lib:RQII", "all")])<br><br>
-   Armor Penalty : [r: json.get(propArmorPenalty, "current")]<br>
-   Current SR : [r: json.get(propStrikeRank, "current")]<br>
-   Current Damage Mod : [r: json.get(propDamageMod, "current")]<br>
-   Current Dedicated POW : [r: json.get(propMagicPoint, "dedPOW")]<br>
-   Current PM : <b>[r: json.path.read(propMagicPoint,"MP.current")]</b> / [r: json.path.read(propMagicPoint,"MP.base")]<br>
-
-<!-- Manage Ca change -->
-<form action="[r:linkUpdateCcCA]" method="json">
-<table style="cellspacing:0px">
-  <tr>   
-    <td style="text-align:left">Active weapon(s) :</td>
-    <td> 
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="action" value="weaponca">
-      <input type="text" name="newWeaponNb" value="[r:currWeaponNb]" size="2" align="right">
+   <b>[r: getName(tokenId)]</b> ([r: macroLink("Refresh", "openSheetMgt@Lib:RQII", "all")])<br><br>
+   <table>
+     <tr class = "oddRow">
+       <td>Armor Penalty : </td><td>[r: json.get(propArmorPenalty, "current")]</td>
+     </tr>
+     <tr class = "evenRow">
+       <td>Strike Rank (SR) :</td><td>[r: json.get(propStrikeRank, "current")]</td>
+     </tr>
+     <tr class = "oddRow">
+       <td>Damage Modifier : </td><td>[r: json.get(propDamageMod, "current")]</td>
+     </tr>
+     <tr class = "evenRow">
+       <td>Hero Point :</td><td></td>
+     </tr>
+     <tr class = "oddRow">
+       <td>Fatigue :</td><td</td>
+     </tr>
+     <tr class = "evenRow">
+       <td>Movement :</td><td></td>
+     </tr>
+     <tr class = "oddRow">
+       <td>Enc :</td><td</td>
+     </tr>
+     <tr class = "evenRow">
+       <td>Healing Rate :</td><td></td>
+     </tr>
+     <tr class = "oddRow">
+       <td>Improvement Mod :</td><td</td>
+     </tr>
+    </table>
+    <br>
+    [r: macroLink("Gold & Equipement", "openSheetEquipementMgt@Lib:RQII", "all")]<br>
     </td>
-    <td>
-      <input type="submit" name="edit_btn" value="change">
-    </td> 
-  </tr>
-</table>
-</form>
-<form action="[r:linkUpdateCcCA]" method="json">
-<table>
-  <tr>
-    <td style="text-align:left">Magic CA </td>
-    <td> 
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="action" value="magicca">
-      <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
-    </td>
-    <td>
-      <input type="submit" name="edit_btn" value="change">
-    </td>
-  </tr>
-</table>
-</form>
-<!-- End Manage Ca change -->
-    </td>
-    <td>
+    <td valign="top">
+   
 <!-- Manage Characteristics Change -->
 
+[h: linkUpdateCharac = macroLinkText("updateCharac@Lib:RQII", "all")]
 <form action="[r:linkUpdateCharac]" method="json">
-<table id="stats" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td></td>
-    <td class="leftBorder"><b>Base</b></td>
-    <td class="leftBorder"><b>Current</b></td>
-  </r>
+<table cellpadding="2" cellspacing="0" border="0">
+  <tr class="headRow">
+    <th></th>
+    <th class="leftBorder"><b>Base</b></th>
+    <th class="leftBorder"><b>Current</b></th>
+  </tr>
   [h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
   [h: class = "oddRow"]
   [foreach(characName, characNames, ""), code: {
@@ -84,17 +77,33 @@
 	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
   }]
   <tr>
-    <td colspan="3">
+    <td colspan="2">
       <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="srcWindow" value="openHumSheetMgt">
+      <input type="hidden" name="srcWindow" value="openSheetMgt">
       <input type="submit" name="edit_btn" value="change">
     </td>
   </tr>
 </table>
 </form>
+  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+  [r: macroLink("Reset base from current", "resetCharacBase@Lib:RQII", "all",macroParam)]
 <!-- End Manage Charac Change -->
     </td>
     <td valign="top">
+
+    <table>
+      <tr class="headRow">
+       <th>Magic</th>
+       <th></th>
+      </tr>
+      <tr class = "evenRow">
+       <td>Magic Point (MP) :</td><td><b>[r: json.path.read(propMagicPoint,"MP.current")]</b> / [r: json.path.read(propMagicPoint,"MP.base")]</td>
+     </tr>
+     <tr class = "oddRow">
+       <td>Dedicated POW : </td><td>[r: json.get(propMagicPoint, "dedPOW")]</td>
+     </tr>
+   </table>
+<br>   
 <!-- Start Manage Dedicated POW -->
 [h: linkUpdateDedPow = macroLinkText("updateDedPow@Lib:RQII", "all")]
 <form action="[r:linkUpdateDedPow]" method="json">
@@ -114,24 +123,49 @@
   <tr>
     <td colspan="2">
       <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="srcWindow" value="openHumSheetMgt">
+      <input type="hidden" name="srcWindow" value="openSheetMgt">
       <input type="submit" name="edit_btn" value="Update">
     </td>
   </tr>
 </table>
 </form>
 <!-- End Manage Dedicated POW -->
+[h: link = macroLinkText("updateCcCA@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+<table valign="middle">
+  <tr class = "oddRow">
+    <td style="text-align:left">Magic CA </td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="magicca">
+      <input type="hidden" name="srcWindow" value="openSheetMgt">
+      <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
     </td>
-    <td>
-       [r, macro("editHumanSheetMeleeWeapon@Lib:RQII"): tokenId]<br>
-       [r, macro("editHumanSheetRangeWeapon@Lib:RQII"): tokenId]
+    <td><input type="submit" name="edit_btn" value="U."></td>
+  </tr>
+</table>
+</form>
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",".*","typeFilter","common")]
+    [r: macroLink("Manage Spells", "openSheetSpellMgt@Lib:RQII", "all", macroParam)]
+    </td>
+    <td valign="top">
+       [r, macro("editSheetMeleeWeapon@Lib:RQII"): tokenId]<br>
+	</td>
+  </tr>
+  <tr>
+    <td valign="top" colspan="3">
+	  [r, macro("editSheetHP@Lib:RQII"): tokenId]<br>
+	  [r, macro("editSheetAP@Lib:RQII"): tokenId]
+	</td>
+	<td valign="top">
+      [r, macro("editSheetRangeWeapon@Lib:RQII"): tokenId]
     </td>
   </tr>
 </table> <!-- Global window table -->
 
 <!--Manage Advanced Attribute -->
  
-[h: link = macroLinkText("updateHumanSheet@Lib:RQII", "all")]
+[h: link = macroLinkText("updateSkills@Lib:RQII", "all")]
 
 <table>
   <tr>

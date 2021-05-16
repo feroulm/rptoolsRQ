@@ -1,5 +1,23 @@
 ## RQ_Human
 
+### Localisation HP & App
+
+* Structure for human :
+
+```
+locName = loc1=Tête;loc2=Br. G.;loc3=Br. D.;loc4=Poit-;loc5=Abd.;loc6=Jb. G.;loc7=Jb D.
+```
+
+```
+locD20 = loc1=19-20;loc2=16-18;loc3=13-15;loc4=10-12;loc5=7-9;loc6=4-6;loc7=1-3
+```
+```
+locNb = 7
+```
+
+* value are computed based on SIZ+CON & hpInit var
+* to manage monster and human which do not respect this rule we use locMod to increase/decrease a specific loc Value
+
 ### Charac
 
 bas<Charac> : used to keep the native / permanent value (defined during character creation and incresde / decreased during improvment)

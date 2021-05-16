@@ -6,8 +6,10 @@ Calling :
 -->
 
 [h: tokenId = json.get(macro.args, "tokenId")]
+[h: srcWindow = json.get(macro.args, "srcWindow")]
 
 [h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[h: POWded = getProperty("POWded",tokenId)]
 [h: propCharac = getProperty("Charac",tokenId)]
 [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
 [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
@@ -34,6 +36,7 @@ Calling :
 [h: newDEX = json.get(macro.args,"DEX")]
 [h: newCHA = json.get(macro.args,"CHA")]
 
+[h: logMsg = "Update "]
 <!-- Update Chacac -->
 [foreach(characName, characNames, ""), code: {
   <!-- construct JSON varName based on prop Name -->
@@ -42,12 +45,17 @@ Calling :
   [h: currCharacValue = json.get(propCharac, tmpCharacName)]
   [r, if (currCharacValue != newCharacValue), code:{
   	[r: characName] changed from [r: currCharacValue] to [r: newCharacValue]<br>
+  	[h: logMsg = logMsg+characName+" "]
   }]
   [h: newCharac = json.set(newCharac,tmpCharacName,newCharacValue)]
   [h: setProperty(characName,newCharacValue,tokenId)]
 }]
 
 [h: setProperty("Charac",newCharac,tokenId)]
+
+<!-- log the change -->
+
+[h: logCombatAction(tokenId,"change",logMsg)]
 
 <!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->
 [h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
@@ -97,7 +105,7 @@ Calling :
 <!-- base MP = newPOW, current MP = currentMP + (newPOW - prevPOW) -->
 [r, if(newPOW != currPOW), code:{
   [h: newMP = newPOW - json.get(propMagicPoint,"dedPOW")]
-  [h: currMP = json.path.read(newMagicPoint,"MP.current")]
+  [h: currMP = json.path.read(propMagicPoint,"MP.current")]
   [h: newMagicPoint = json.path.set(propMagicPoint,"MP.base",newMP)]
   [h: newCurrMP = currMP + (newPOW - currPOW)]
   [h: newMagicPoint = json.path.set(newMagicPoint,"MP.current",newCurrMP)]
@@ -105,10 +113,40 @@ Calling :
   Current MP change from [r: currMP] to [r: newCurrMP]<br>
 };{}]
 
-<!-- recompute HP (CON+SIZ)/2 (rounded up) -->
+<!-- recompute HP (CON+SIZ)/2 (rounded up) 
+- modifiy only hpInit since origHP are computed dynamically base on hpInit
+- rule : increasing HP during combat could change an existing wound level, it is considered as a magical healing. if it is decreasing it is considered as an injury
+-->
+[h: newHpInit = ceil((newCON + newSIZ)/5)]
+[h: currHpInit = getProperty("hpInit",tokenId)]
+[r, if(newHpInit != currHpInit), code:{
+  Change HP :  [r: newHpInit- currHpInit] in every locations
+  [h: setProperty("hpInit",newHpInit,tokenId)]
+};{}]
 
 <!-- recompute Skills -->
 
+[h: currSkill = getProperty("commonSkills",tokenId)]
+[h: newSkill = computeSkill(currSkill,tokenId)]
+[h: setProperty("commonSkills",newSkill,tokenId)]
+
+[h: currSkill = getProperty("combatSkills",tokenId)]
+[h: newSkill = computeSkill(currSkill,tokenId)]
+[h: setProperty("combatSkills",newSkill,tokenId)]
+
+[h: currSkill = getProperty("magicSkills",tokenId)]
+[h: newSkill = computeSkill(currSkill,tokenId)]
+[h: setProperty("magicSkills",newSkill,tokenId)]
+
+[h: currSkill = getProperty("advSkills",tokenId)]
+[h: newSkill = computeSkill(currSkill,tokenId)]
+[h: setProperty("advSkills",newSkill,tokenId)]
+
 <!-- Refresh edit Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+
+[h, if(srcWindow == "openSheetMgt"), code:{
+  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+};{
+  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+}]

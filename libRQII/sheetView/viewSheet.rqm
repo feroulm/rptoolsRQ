@@ -1,0 +1,61 @@
+[h: tokenId = macro.args]
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+
+<table>
+  <tr>
+    <td>
+      <h2><a href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki", tokenId)]'>[r: getName(tokenId)]</a>
+	  </h2><br>
+      <img src='[r:getTokenPortrait(100,tokenId)]'></img><br>
+      <img src='[r: getTokenImage(100,tokenId)]'></img> 
+      <table>
+      <tr>
+        <td>
+        [h: link = macroLinkText("openSheetMgt@Lib:RQII", "")]
+        <form action="[r:link]" method="json">
+            <input type="hidden" name="tokenId" value=[r: tokenId]>
+            <input type="submit" name="edit_btn" value="Edit Sheet">
+          </form>
+        </td>
+      </tr>
+    </table>         
+    </td>
+    <td>
+      <table id="stats">
+        <tr>
+          <th>Name</th>
+          <th>Score</th>
+        </tr>
+        [h: class = "oddRow"]
+        [foreach(prop, propNames, ""), code: {
+          <tr class="[r:class]">
+            <td>[r: prop]</td>
+            <td>[r: getProperty(prop, tokenId)]</td>
+          </tr>
+          [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+        }]
+      </table>
+    </td>
+    <td>
+      [r, macro("viewMonsterAPHP@this"): tokenId]
+    <table style="margin-top: 5px">
+        <tr>
+          <td style="text-align: left"><b>SR :</b> [r: getProperty("SR", tokenId)] <b>CA :</b> [r: getProperty("CA", tokenId)] <b>MP :</b> [r: getProperty("MP", tokenId)] <b>DMG :</b> [r: getProperty("dmgMod", tokenId)]</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><b>Combat Styles :</b> [r: getProperty("ccStyles", tokenId)]</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><b>Skills :</b> [r: getProperty("ccSkills", tokenId)]</td>
+        </tr>
+      </table>    
+  </td>
+  <td style="text-align: left">
+      <b>Magic :</b>
+      <br><br>
+      <b>Spells :</b> [r: getProperty("spells", tokenId)]
+    </td>
+  </tr>
+</table>
+  <hr>
+  [r, macro("viewWeapon@this"): tokenId]<br>

@@ -1,0 +1,35 @@
+<!-- Sub section of editSheet -->
+[h: tokenId = macro.args]
+
+[h: pLocName= getProperty("locName", tokenId)]
+[h: pLocAP = getProperty("locAP", tokenId)]
+[h: pLocAPorig = getProperty("locAPorig", tokenId)]
+[h: pLocNb = getProperty("locNb", tokenId)]
+
+[h: link = macroLinkText("updateAP@Lib:RQII", "all")]
+<!-- compute width -->
+[h: tblWidth = pLocNb * 30 + 100]
+<form action="[r:link]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <table width="[r: tblWidth]px" cellpadding="2" cellspacing="0" border="0">
+    <tr class="headRow">
+      <th width="80px">Location</th>
+	  [for(i,1,pLocNb+1,1,""), code:{
+        <td>[r: getStrProp(pLocName, strformat("loc%{i}"))]</td>
+	  }]
+    </tr>
+	<tr class="oddRow">
+	  <td>locAP (current)</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+        <td>[r: getStrProp(pLocAP, strformat("loc%{i}"))]</td>
+	  }]
+	</tr>
+	<tr class="evenRow">
+	  <td>locAP (orig)</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+        <td><input type="text" name='[r: strformat("loc%{i}ap")]' value='[r: getStrProp(pLocAPorig, strformat("loc%{i}"))]' align="right"></td>
+	  }]
+	</tr>
+  </table>
+  <input type="submit" name="edit_btn" value="Update">
+</form>
