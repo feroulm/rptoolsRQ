@@ -1,0 +1,65 @@
+[h: param = macro.args]
+[h: spellType = json.get(param,"type")]
+[h: spellId = json.get(param,"spellId")]
+
+[h: displayname = json.get(param,"displayname")]
+[h: grimoire = json.get(param,"grimoire")]
+[h: cult = json.get(param,"cult")]
+[h: magnitude = json.get(param,"magnitude")]
+[h: lnk = json.get(param,"lnk")]
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spellsDb = getLibProperty("spellsDb", "Lib:RQII")]
+  };
+  case "divine" :{
+  	[h: spellsDb = getLibProperty("divineSpellsDb", "Lib:RQII")]
+  };
+  case "sorcery" :{
+  	[h: spellsDb = getLibProperty("sorcerySpellsDb", "Lib:RQII")]
+  };
+  case "draconic" :{
+  	[h: spellsDb = getLibProperty("draconicSpellsDb", "Lib:RQII")]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown spell type !<br>
+  }
+]
+
+[h: spellExist = json.contains(spellsDb,spellId)]
+
+[r, if(! spellExist), code:{
+  [h: newSpellValues = json.set("{}","displayname",displayname)]
+  [h: newSpellValues = json.set(newSpellValues,"type",spellType)]
+  [h: newSpellValues = json.set(newSpellValues,"grimoire",grimoire)]
+  [h: newSpellValues = json.set(newSpellValues,"cult",cult)]
+  [h: newSpellValues = json.set(newSpellValues,"magnitude",magnitude)]
+  [h: newSpellValues = json.set(newSpellValues,"lnk",lnk)]
+  [h: spellsDb = json.set(spellsDb,spellId,newSpellValues)]
+  [r, switch(spellType), code:
+    case "common" :{
+    	[h: setLibProperty("spellsDb", spellsDb, "Lib:RQII")]
+    };
+    case "divine" :{
+    	[h: setLibProperty("divineSpellsDb", spellsDb, "Lib:RQII")]
+    };
+    case "sorcery" :{
+    	[h: setLibProperty("sorcerySpellsDb", spellsDb, "Lib:RQII")]
+    };
+    case "draconic" :{
+    	[h: setLibProperty("draconicSpellsDb", spellsDb, "Lib:RQII")]
+    };
+    default: {
+  	 <!-- do nothing -->
+  	 <br>Unknown spell type !<br>
+    }
+  ]
+  Add spell [r: displayname] (<i>[r: spellId]</i>)
+};{
+  Not created, spell exists already !
+}]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpellMgt@Lib:RQII"): macroParam]

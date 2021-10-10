@@ -28,64 +28,130 @@
   }
 ]
 
-[h: link = macroLinkText("openSheetSpellMgt@Lib:RQII", "all")]
-<form action="[r:link]" method="json">
-  <input type="hidden" name="tokenId" value="[r:tokenId]">
-  <table>
-    <tr>
-       <th>Spell Name</th>
-       <th>Spell Type</th>
-       <th></th>
-    </tr>
-    <tr>
-      <td><input type="text" name="nameFilter" value="[r: nameFilter]"></td>
-      <td>
-        <select type="text" name="typeFilter"> 
-          <option>common</option>
-          <option>divine</option>
-          <option>sorcery</option>
-          <option>draconic</option>
-          <option>spirit</option>
-        </select>
-      </td>
-      <td><input type="submit" name="edit_btn" value="Filter"></td>
-    </tr>
-  </table>
-</form>
-
-[h: link= macroLinkText("addSpell@Lib:RQII", "all")]
-<form action="[r:link]" method="json">
-<input type="hidden" name="tokenId" value="[r:tokenId]">
-<table id="stats" cellpadding="2" cellspacing="0" border="0">
-  [h: class = "oddRow"]
-  [r, foreach(spell, spellsDb, ""), code:{
-	[h: spellValues = json.get(spellsDb,spell)]
-	[h: spellType = json.get(spellValues,"type")]
-	[h: spellName = json.get(spellValues,"displayname")]
-	[r, if(matches(spellName,nameFilter) && matches(spellType,typeFilter)), code:{
-	<tr class="[r:class]">
-      <td class="leftBorder">
-        [r: spellName] (<i>[r: spell]</i>)
-      </td>
-      <td>
-        <input type="checkbox" name="[r:spell]"/>
-      </td>
-      <td>
-        [r: json.get(spellValues,"type")]
-      </td>
-      <td>
-        [r: json.get(spellValues,"grimoire")]
-      </td>
-      <td>
-        [r: json.get(spellValues,"cult")]
-      </td>
-      <td>
-        [r: json.get(spellValues,"magnitude")]
-      </td>   
-    </tr>
-	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
-	};{}]
-  }]
+<table>
+  <tr>
+    <td valign="top">
+      [h: link = macroLinkText("openSheetSpellMgt@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <table>
+          <tr>
+             <th>Spell Name</th>
+             <th>Spell Type</th>
+             <th></th>
+          </tr>
+          <tr>
+            <td><input type="text" name="nameFilter" value="[r: nameFilter]"></td>
+            <td>
+              <select type="text" name="typeFilter"> 
+                <option>common</option>
+                <option>divine</option>
+                <option>sorcery</option>
+                <option>draconic</option>
+                <option>spirit</option>
+              </select>
+            </td>
+            <td><input type="submit" name="edit_btn" value="Filter"></td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      [h: link= macroLinkText("addSpell@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <table id="stats" cellpadding="2" cellspacing="0" border="0">
+        [h: class = "oddRow"]
+        [r, foreach(spell, spellsDb, ""), code:{
+      	[h: spellValues = json.get(spellsDb,spell)]
+      	[h: spellType = json.get(spellValues,"type")]
+      	[h: spellName = json.get(spellValues,"displayname")]
+      	[r, if(matches(spellName,nameFilter) && matches(spellType,typeFilter)), code:{
+      	<tr class="[r:class]">
+            <td class="leftBorder">
+              [r: spellName] (<i>[r: spell]</i>)
+            </td>
+            <td>
+              <input type="checkbox" name="[r:spell]"/>
+            </td>
+            <td>
+              [r: json.get(spellValues,"type")]
+            </td>
+            <td>
+              [r: json.get(spellValues,"grimoire")]
+            </td>
+            <td>
+              [r: json.get(spellValues,"cult")]
+            </td>
+            <td>
+              [r: json.get(spellValues,"magnitude")]
+            </td>   
+          </tr>
+      	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+      	};{}]
+        }]
+      </table>
+      <input type="submit" name="edit_btn" value="Add Spell">
+      </form>
+    </td>
+    <td valign="top">
+      [h: link = macroLinkText("createSpell@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <table id="stats" cellpadding="2" cellspacing="0" border="0">
+        <tr class = "oddRow">
+          <td class="leftBorder">spellId : </td>
+          <td>
+            <input type="text" name="spellId" size="20" align="right">
+          </td>
+        </tr>
+        <tr class = "evenRow">
+          <td class="leftBorder">Display Name : </td>
+          <td>
+            <input type="text" name="displayname" size="20" align="right">
+          </td>
+        </tr>
+        <tr class = "oddRow">
+          <td class="leftBorder">Type : </td>
+          <td>
+            <select type="text" name="type"> 
+                <option>common</option>
+                <option>divine</option>
+                <option>sorcery</option>
+                <option>draconic</option>
+                <option>spirit</option>
+            </select>
+          </td>
+        </tr>
+        <tr class = "evenRow">
+          <td class="leftBorder">Grimoire : </td>
+          <td>
+            <input type="text" name="grimoire" size="20" align="right">
+          </td>
+        </tr>
+		<tr class = "evenRow">
+          <td class="leftBorder">Cult : </td>
+          <td>
+            <input type="text" name="cult" size="20" align="right">
+          </td>
+        </tr>
+		<tr class = "evenRow">
+          <td class="leftBorder">Magnitude : </td>
+          <td>
+            <input type="text" name="cult" size="20" align="right">
+          </td>
+        </tr>
+		<tr class = "evenRow">
+          <td class="leftBorder">Link : </td>
+          <td>
+            <input type="text" name="lnk" size="30" align="right">
+          </td>
+        </tr>
+      </table>
+      <input type="submit" name="edit_btn" value="Create Spell">
+      </form>
+    </td>
+  </tr>
 </table>
-<input type="submit" name="edit_btn" value="Add Spell">
-</form>
