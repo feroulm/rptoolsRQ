@@ -1,0 +1,41 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: spellType = json.get(arguments, "spellType")]
+[h: spellId = json.get(arguments, "spellId")]
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spells = getProperty("spells", tokenId)]
+	[h: spells = json.remove(spells, spellId)]
+    [h: setProperty("spells", spells, tokenId)]
+  };
+  case "divine" :{
+  	[h: spells = getProperty("divineSpells", tokenId)]
+	[h: spells = json.remove(spells, spellId)]
+    [h: setProperty("divineSpells", spells, tokenId)]
+  };
+  case "sorcery" :{
+  	[h: spells = getProperty("sorcerySpells", tokenId)]
+	[h: spells = json.remove(spells, spellId)]
+    [h: setProperty("sorcerySpells", spells, tokenId)]
+  };
+  case "draconic" :{
+  	[h: spells = getProperty("draconicSpells", tokenId)]
+	[h: spells = json.remove(spells, spellId)]
+    [h: setProperty("draconicSpells", spells, tokenId)]
+  };
+  case "draconicPrepared" :{
+  	[h: spells = getProperty("draconicPrepared", tokenId)]
+	[h: spells = json.remove(spells, spellId)]
+	[h: reorderedSpells = reindexJson("preSpell",spells)]
+	[h: setProperty("draconicPrepared", reorderedSpells, tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown spell type !<br>
+  }
+]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpellMgt@Lib:RQII"): macroParam]

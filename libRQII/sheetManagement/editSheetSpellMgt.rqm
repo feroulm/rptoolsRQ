@@ -32,6 +32,8 @@ Spell Management<br>
               </th>
               <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
 			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spellType","common","spellId",spell)]
+              <td>[r: macroLink("Del", "delSpell@Lib:RQII", "all",macroParam)]</td>
             </tr>
             [h: class = if(class=="oddRow", "evenRow", "oddRow")]
           }]
@@ -64,38 +66,8 @@ Spell Management<br>
               </th>
               <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
 			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
-            </tr>
-            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
-          }]
-        </table>
-      <input type="submit" name="edit_btn" value="Update">
-      </form>
-    </td>
-	<td>
-      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
-      <form action="[r:link]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="spellType" value="draconic">
-        <table>
-          <tr class="headRow">
-            <th>Draconic Spell</th>
-            <th>Magnitude</th>
-			<th>Cult</th>
-          </tr>
-          [h: class = "oddRow"]
-          [h: spells = getProperty("draconicSpells", tokenId)]
-        
-          [foreach(spell, spells, ""), code: {
-          	[h: spellValues = json.get(spells,spell)]
-			[h: spellName = json.get(spellValues,"displayname")]
-			[h: spellMagnitude = json.get(spellValues,"magnitude")]
-			[h: spellCult = json.get(spellValues,"cult")]
-            <tr class="[r:class]">
-              <th>
-                [r: spellName]
-              </th>
-              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
-			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spellType","divine","spellId",spell)]
+              <td>[r: macroLink("Del", "delSpell@Lib:RQII", "all",macroParam)]</td>
             </tr>
             [h: class = if(class=="oddRow", "evenRow", "oddRow")]
           }]
@@ -131,6 +103,77 @@ Spell Management<br>
               <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
 			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
 			  <td><input type="text" name="[r: strformat('%{spell}Grimoire')]" value="[r: spellGrimoire]" size="10" align="right"></td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spellType","sorcery","spellId",spell)]
+              <td>[r: macroLink("Del", "delSpell@Lib:RQII", "all",macroParam)]</td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+  </tr>
+  <tr>  
+	<td>
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="draconic">
+        <table>
+          <tr class="headRow">
+            <th>Draconic Spell</th>
+            <th>Magnitude</th>
+			<th>Cult</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("draconicSpells", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+			[h: spellCult = json.get(spellValues,"cult")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spellName",spellName,"spellMagnitude",spellMagnitude)]
+              <td>[r: macroLink("Prep", "addPreparedSpell@Lib:RQII", "all",macroParam)]</td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spellType","draconic","spellId",spell)]
+              <td>[r: macroLink("Del", "delSpell@Lib:RQII", "all",macroParam)]</td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+	<td>
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="draconicPrepared">
+        <table>
+          <tr class="headRow">
+            <th>Draconic Prepared</th>
+            <th>Magnitude</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("draconicPrepared", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spellType","draconicPrepared","spellId",spell)]
+              <td>[r: macroLink("Del", "delSpell@Lib:RQII", "all",macroParam)]</td>
             </tr>
             [h: class = if(class=="oddRow", "evenRow", "oddRow")]
           }]

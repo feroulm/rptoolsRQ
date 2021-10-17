@@ -1,0 +1,17 @@
+[h: keyPrefix = arg(0)]
+[h: currJson = arg(1)]
+
+[h: len = json.length(currJson)]
+[h: nextId = len + 1]
+
+
+[h: newJson = "{}"]
+[h: nextId = 1]
+[foreach(item, currJson, ""), code: {
+  [h: keyId = strformat('%{keyPrefix}%{nextId}')]
+  [h: itemValues = json.get(currJson,item)]
+  [h: newJson = json.set(newJson,keyId,itemValues)]
+  [h: nextId = nextId + 1]
+}]
+
+[r: newJson]

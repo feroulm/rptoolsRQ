@@ -41,18 +41,23 @@ Logic - Mermaid diagram
 ```
 graph TD
     A(openSheetSpellMgt) -->|tokenId, nameFilter,typeFilter| B[editSheetSpellMgt]
-    B --> C1[/Common Spell Frm/] 
-    B --> C2[/Divine Spell Frm/] 
-    B --> |tokenId, nameFilter,typeFilter| C3(editAddSpells)
-    C1 --> |tokenId, spellType| D(updateSpells)
-    C2 --> |tokenId, spellType| D(updateSpells)
-    C3 --> E1[/Filter/]
-    C3 --> E2[/Add Spell Frm/]
-    C3 --> E3[/Create Spell Frm/]
+	B --> |tokenId, nameFilter,typeFilter| C1(editAddSpells)
+    B --> C2[/Each Spell Frm/] 
+	B --> C3[/Each Spell Del Lnk/] 
+	B --> C4[/Drac. pre. lnk/]
+    C2 --> |tokenId, spellType| D2(updateSpells) 
+    C3 --> |tokenId, spellType, spellId| D3(delSpell)
+	D3 --> |keyPrefix,Json| E4[[reindexJson]]
+	C4 -->|tokenId, spellName, spellMagnitude|D4(addPreparedSpell)
+    C1 --> E1[/Filter/]
+    C1 --> E2[/Add Spell Frm/]
+    C1 --> E3[/Create Spell Frm/]
+	D2 --> |tokenId| Z
+	D3 --> |tokenId| Z
+	D4 --> |tokenId| Z
+	E1 --> |tokenId| Z
     E2 --> |tokenId + All spell Fields| F1(addSpell)
     E3 --> |tokenId + All spell Fields| F2(createSpell)
-    D --> |tokenId| Z
-    E1 --> |tokenId| Z
     F1 --> |tokenId| Z
     F2 --> |tokenId| Z
     Z(openSheetSpellMgt -callback)

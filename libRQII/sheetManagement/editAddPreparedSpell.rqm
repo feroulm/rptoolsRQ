@@ -1,0 +1,31 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: spellName = json.get(arguments, "spellName")]
+[h: spellMagnitude = json.get(arguments, "spellMagnitude")]
+
+<!-- define nextKeyId -->
+[h: spells = getProperty("draconicPrepared", tokenId)]
+
+[h: len = json.length(spells)]
+[h: nextId = len + 1]
+[r: prepSpellKey = strformat('prepSpell%{nextId}')]
+
+
+[h: link = macroLinkText("addPreparedSpells@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <input type="hidden" name="prepSpellKey" value="[r:prepSpellKey]">
+  <table>
+    <tr class="headRow">
+      <th>Prepared Draconic Spell</th>
+      <th>Magnitude</th>
+    </tr>
+    <tr>
+      <th>
+        [r: spellName]
+      </th>
+        <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+  </table>
+<input type="submit" name="edit_btn" value="Update">
+</form>
