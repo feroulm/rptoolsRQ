@@ -1,0 +1,145 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+Spell Management<br>
+
+<table>
+  <tr>
+    <td>
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="common">
+        <table>
+          <tr class="headRow">
+            <th>Common Spell</th>
+            <th>Magnitude</th>
+			<th>Cult</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("spells", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+			[h: spellCult = json.get(spellValues,"cult")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+    <td>
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="divine">
+        <table>
+          <tr class="headRow">
+            <th>Divine Spell</th>
+            <th>Magnitude</th>
+			<th>Cult</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("divineSpells", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+			[h: spellCult = json.get(spellValues,"cult")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+	<td>
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="draconic">
+        <table>
+          <tr class="headRow">
+            <th>Draconic Spell</th>
+            <th>Magnitude</th>
+			<th>Cult</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("draconicSpells", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+			[h: spellCult = json.get(spellValues,"cult")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+	<td>
+      [h: link = macroLinkText("updateSpells@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="spellType" value="sorcery">
+        <table>
+          <tr class="headRow">
+            <th>Sorcery Spell</th>
+            <th>Magnitude</th>
+			<th>Cult</th>
+			<th>Grimoire</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spells = getProperty("sorcerySpells", tokenId)]
+        
+          [foreach(spell, spells, ""), code: {
+          	[h: spellValues = json.get(spells,spell)]
+			[h: spellName = json.get(spellValues,"displayname")]
+			[h: spellMagnitude = json.get(spellValues,"magnitude")]
+			[h: spellCult = json.get(spellValues,"cult")]
+			[h: spellGrimoire = json.get(spellValues,"grimoire")]
+            <tr class="[r:class]">
+              <th>
+                [r: spellName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spell}Magnitude')]" value="[r: spellMagnitude]" size="4" align="right"></td>
+			  <td><input type="text" name="[r: strformat('%{spell}Cult')]" value="[r: spellCult]" size="10" align="right"></td>
+			  <td><input type="text" name="[r: strformat('%{spell}Grimoire')]" value="[r: spellGrimoire]" size="10" align="right"></td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+  </tr>
+</table>
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",nameFilter,"typeFilter",typeFilter)]
+[r, macro("editAddSpells@Lib:RQII"): macroParam]

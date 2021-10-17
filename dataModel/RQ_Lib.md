@@ -22,6 +22,9 @@ damageMod = ["-1d8","-1d6","-1d4","-1d2","0","+1d2","+1d4","+1d6","+1d8","+1d10"
 
 ### Spell DB
 
+- Simplification : All spell use the same data model. Not needed attribute are left empty.
+- When added to a token, they keep the same structure. On a token. magnitude can be different from default value
+
 ```
 {
     "heal": {
@@ -74,3 +77,4 @@ damageMod = ["-1d8","-1d6","-1d4","-1d2","0","+1d2","+1d4","+1d6","+1d8","+1d10"
 ```  
 commonSpellDb =
 ```
+

@@ -27,8 +27,12 @@
 [foreach(spell, spells, ""), code: {
 
   [h:spellValues = json.get(spells,spell)]
-  [h: newMagnitude = json.get(arguments, strformat("%{spell}Magnitude")]
+  [h: newMagnitude = json.get(arguments, strformat("%{spell}Magnitude"))]
+  [h: newCult = json.get(arguments, strformat("%{spell}Cult"))]
+  [h: newGrimoire = json.get(arguments, strformat("%{spell}Grimoire"))]
   [h: spellValues = json.set(spellValues,"magnitude",newMagnitude)]
+  [h: spellValues = json.set(spellValues,"cult",newCult)]
+  [h, if(json.isEmpty(newGrimoire) == 0) : spellValues = json.set(spellValues,"grimoire",newGrimoire)]
   [h: spells = json.set(spells,spell,spellValues)]
 
 }]

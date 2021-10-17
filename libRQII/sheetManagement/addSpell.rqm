@@ -1,0 +1,74 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: spellType = json.get(arguments, "spellType")]
+
+[r, switch(spellType), code:
+  case "common" :{
+  	[h: spellsToken = getProperty("spells", tokenId)]
+    [h: spellDb = getLibProperty("spellsDb", "Lib:RQII")]
+  };
+  case "divine" :{
+  	[h: spellsToken = getProperty("divineSpells", tokenId)]
+    [h: spellDb = getLibProperty("divineSpellsDb", "Lib:RQII")]
+  };
+  case "sorcery" :{
+  	[h: spellsToken = getProperty("sorcerySpells", tokenId)]
+    [h: spellDb = getLibProperty("sorcerySpellsDb", "Lib:RQII")]
+  };
+  case "draconic" :{
+  	[h: spellsToken = getProperty("draconicSpells", tokenId)]
+    [h: spellDb = getLibProperty("draconicSpellsDb", "Lib:RQII")]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
+[r, foreach(param,arguments,""),code :{
+  [r: spellExist = json.contains(spellsToken,param)]
+  <!-- add only new skill -->
+  [r, if((param != "tokenId")&&(param != "edit_btn")&&(param != "spellType")&&(! spellExist)), code :{
+  	<!-- get spell model from db ref -->
+  	[h: spellRef = json.get(spellDb,param)]
+  	[r: displayname = json.get(spellRef,"displayname")]
+  	[h: grimoire = json.get(spellRef,"grimoire")]
+  	[h: cult = json.get(spellRef,"cult")]
+  	[h: magnitude = json.get(spellRef,"magnitude")]
+  	[h: lnk = json.get(spellRef,"lnk")]
+
+  	[h: newSpellValues = json.set("{}","displayname",displayname)]
+    [h: newSpellValues = json.set(newSpellValues,"type",spellType)]
+    [h: newSpellValues = json.set(newSpellValues,"grimoire",grimoire)]
+    [h: newSpellValues = json.set(newSpellValues,"cult",cult)]
+    [h: newSpellValues = json.set(newSpellValues,"magnitude",magnitude)]
+    [h: newSpellValues = json.set(newSpellValues,"lnk",lnk)]
+
+  	[r: spellsToken = json.set(spellsToken,param,newSpellValues)]
+  }]
+
+}]
+
+[r, switch(spellType), code:
+    case "common" :{
+  	   [r: setProperty("spells",spellsToken, tokenId)]
+    };
+    case "divine" :{
+      [h: setProperty("divineSpells",spellsToken, tokenId)]
+    };
+    case "sorcery" :{
+      [h: setProperty("sorcerySpells",spellsToken, tokenId)]
+    };
+    case "draconic" :{
+      [h: setProperty("draconicSpells",spellsToken, tokenId)]
+    };
+    default: {
+ 	<!-- do nothing -->
+ 	  <br>Unknown skill type !<br>
+    }
+]	
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpellMgt@Lib:RQII"): macroParam]
