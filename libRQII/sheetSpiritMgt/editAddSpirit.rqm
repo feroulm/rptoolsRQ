@@ -1,0 +1,42 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+
+<hr>
+<table>
+  <tr>
+    <td valign="top">
+      [h: link= macroLinkText("addSpirit@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+	  
+      <table id="stats" cellpadding="2" cellspacing="0" border="0">
+        [h: class = "oddRow"]
+
+		[h: cond = '{ mapName:"_Spirit_Lib" }']
+		[h: spiritsDb = getTokens("json", cond)]
+		
+        [r, foreach(spiritTokenId, spiritsDb, ""), code:{
+
+      	<tr class="[r:class]">
+            <td class="leftBorder">
+              <input type="checkbox" name="[r:spiritTokenId]"/>
+            </td>
+			<td>
+              [r: getName(spiritTokenId,"_Spirit_Lib")]
+            </td>   
+			<td>
+              <img src='[r: getTokenPortrait(50,spiritTokenId,"_Spirit_Lib")]'></img>
+            </td>
+            <td>
+              <img src='[r: getTokenImage(50,spiritTokenId,"_Spirit_Lib")]'></img>
+            </td>
+          </tr>
+      	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+
+        }]
+      </table>
+      <input type="submit" name="edit_btn" value="Add Spirit">
+      </form>
+    </td>
+  </tr>
+</table>

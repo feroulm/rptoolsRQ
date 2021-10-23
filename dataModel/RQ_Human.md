@@ -338,4 +338,49 @@ Example  :
   * it is used in each weaponAttribute property fields : ```Weapon1Name = "Sabre"```
   * It is never decreased (otherwise each weapon must be renumbered when one is deleted !)
   
+## Magic
 
+### Draconic prepared spell
+
+{
+    "preSpell1": {
+        "displayname": "Command Reptile",
+        "magnitude": 2
+    },
+    "preSpell2": {
+        "displayname": "Combat Meditation",
+        "magnitude": 4
+    },
+    "preSpell3": {
+        "displayname": "Command Reptile",
+        "magnitude": 3
+    }
+}
+
+### Spirit spell
+
+To-do : we may not need spiritTokenID... 
+- It may change if the token is recreated in _Spirit_Lib, in that case it may create an issue.
+For the moment, once a token is created , never erase it.
+
+```
+spiritSpells = {
+    "spirit1": {
+        "spiritTokenId": "",
+        "spiritBaseName": "Soul Eater",
+		"spiritCustomName" : "My Soul Eater",
+		"spiritLibMapName" : "_Spirit_Lib"
+    },
+	"spirit2": {
+        "spiritTokenId": "",
+        "spiritBaseName": "Wolf Spirit",
+		"spiritCustomName" : "My Wolf Spirit",
+		"spiritLibMapName" : "_Spirit_Lib"
+    }
+}
+```
+
+example to be copied on atoken
+```
+spiritSpells = {"spirit1": {"spiritTokenId": "","spiritBaseName": "Soul Eater","spiritCustomName": "My Soul Eater","spiritLibMapName": "_Spirit_Lib"},"spirit2": {"spiritTokenId": "","spiritBaseName": "Wolf Spirit","spiritCustomName": "My Wolf Spirit","spiritLibMapName": "_Spirit_Lib"}}
+```

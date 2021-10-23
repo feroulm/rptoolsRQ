@@ -1,0 +1,14 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: spiritId = json.get(arguments, "spiritId")]
+
+
+[h: spirits = getProperty("spiritSpells", tokenId)]
+[h: spirits = json.remove(spirits, spiritId)]
+[h: reorderedSpirits = reindexJson("spirit",spirits)]
+[h: setProperty("spiritSpells", reorderedSpirits, tokenId)]
+
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpiritMgt@Lib:RQII"): macroParam]

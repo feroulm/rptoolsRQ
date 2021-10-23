@@ -1,0 +1,20 @@
+[h: link = macroLinkText("openSheetSpiritMgt@Lib:RQII", "")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[h, if(listCount(tokenId) != 1): abort(0)]
+[h: tokenType = getPropertyType(tokenId)]
+[h, if(tokenType != "RQ_Human"): abort(0)]
+
+[dialog("Spirit Edit Sheet"): {
+  <html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <title>Sheet Spirit Spell Edition</title>
+    </head>
+    <body>
+      [h: macroParam = json.set("{}", "tokenId", tokenId)]
+      [r, macro("editSheetSpiritMgt@Lib:RQII"): macroParam]
+    </body>
+</html>
+}]

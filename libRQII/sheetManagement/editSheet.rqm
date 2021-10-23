@@ -147,6 +147,9 @@
 </form>
     [h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",".*","typeFilter","common")]
     [r: macroLink("Manage Spells", "openSheetSpellMgt@Lib:RQII", "all", macroParam)]
+	 <br>
+	[h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r: macroLink("Manage Spirits", "openSheetSpiritMgt@Lib:RQII", "all", macroParam)]
     </td>
     <td valign="top">
        [r, macro("editSheetMeleeWeapon@Lib:RQII"): tokenId]<br>

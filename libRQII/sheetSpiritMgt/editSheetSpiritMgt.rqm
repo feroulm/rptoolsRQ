@@ -1,0 +1,42 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+
+Spirit Management<br>
+
+<table>
+  <tr>
+    <td>
+      [h: link = macroLinkText("updateSpirit@Lib:RQII", "all")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <table>
+          <tr class="headRow">
+            <th>Spirit Base Name</th>
+            <th>Spirit Custom Name</th>
+          </tr>
+          [h: class = "oddRow"]
+          [h: spirits = getProperty("spiritSpells", tokenId)]
+        
+          [foreach(spirit, spirits, ""), code: {
+          	[h: spiritValues = json.get(spirits,spirit)]
+			[h: spiritBaseName = json.get(spiritValues,"spiritBaseName")]
+			[h: spiritCustomName = json.get(spiritValues,"spiritCustomName")]
+            <tr class="[r:class]">
+              <th>
+                [r: spiritBaseName]
+              </th>
+              <td><input type="text" name="[r: strformat('%{spirit}CustomName')]" value="[r: spiritCustomName]" size="10" align="right"></td>
+			  [h: macroParam = json.set("{}", "tokenId", tokenId,"spiritId",spirit)]
+              <td>[r: macroLink("Del", "delSpirit@Lib:RQII", "all",macroParam)]</td>
+            </tr>
+            [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+          }]
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+  </tr>
+</table>
+
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("editAddSpirit@Lib:RQII"): macroParam]

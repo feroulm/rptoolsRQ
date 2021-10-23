@@ -1,0 +1,20 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+
+
+[h: spirits = getProperty("spiritSpells", tokenId)]
+
+[foreach(spirit, spirits, ""), code: {
+
+  [h: spiritValues = json.get(spirits,spirit)]
+  [h: newCustomName = json.get(arguments, strformat("%{spirit}CustomName"))]
+  [h: spiritValues = json.set(spiritValues,"spiritCustomName",newCustomName)]
+  [h: spirits = json.set(spirits,spirit,spiritValues)]
+
+}]
+
+[h: spells = setProperty("spiritSpells", spirits, tokenId)]
+  
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpiritMgt@Lib:RQII"): macroParam]

@@ -1,0 +1,39 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+
+<!-- define nextKeyId -->
+[h: spiritSpells = getProperty("spiritSpells", tokenId)]
+
+[h: len = json.length(spiritSpells)]
+[h: nextId = len + 1]
+[h: spiritKey = strformat('spirit%{nextId}')]
+
+[r, foreach(param,arguments,""),code :{
+
+  <!-- use only tokenid param -->
+  [r, if((param != "tokenId")&&(param != "edit_btn")), code :{
+  	<!-- get spell model from db ref -->
+  	[h: spiritBaseName = getName(param,"_Spirit_Lib")]
+  	[h: spiritCustomName = strformat('My %{spiritBaseName} %{nextId}')]
+
+
+  	[h: newSpiritValues = json.set("{}","spiritTokenId",param)]
+    [h: newSpiritValues = json.set(newSpiritValues,"spiritBaseName",spiritBaseName)]
+    [h: newSpiritValues = json.set(newSpiritValues,"spiritCustomName",spiritCustomName)]
+    [h: newSpiritValues = json.set(newSpiritValues,"spiritLibMapName","_Spirit_Lib")]
+
+  	[h: spiritSpells = json.set(spiritSpells,spiritKey,newSpiritValues)]
+	
+	[h: nextId = nextId + 1]
+	[h: spiritKey = strformat('spirit%{nextId}')]
+  }]
+
+}]
+
+[h: setProperty("spiritSpells",spiritSpells, tokenId)]
+	
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetSpiritMgt@Lib:RQII"): macroParam]
