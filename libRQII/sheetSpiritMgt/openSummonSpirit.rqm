@@ -1,0 +1,31 @@
+[h: link = macroLinkText("openSummonSpirit@Lib:RQII", "none")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[h, if(listCount(tokenId) != 1): abort(0)]
+[h: tokenType = getPropertyType(tokenId)]
+[h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
+[h: spiritCustomName = json.get(arguments,"spiritCustomName")]
+[h: spiritBaseName = json.get(arguments,"spiritBaseName")]
+
+[dialog("Summon [r: spiritCustomName]"): {
+  <html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <title>Summon [r: spiritCustomName]</title>
+    </head>
+    <body>
+	  <!-- get spirit tokenId using its baseName -->
+	  [h: spiritTokenId = findToken(spiritBaseName,"_Spirit_Lib")]
+	  <!-- bug - we cant define spiritCustomName in summonCond cf #25 -->
+	  <!-- get summoner coordinate -->
+	  [h: X = getTokenX(0,tokenId)]
+	  [h: Y = getTokenY(0,tokenId)]
+	  [h: summonCond = json.set("{}", "useDistance", 0)]
+      [h: summonCond = json.set(summonCond, "x", X+1)]
+      [h: summonCond = json.set(summonCond, "y", Y)]
+	  [h: macroParam = json.set("{}", "tokenId", spiritTokenId,"tokenMap","_Spirit_Lib","summonCond",summonCond)]
+      [r, macro("viewSummonSpirit@Lib:RQII"): macroParam]
+    </body>
+</html>
+}]

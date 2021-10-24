@@ -35,27 +35,30 @@ Display - On the Edit Sheet
 
 Display - on the Viewing Sheet
    - the player click on the spirit name, it open another window with the spirit sheet
-   - The spirit sheet display a summon button & a field to re-name the invocated spirit
+   - The spirit sheet display a summon button, the spirit is summoned using its baseName (cf #25)
    - This button will copy an instance of the spirit from the _Spirit_Lib map to the current sheet, next to the token.
+     - It serch the map using the baseName so they must be unique on this Map
 
 ```
-Logic - Mermaid Diagram
 graph TD
     A(openSheetSpiritMgt) -->|tokenId| B[editSheetSpiritMgt]
 	B --> |tokenId| C1(editAddSpirit)
     B --> C2[/Spirit lst Frm/] 
-	B --> C3[/Each Spirit Del Lnk/] 
 	B --> C4[/Spirit View lnk/]
+    B --> C3[/Each Spirit Del Lnk/] 
     C2 --> |tokenId| D2(updateSpirit) 
     C3 --> |tokenId, spiritId| D3(delSpirit)
-	D3 --> |keyPrefix,Json| E4[[reindexJson]]
-	C4 -->|spiritTokenId|D4(openSheetSpirit)
+	D3 --> |keyPrefix,Json| E3[[reindexJson]]
+	C4 -->|spiritTokenId|D4(openSummonSpirit)
     C1 --> E2[/Add Spirit Frm/]
+    D4 --> |tokenId| E4(viewSummonSpirit)
     D3 --> |tokenId| Z
 	D2 --> |tokenId| Z
     E2 --> |tokenId + All spell Fields| F1(addSpirit)
     F1 --> |tokenId| Z
+    E4 --> |tokenId| F4(summonSpirit)
+    F4 --> |tokenId| Z
     Z(openSheetSpiritMgt -callback)
 ```
 
-![spirit Mgt flow](../../assets/doc/spellManagementFlow.png?raw=true)
+![spirit Mgt flow](../../assets/doc/spiritMgtFlow.png?raw=true)

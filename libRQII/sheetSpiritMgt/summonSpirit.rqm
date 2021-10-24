@@ -1,0 +1,5 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: summonCond = json.get(arguments, "summonCond")]
+
+[h: newId = copyToken(tokenId, 1, "_Spirit_Lib", summonCond)]
