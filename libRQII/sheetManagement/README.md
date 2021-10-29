@@ -63,5 +63,5 @@ graph TD
 
 ![Fatigue Mgt flow](../../assets/doc/fatigueMgtFlow.png?raw=true)
 
-principle :
-- form list box to select the fatigue level is filled using RQ:Lib fatigueLevel reference
+Principle :
+- From the list box , select the fatigue level. The list box is filled using RQ:Lib/fatigueLevel property
