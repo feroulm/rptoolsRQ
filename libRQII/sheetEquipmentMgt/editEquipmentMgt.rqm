@@ -1,0 +1,77 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+
+Equipment Management<br>
+
+<table>
+  <tr>
+    <td style="text-align:left;" valign="top">
+      [h: link = macroLinkText("updateWealth@Lib:RQII", "all")]
+	  [h: wealth = getProperty("wealth", tokenId)]
+	  [h: wealthHold = json.get(wealth,"hold")]
+	  [h: holdGP = json.get(wealthHold,"gp")]
+	  [h: holdSP = json.get(wealthHold,"sp")]
+	  [h: holdCP = json.get(wealthHold,"cp")]
+	  [h: holdOthers = json.get(wealthHold,"others")]
+	  [h: wealthHidden = json.get(wealth,"hidden")]
+	  [h: hiddenGP = json.get(wealthHidden,"gp")]
+	  [h: hiddenSP = json.get(wealthHidden,"sp")]
+	  [h: hiddenCP = json.get(wealthHidden,"cp")]
+	  [h: hiddenOthers = json.get(wealthHidden,"others")]
+      <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <table>
+          <tr class="headRow">
+            <th></th>
+            <th>GP</th>
+			<th>SP</th>
+			<th>CP</th>
+			<th>Others</th>
+          </tr>
+          <tr class="oddRow">
+            <th>Hold</th>
+            <td><input type="text" name="holdGP" value="[r: holdGP]" size="4" align="right"></td>
+			<td><input type="text" name="holdSP" value="[r: holdSP]" size="4" align="right"></td>
+			<td><input type="text" name="holdCP" value="[r: holdCP]" size="4" align="right"></td>
+			<td><input type="text" name="holdOthers" value="[r: holdOthers]" size="20" align="right"></td>
+          </tr>
+		  <tr class="evenRow">
+            <th>Hidden</th>
+            <td><input type="text" name="hiddenGP" value="[r: hiddenGP]" size="4" align="right"></td>
+			<td><input type="text" name="hiddenSP" value="[r: hiddenSP]" size="4" align="right"></td>
+			<td><input type="text" name="hiddenCP" value="[r: hiddenCP]" size="4" align="right"></td>
+			<td><input type="text" name="hiddenOthers" value="[r: hiddenOthers]" size="20" align="right"></td>
+          </tr>
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+	<td style="text-align:left;" valign="top">
+	  [h: link = macroLinkText("updateEquipment@Lib:RQII", "all")]
+	  [h: equipmentDesc = getProperty("equipmentDesc", tokenId)]
+	  [h: holdEquipment = json.get(equipmentDesc,"hold")]
+	  [h: hiddenEquipment = json.get(equipmentDesc,"hidden")]
+	  <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <table>
+		  <tr class="headRow">
+            <th colspan="2">Equipment</th>
+	      </tr>
+          <tr class="oddRow">
+            <th>Hold</th>
+            <td>
+				<textarea name="holdEquipment" cols="30" rows="4" align="left">[r: holdEquipment]</textarea>
+			</td>
+          </tr>
+		  <tr class="evenRow">
+            <th>Hidden</th>
+            <td>
+				<textarea name="hiddenEquipment" cols="30" rows="4" align="left">[r: hiddenEquipment]</textarea>
+			</td>
+          </tr>
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+	</td>
+  </tr>
+</table>

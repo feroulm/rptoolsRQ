@@ -13,6 +13,8 @@
 [h: propDamageMod = getProperty("DamageMod",tokenId)]
 [h: propMagicPoint = getProperty("MagicPoint",tokenId)]
 [h: propDedicatedPow = getProperty("DedicatedPow",tokenId)]
+[h: propFatigue = getProperty("fatigue",tokenId)]
+[h: fatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
 
 <table>
  <tr>
@@ -48,7 +50,7 @@
      </tr>
     </table>
     <br>
-    [r: macroLink("Gold & Equipement", "openSheetEquipementMgt@Lib:RQII", "all")]<br>
+    [r: macroLink("Gold & Equipement", "openEquipmentMgt@Lib:RQII", "all")]<br>
     </td>
     <td valign="top">
    
@@ -88,6 +90,39 @@
   [h: macroParam = json.set("{}", "tokenId", tokenId)]
   [r: macroLink("Reset base from current", "resetCharacBase@Lib:RQII", "all",macroParam)]
 <!-- End Manage Charac Change -->
+
+<!-- Manage Fatigue Change -->
+
+[h: linkUpdateFatigue = macroLinkText("updateFatigue@Lib:RQII", "all")]
+<form action="[r:linkUpdateFatigue]" method="json">
+<table cellpadding="2" cellspacing="0" border="0">
+  <tr class="headRow">
+    <th>Fatigue level</th>	
+  </tr>
+  <tr>
+    [h: currentLevel = json.get(propFatigue,"level")]
+    <td><i><b>[r:currentLevel]</b></i></td>
+  </tr>
+  <tr>
+    <td>	  
+	  <select name="newLevel">
+	  [r, foreach(levelName, fatigueLevels, ""), code:{
+	    <option>[r:levelName]</option>
+	  }]
+	  </select>
+	</td>
+  </tr>
+  <tr>
+    <td>
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="srcWindow" value="openSheetMgt">
+      <input type="submit" name="edit_btn" value="change">
+    </td>
+  </tr>
+</table>
+</form>	
+
+<!-- End Manage Fatigue Change -->
     </td>
     <td valign="top">
 

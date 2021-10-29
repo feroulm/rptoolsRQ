@@ -384,3 +384,32 @@ example to be copied on atoken
 ```
 spiritSpells = {"spirit1": {"spiritTokenId": "","spiritBaseName": "Soul Eater","spiritCustomName": "My Soul Eater","spiritLibMapName": "_Spirit_Lib"},"spirit2": {"spiritTokenId": "","spiritBaseName": "Wolf Spirit","spiritCustomName": "My Wolf Spirit","spiritLibMapName": "_Spirit_Lib"}}
 ```
+
+## Equipment
+
+```
+wealth = {
+    "hold": {
+        "gp": 50,
+        "sp": 20,
+		"cp": 30,
+		"others" : "2 ruby, 1 diamond"
+    },
+	"hidden": {
+        "gp": 300,
+        "sp": 200,
+		"cp": 100,
+		"others" : "2 saphir, 2 diamond"
+    }
+}
+```
+
+```
+equipmentDesc = {
+    "hold": "Boots, Camping stuff, Torch (x2)",
+	"hidden": "Rich Clothes, Secret Book"
+}
+```
+
+
+

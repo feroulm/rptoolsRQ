@@ -35,6 +35,10 @@ sorcerySpells
 wiki:AttracteurEtrange/PNJ/pnjEWFAkthiAthno/
 combatStatus
 combatLog
+tokenDesc
+wealth
+equipmentDesc
+fatigue
 *MP:10
 *SR:9
 *CA:2

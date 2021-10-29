@@ -36,6 +36,9 @@ wiki:AttracteurEtrange/PNJ/pnjEWFAkthiAthno/
 combatStatus
 combatLog
 tokenDesc
+wealth
+equipmentDesc
+fatigue
 ccStyles
 ccSkills
 *@HP_Head (Head ,):4

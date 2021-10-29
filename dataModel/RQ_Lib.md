@@ -78,3 +78,74 @@ damageMod = ["-1d8","-1d6","-1d4","-1d2","0","+1d2","+1d4","+1d6","+1d8","+1d10"
 commonSpellDb =
 ```
 
+#### fatigueLevel
+we use a Json structure in case we want to add malus management
+`
+{
+	"Fresh": {
+		"skillGrade" : 0,
+		"movement" : "no penalty",
+		"strikeRank" : 0,
+		"actionPoints" : 0,
+		"recoveryPeriod" : "none" 
+	},
+	"Winded": {
+		"skillGrade" : -20,
+		"movement" : "no penalty",
+		"strikeRank" : 0,
+		"actionPoints" : 0,
+		"recoveryPeriod" : "15mn" 
+	},
+	"Tired": {
+		"skillGrade" : -20,
+		"movement" : "-1m",
+		"strikeRank" : 0,
+		"actionPoints" : 0,
+		"recoveryPeriod" : "3h" 
+	},
+	"Wearied": {
+		"skillGrade" : -40,
+		"movement" : "-2m",
+		"strikeRank" : -2,
+		"actionPoints" : 0,
+		"recoveryPeriod" : "6h" 
+	},
+	"Exhausted": {
+		"skillGrade" : -40,
+		"movement" : "halved",
+		"strikeRank" : -4,
+		"actionPoints" : -1,
+		"recoveryPeriod" : "12h" 
+	},
+	"Debilitated": {
+		"skillGrade" : -80,
+		"movement" : "halved",
+		"strikeRank" : -6,
+		"actionPoints" : -2,
+		"recoveryPeriod" : "18h" 
+	},
+	"Incapacitated": {
+		"skillGrade" : -80,
+		"movement" : "immobile",
+		"strikeRank" : -8,
+		"actionPoints" : -3,
+		"recoveryPeriod" : "24h" 
+	},
+	"SemiConscious": {
+		"skillGrade" : -200,
+		"movement" : "no activities",
+		"strikeRank" : -100,
+		"actionPoints" : -10,
+		"recoveryPeriod" : "36h" 
+	},
+	"Comatose": {
+		"skillGrade" : -200,
+		"movement" : "no activities",
+		"strikeRank" : -100,
+		"actionPoints" : -10,
+		"recoveryPeriod" : "48h" 
+	}
+}
+```
+fatigueLevel = {"Fresh":{"skillGrade":0,"movement":"no penalty","strikeRank":0,"actionPoints":0,"recoveryPeriod":"none"},"Winded":{"skillGrade":-20,"movement":"no penalty","strikeRank":0,"actionPoints":0,"recoveryPeriod":"15mn"},"Tired":{"skillGrade":-20,"movement":"-1m","strikeRank":0,"actionPoints":0,"recoveryPeriod":"3h"},"Wearied":{"skillGrade":-40,"movement":"-2m","strikeRank":-2,"actionPoints":0,"recoveryPeriod":"6h"},"Exhausted":{"skillGrade":-40,"movement":"halved","strikeRank":-4,"actionPoints":-1,"recoveryPeriod":"12h"},"Debilitated":{"skillGrade":-80,"movement":"halved","strikeRank":-6,"actionPoints":-2,"recoveryPeriod":"18h"},"Incapacitated":{"skillGrade":-80,"movement":"immobile","strikeRank":-8,"actionPoints":-3,"recoveryPeriod":"24h"},"SemiConscious":{"skillGrade":-200,"movement":"no activities","strikeRank":-100,"actionPoints":-10,"recoveryPeriod":"36h"},"Comatose":{"skillGrade":-200,"movement":"no activities","strikeRank":-100,"actionPoints":-10,"recoveryPeriod":"48h"}}
+```

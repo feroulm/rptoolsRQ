@@ -28,5 +28,40 @@ graph TD
 
 ![edit Sheet Mgt flow](../../assets/doc/editSheetFlow.png?raw=true)
 
-Composed of sub-windows for spellManagement
 
+### Fatigue level
+
+### Data Model
+cf RQ_Human_Prop and RQ_Monster_Prop
+
+Possible Values are taken from RQ_Lib/fatigueLevel prop,
+We keep a json structure, in case we need to add malus management.
+```
+fatigue = {
+    "level": "Fresh"
+}
+```
+
+Sample to be copied on a token :
+```
+{"level":"Fresh"}
+```
+
+Can be called from editSheet (when managing a token) or from openHumCombatAttr (when modified during a combat)
+```
+Logic - Mermaid Diagram
+graph TD
+    A1(openSheetMgt) -->|tokenId| B1(editSheet)
+	A2(openHumCombatAttr) -->|tokenId| B2(editHumCombatAttr)
+    B1(editSheet) -->|tokenId, srcWindow| C[updateFatigue]
+	B2(editHumCombatAttr) -->|tokenId| C[updateFatigue]
+    C -->|srcWindow = openSheetMgt|Z1
+    C -->|default|Z2
+	Z1(openSheetMgt - callback)
+	Z2(openHumCombatAttr - callback)
+```
+
+![Fatigue Mgt flow](../../assets/doc/fatigueMgtFlow.png?raw=true)
+
+principle :
+- form list box to select the fatigue level is filled using RQ:Lib fatigueLevel reference

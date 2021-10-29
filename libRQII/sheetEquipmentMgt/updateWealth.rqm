@@ -1,0 +1,36 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+
+
+[h: holdGP = json.get(arguments,"holdGP")]
+[h: holdSP = json.get(arguments,"holdSP")]
+[h: holdCP = json.get(arguments,"holdCP")]
+[h: holdOthers = json.get(arguments,"holdOthers")]
+
+[h: hiddenGP = json.get(arguments,"hiddenGP")]
+[h: hiddenSP = json.get(arguments,"hiddenSP")]
+[h: hiddenCP = json.get(arguments,"hiddenCP")]
+[h: hiddenOthers = json.get(arguments,"hiddenOthers")]
+
+[h: wealth = getProperty("wealth", tokenId)]
+[h: holdValues = json.get(wealth,"hold")]
+[h: hiddenValues = json.get(wealth,"hidden")]
+
+[h: holdValues = json.set(holdValues,"gp",holdGP)]
+[h: holdValues = json.set(holdValues,"sp",holdSP)]
+[h: holdValues = json.set(holdValues,"cp",holdCP)]
+[h: holdValues = json.set(holdValues,"others",holdOthers)]
+
+[h: hiddenValues = json.set(hiddenValues,"gp",hiddenGP)]
+[h: hiddenValues = json.set(hiddenValues,"sp",hiddenSP)]
+[h: hiddenValues = json.set(hiddenValues,"cp",hiddenCP)]
+[h: hiddenValues = json.set(hiddenValues,"others",hiddenOthers)]
+
+[h: wealth = json.set(wealth,"hold",holdValues)]
+[h: wealth = json.set(wealth,"hidden",hiddenValues)]
+
+[h: setProperty("wealth", wealth, tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openEquipmentMgt@Lib:RQII"): macroParam]
