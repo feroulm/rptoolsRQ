@@ -17,6 +17,8 @@
 [h: fatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
 [h: propHeroicSkills = getProperty("heroicSkills",tokenId)]
 [h: heroicDb = getLibProperty("heroicDb","Lib:RQII")]
+[h: propTraits = getProperty("traits",tokenId)]
+[h: traitsDb = getLibProperty("traitsDb","Lib:RQII")]
 
 <table>
  <tr>
@@ -425,8 +427,8 @@
     <th>
         Heroic Skill
     </th>
-    <th>Name</th>
     <th>Desc</th>
+    <th></th>
   </tr>
   [h: class = "oddRow"]
   [h: idx = 0]
@@ -451,6 +453,41 @@
 <form action="[r:linkAddHeroicSkill]" method="json">
   <input type="hidden" name="tokenId" value="[r:tokenId]">
   <input type="submit" name="edit_btn" value="Add Heroic Skill">
+</form>
+
+<!-- Traits -->
+
+<table width="*">
+<tr class="headRow">
+    <th>
+        Traits
+    </th>
+    <th>Desc</th>
+    <th></th>
+  </tr>
+  [h: class = "oddRow"]
+  [h: idx = 0]
+  [foreach(trait, propTraits, ""), code: {
+  	[h: traitAttr = json.get(traitsDb,trait)]
+  	[h: traitName = json.get(traitAttr,"displayname")]
+	[h: traitDesc = json.get(traitAttr,"desc")]
+    <tr class="[r:class]">
+      <th>
+        [r: traitName]
+      </th>
+      <td>[r: traitDesc]</td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"traitIdx",idx)]
+      <td>[r: macroLink("Del", "delTrait@Lib:RQII", "all",macroParam)]</td>
+    </tr>
+    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
+	[h: idx = idx + 1]
+  }]
+</table>
+
+[h: linkAddTraits = macroLinkText("openAddTraits@Lib:RQII", "all")]
+<form action="[r:linkAddTraits]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <input type="submit" name="edit_btn" value="Add Traits">
 </form>
 
     </td>

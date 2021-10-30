@@ -1,0 +1,12 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: traitIdx = json.get(arguments, "traitIdx")]
+[h: propTraits = getProperty("traits",tokenId)]
+
+[h: propTraits = json.remove(propTraits, traitIdx)]
+[h: setProperty("traits", propTraits, tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

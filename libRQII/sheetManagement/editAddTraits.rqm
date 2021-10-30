@@ -1,0 +1,63 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+[h, if(nameFilter == "") : nameFilter = ".*"]
+[h, if(typeFilter == "") : typeFilter = ".*"]
+
+[h: traitsDb = getLibProperty("traitsDb","Lib:RQII")]
+
+[h: link = macroLinkText("openAddTraits@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <table>
+    <tr>
+       <th>Name</th>
+       <th>Type</th>
+       <th></th>
+    </tr>
+    <tr>
+      <td><input type="text" name="nameFilter" value="[r: nameFilter]"></td>
+      <td><input type="text" name="typeFilter" value="[r: typeFilter]"></td>
+      <td><input type="submit" name="edit_btn" value="Filter"></td>
+    </tr>
+  </table>
+</form>
+
+[h: linkAddTraits = macroLinkText("addTraits@Lib:RQII", "all")]
+<form action="[r:linkAddTraits]" method="json">
+<input type="hidden" name="tokenId" value="[r:tokenId]">
+<table id="stats" cellpadding="2" cellspacing="0" border="0">
+  [h: class = "oddRow"]
+  [r, foreach(trait, traitsDb, ""), code:{
+	[h: traitAttr = json.get(traitsDb,trait)]
+	[h: traitName = json.get(traitAttr,"displayname")]
+	[h: traitType = json.get(traitAttr,"type")]
+	[r, if(matches(traitName,nameFilter) && matches(traitType,typeFilter)), code:{
+	<tr class="[r:class]">
+	  <td class="leftBorder">
+        <input type="checkbox" name="[r:trait]"/>
+      </td>
+      <td>
+        [r: traitName] 
+      </td>
+      <td>
+        [r: json.get(traitAttr,"type")]
+      </td>
+      <td>
+        [r: json.get(traitAttr,"d100")]
+      </td>
+      <td>
+        [r: json.get(traitAttr,"lnk")]
+      </td>
+      <td>
+        [r: json.get(traitAttr,"desc")]
+      </td>    
+    </tr>
+	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+	};{}]
+  }]
+</table>
+<input type="submit" name="edit_btn" value="Add Traits">
+</form>

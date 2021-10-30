@@ -213,3 +213,50 @@ On the token, heroicID are stored in a JSON array in the propertie *heroicSkills
 ```
 heroicDb = {"arrowCutting":{"displayname":"Arrow Cutting","type":"generic","requirements":"DEX 15 or higher, any close combat style at 90% or higher","heroPoints":10,"duration":"A number of melee rounds equal to CON","lnk":"Rq/HeroicHability#HArrowCutting","desc":"Your reactions are preternatural, allowing you to parry missile attacks with melee weapons instead of being limited to a shield."},"awesomeSmash":{"displayname":"Awesome Smash","type":"generic","requirements":"STR 15 or higher, any unarmed or bludgeon weapon style at 90% or higher","heroPoints":12,"duration":"One melee attack","lnk":"Rq/HeroicHability#HAwesomeSmash","desc":"Invoked whilst wielding a bludgeoning weapon or using Unarmed combat, you cause an automatic knockback of 1 metre per 2 points of rolled damage before it is reduced by parrying, armour or magic.<br>If the victim strikes any obstacle they smash into it, fall prone and automatically receive the attacker’s Damage Bonus to a random location, ignoring any protection."},"autocasting":{"displayname":"Autocasting","type":"magic","requirements":"DEX 16 or higher, any Magic skill at 90% or higher","heroPoints":8,"duration":"","lnk":"Rq/HeroicHability#HAutocasting","desc":"All of your spell casting times are considered to be one Combat Action less than the listed Casting Time, with any existing Casting Time of one actually only taking one Combat Reaction instead. Spells cast as Combat Reactions still occur on your normal Strike Rank instead of a Combat Action."},"blurMovement":{"displayname":"Graceful Blur of Movement","type":"draconic","requirements":"POW 15 or higher, Martial Arts 90% or higher","heroPoints":8,"duration":"","lnk":"Rq/HeroicHability#HGracefulBlurofMovement","desc":"The chance of a Dodge critical success is doubled. In addition, the character never needs to Give Ground unless he decides to do so, representing his unfailing ability to maintain his balance and dodge at close-quarters."},"predatorRoar":{"displayname":"Predator roar","type":"draconic","requirements":"POW 15 or higher, Martial Arts 90% or higher","heroPoints":8,"duration":"","lnk":"Rq/HeroicHability#HPredator2019sRoar","desc":"Each turn that an enemy opposes a roaring dragonspeaker with this Legendary Ability in close combat, the enemy increases their chance to fumble any Weapon skill test by 1%."}}
 ```
+
+#### heroicDb
+
+* name : traits ID -  name (must be unique) i.e excellentSwimmer
+  * displayname : i.e Excellent Swimmer
+  * type : generic or chaotic
+  * d100 : for chaotic traits
+  * lnk : Link to wiki page
+  * desc : info, effects
+
+On the token, heroicID are stored in a JSON array in the propertie *heroicSkills* cf [heroib Skill Mgt](../../libRQII/sheetManagement/README.md)
+
+```
+{
+	"darksense": {
+		"displayname" : "Darksense",
+		"type" : "generic",
+		"d100" : 5,
+		"lnk":"Rq/MonstersTraits#HDarksense",
+		"desc" : "The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight." 
+	},
+	"excellentSwimmer": {
+		"displayname" : "Excellent Swimmer",
+		"type" : "generic",
+		"d100" : 7,
+		"lnk":"Rq/MonstersTraits#HDarksense",
+		"desc" : "The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight." 
+	},
+	"absorbing": {
+		"displayname" : "Absorbing",
+		"type" : "chaotic",
+		"d100" : 1,
+		"lnk":"Rq/TraitChaotiques",
+		"desc" : "The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight." 
+	},
+	"accursed": {
+		"displayname" : "Accursed",
+		"type" : "chaotic",
+		"d100" : 2,
+		"lnk":"Rq/TraitChaotiques",
+		"desc" : "Temporarily weakens the soul of an opponent by 1D8 POW each successful hit." 
+	}
+}
+```
+```
+traitsDb = {"darksense":{"displayname":"Darksense","type":"generic","d100":5,"lnk":"Rq/MonstersTraits#HDarksense","desc":"The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight."},"excellentSwimmer":{"displayname":"Excellent Swimmer","type":"generic","d100":7,"lnk":"Rq/MonstersTraits#HDarksense","desc":"The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight."},"absorbing":{"displayname":"Absorbing","type":"chaotic","d100":1,"lnk":"Rq/TraitChaotiques","desc":"The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight."},"accursed":{"displayname":"Accursed","type":"chaotic","d100":2,"lnk":"Rq/TraitChaotiques","desc":"Temporarily weakens the soul of an opponent by 1D8 POW each successful hit."}}
+```
