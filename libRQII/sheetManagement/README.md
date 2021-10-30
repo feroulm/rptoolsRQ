@@ -34,6 +34,22 @@ graph TD
 
 ![edit Sheet Mgt flow](../../assets/doc/editSheetFlow.png?raw=true)
 
+### Other Attributes
+defined in RQ_Human_Prop and RQ_Monster_Prop
+
+```
+otherAttr ={"currHeroPts":0,"prevHeroPts":0,"currEnc":5,"travelEnc":25,"healRate":1,"movement":"8m","improvementMod":0}
+```
+```
+Logic - Mermaid Diagram
+graph LR
+    A1(openSheetMgt) -->|tokenId| B1(editSheet)
+    B1 -->|tokenId, params| C[updateOtherAttr]
+    C -->|tokenId|Z1
+	Z1(openSheetMgt - callback)
+```
+
+![other Attribute Mgt flow](../../assets/doc/otherAttrMgtFlow.png?raw=true)
 
 ### Fatigue level
 

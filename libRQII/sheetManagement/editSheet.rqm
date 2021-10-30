@@ -5,6 +5,7 @@
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: currentCharac = getProperty("Charac",tokenId)]
+[h: propOtherAttr = getProperty("otherAttr",tokenId)]
 [h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
 [h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
 [h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
@@ -23,38 +24,75 @@
 <table>
  <tr>
    <td style="text-align:left;" valign="top">
-   <b>[r: getName(tokenId)]</b> ([r: macroLink("Refresh", "openSheetMgt@Lib:RQII", "all")])<br><br>
-   <table>
-     <tr class = "oddRow">
-       <td>Armor Penalty : </td><td>[r: json.get(propArmorPenalty, "current")]</td>
-     </tr>
-     <tr class = "evenRow">
-       <td>Strike Rank (SR) :</td><td>[r: json.get(propStrikeRank, "current")]</td>
-     </tr>
-     <tr class = "oddRow">
-       <td>Damage Modifier : </td><td>[r: json.get(propDamageMod, "current")]</td>
-     </tr>
-     <tr class = "evenRow">
-       <td>Hero Point :</td><td></td>
-     </tr>
-     <tr class = "oddRow">
-       <td>Fatigue :</td><td</td>
-     </tr>
-     <tr class = "evenRow">
-       <td>Movement :</td><td></td>
-     </tr>
-     <tr class = "oddRow">
-       <td>Enc :</td><td</td>
-     </tr>
-     <tr class = "evenRow">
-       <td>Healing Rate :</td><td></td>
-     </tr>
-     <tr class = "oddRow">
-       <td>Improvement Mod :</td><td</td>
-     </tr>
-    </table>
-    <br>
-    [r: macroLink("Gold & Equipement", "openEquipmentMgt@Lib:RQII", "all")]<br>
+     <b>[r: getName(tokenId)]</b> ([r: macroLink("Refresh", "openSheetMgt@Lib:RQII", "all")])<br><br>
+     <table>
+       <tr class = "oddRow">
+         <td>Armor Penalty : </td><td>[r: json.get(propArmorPenalty, "current")]</td>
+       </tr>
+       <tr class = "evenRow">
+         <td>Strike Rank (SR) :</td><td>[r: json.get(propStrikeRank, "current")]</td>
+       </tr>
+       <tr class = "oddRow">
+         <td>Damage Modifier : </td><td>[r: json.get(propDamageMod, "current")]</td>
+       </tr>
+     </table>	
+	
+<!-- Manage other Attributes Change -->
+    [h: linkUpdate = macroLinkText("updateOtherAttr@Lib:RQII", "all")]
+    <form action="[r:linkUpdate]" method="json">
+	  <table>
+         <tr class = "evenRow">
+           <td>Hero Pts :</td>
+		   <td>
+		     <input type="text" name="currHeroPts" value='[r: json.get(propOtherAttr,"currHeroPts")]' size="3" align="right">
+		   </td>
+         </tr>
+		 <tr class = "oddRow">
+           <td>Hero Pts (prev) :</td>
+		   <td>
+		     <i>[r: json.get(propOtherAttr,"prevHeroPts")]</i>
+		   </td>
+         </tr>
+         <tr class = "evenRow">
+           <td>Movement :</td>
+		   <td>
+		     <input type="text" name="movement" value='[r: json.get(propOtherAttr,"movement")]' size="3" align="right">
+		   </td>
+         </tr>
+         <tr class = "oddRow">
+           <td>Enc :</td>
+		   <td>
+		     <input type="text" name="currEnc" value='[r: json.get(propOtherAttr,"currEnc")]' size="3" align="right">
+		   </td>
+         </tr>
+		 <tr class = "evenRow">
+           <td>Enc (travel) :</td>
+		   <td>
+		     <input type="text" name="travelEnc" value='[r: json.get(propOtherAttr,"travelEnc")]' size="3" align="right">
+		   </td>
+         </tr>
+         <tr class = "oddRow">
+           <td>Healing Rate :</td>
+		   <td>
+		     <input type="text" name="healRate" value='[r: json.get(propOtherAttr,"healRate")]' size="3" align="right">
+		   </td>
+         </tr>
+         <tr class = "evenRow">
+           <td>Improvement Mod :</td>
+		   <td>
+		     <input type="text" name="improvementMod" value='[r: json.get(propOtherAttr,"improvementMod")]' size="3" align="right">
+		   </td>
+         </tr>
+		 <tr>
+           <td>
+             <input type="hidden" name="tokenId" value="[r:tokenId]">
+             <input type="submit" name="edit_btn" value="change">
+           </td>
+        </tr>
+      </table>
+	</form>
+<!-- END - Manage other Attributes Change -->
+
     </td>
     <td valign="top">
    
@@ -94,7 +132,7 @@
   [h: macroParam = json.set("{}", "tokenId", tokenId)]
   [r: macroLink("Reset base from current", "resetCharacBase@Lib:RQII", "all",macroParam)]
 <!-- End Manage Charac Change -->
-
+  <br><br>
 <!-- Manage Fatigue Change -->
 
 [h: linkUpdateFatigue = macroLinkText("updateFatigue@Lib:RQII", "all")]
@@ -192,6 +230,8 @@
     </td>
     <td valign="top">
        [r, macro("editSheetMeleeWeapon@Lib:RQII"): tokenId]<br>
+	   <br>
+       [r: macroLink("Gold & Equipement", "openEquipmentMgt@Lib:RQII", "all")]<br>
 	</td>
   </tr>
   <tr>

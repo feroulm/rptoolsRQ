@@ -1,0 +1,20 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: currHeroPts = json.get(arguments, "currHeroPts")]
+[h: currEnc = json.get(arguments, "currEnc")]
+[h: travelEnc = json.get(arguments, "travelEnc")]
+[h: healRate = json.get(arguments, "healRate")]
+[h: movement = json.get(arguments, "movement")]
+[h: improvementMod = json.get(arguments, "improvementMod")]
+
+[h: propOtherAttr = getProperty("otherAttr",tokenId)]
+
+[h: prevHeroPts = json.get(propOtherAttr, "currHeroPts")]
+
+[h: propOtherAttr = json.set(propOtherAttr,"currHeroPts",currHeroPts,"prevHeroPts",prevHeroPts,"currEnc",currEnc,"travelEnc",travelEnc,"healRate",healRate,"movement",movement,"improvementMod",improvementMod)]
+
+[h: setProperty("otherAttr",propOtherAttr,tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]
