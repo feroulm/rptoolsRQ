@@ -1,0 +1,23 @@
+[h: link = macroLinkText("openAddHeroic@Lib:RQII", "")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[h, if(listCount(tokenId) != 1): abort(0)]
+[h: tokenType = getPropertyType(tokenId)]
+[h, if(tokenType != "RQ_Human"): abort(0)]
+
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+[dialog("Add Heroic Ability"): {
+  <html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <title>Add Heroic Ability</title>
+    </head>
+    <body>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",nameFilter,"typeFilter",typeFilter)]
+      [r, macro("editAddHeroic@Lib:RQII"): macroParam]
+    </body>
+</html>
+}]

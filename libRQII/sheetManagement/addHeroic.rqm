@@ -1,0 +1,18 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: propHeroicSkills = getProperty("heroicSkills",tokenId)]
+
+[r, foreach(param,arguments),code :{
+  [h: skillExist = json.contains(propHeroicSkills,param)]
+  <!-- add only new skill -->
+  [r, if((param != "tokenId")&&(param != "edit_btn")&&(! skillExist)), code :{
+  	[h: propHeroicSkills = json.append(propHeroicSkills,param)]
+  }]
+}]
+
+[h: setProperty("heroicSkills",propHeroicSkills, tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]
