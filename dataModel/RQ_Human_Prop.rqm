@@ -42,6 +42,8 @@ tokenDesc
 wealth
 equipmentDesc
 fatigue
+improvementPool
+improvementLog
 ccStyles
 ccSkills
 *@HP_Head (Head ,):4

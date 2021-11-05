@@ -1,0 +1,101 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+<!--Manage Advanced Attribute -->
+ 
+[h: linkUpdateSkills = macroLinkText("improveSkills@Lib:RQII", "all")]
+
+<div class="container pure-g">
+  <div class="content pure-u-4-24">
+    [h: pool = getProperty("improvementPool", tokenId)]
+    <table class="content pure-table">
+      <thead>
+      <tr>
+        <th>Pool Remaining</th>
+        <th>Pool Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>[r: json.get(pool,"currTmp")]</td>
+        <td>[r: json.get(pool,"origTmp")]</td>
+    </tr>
+    </tbody>                                       
+    </table>
+  </div>
+  [h: status = json.get(pool,"status")]
+  <div class="content pure-u-5-24">
+    [r, if (status == "done"), code: {
+      [h: linkUpdateImprovement = macroLinkText("updateImprovement@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:linkUpdateImprovement]" method="json">
+        <fieldset>
+        <div class="pure-control-group">
+          <label for="aligned-name">Add / Remove Pts to pool</label>
+          <input type="text" id="aligned-name" placeholder="nb" name="ptsNb" size="3" />
+          <input type="hidden" id="aligned-name" name="action" value="updatepool" />
+          <input type="hidden" id="aligned-name" name="tokenId" value="[r: tokenId]" />
+          <input class="pure-button pure-button-primary" type="submit" name="action_btn" value="+"><input class="pure-button pure-button-primary" type="submit" name="action_btn" value="-">
+      </div>
+      <div class="pure-control-group">
+        <input type="text" id="aligned-name" placeholder="improvement desc" name="desc" size="25" />
+      </div>
+        </fieldset>
+      </form>
+  };{ Improvement as started, to be validated once you are ok with your skills new values }]
+  </div>
+  <div class="content pure-u-5-24">
+    [r, if (status == "running"), code: {
+    [h: linkUpdateImprovement = macroLinkText("updateImprovement@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:linkUpdateImprovement]" method="json">
+        <fieldset>
+          <label for="aligned-name">Improvement status : <b>[r:  json.get(pool,"status")]</b></label>
+          <input type="hidden" id="aligned-name" name="status" value="done" />
+          <input type="hidden" id="aligned-name" name="action" value="updatestatus" />
+          <input type="hidden" id="aligned-name" name="tokenId" value="[r: tokenId]" />
+          <button type="submit" class="pure-button pure-button-primary">Valid improvement</button>
+        </fieldset>
+      </form>
+  };{}]
+  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r: macroLink("Show improvement Log", "openImprovementLogs@Lib:RQII", "all",macroParam)]
+  </div>
+  <div class="content pure-u-10-24">
+  </div>
+</div>
+
+<div class="container pure-g">
+  <div class="content pure-u-12-24">
+    <section>
+      <p>
+      <!-- Common Skills -->
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","common")]
+        [r, macro("subEditImproveSkill@Lib:RQII"): macroParam]
+      </p>
+    </section>
+  </div>
+  <div class="content pure-u-12-24">
+    <section>
+      <p>
+      <!-- Magic Skills -->
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","magic")]
+        [r, macro("subEditImproveSkill@Lib:RQII"): macroParam]
+      </p>
+    </section>
+    <section>
+      <p>
+      <!-- Combat Skills -->
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","combat")]
+        [r, macro("subEditImproveSkill@Lib:RQII"): macroParam]
+      </p>
+    </section>
+    <section>
+      <p>
+      <!-- Advanced Skills -->
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","advanced")]
+        [r, macro("subEditImproveSkill@Lib:RQII"): macroParam] 
+      </p>
+    </section>
+  </div>
+</div>

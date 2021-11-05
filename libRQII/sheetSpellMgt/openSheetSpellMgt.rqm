@@ -3,7 +3,10 @@
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
-[h, if(tokenType != "RQ_Human"): abort(0)]
+[h: assert(((tokenType == "RQ_Human")||(tokenType == "RQ_Monster")),"openSheetSpellMgt - wrong tokenType",0)]
+
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
 
 [dialog("Spell Sheet"): {
   <html>
@@ -13,7 +16,8 @@
       <title>Sheet Spell Edition</title>
     </head>
     <body>
-      [r, macro("editSheetSpellMgt@Lib:RQII"): tokenId]
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",nameFilter,"typeFilter",typeFilter)]
+      [r, macro("editSheetSpellMgt@Lib:RQII"): macroParam]
     </body>
 </html>
 }]

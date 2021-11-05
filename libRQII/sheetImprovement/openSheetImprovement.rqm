@@ -1,19 +1,21 @@
-[h: link = macroLinkText("openSheetMgt@Lib:RQII", "")]
+[h: link = macroLinkText("openSheetImprovement@Lib:RQII", "")]
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h: assert(((tokenType == "RQ_Human")||(tokenType == "RQ_Monster")),"openSheetMgt - wrong tokenType",0)]
 
-[dialog("CharSheet"): {
+[dialog5("ImproveSheet [r: getName(tokenId)]"): {
   <html>
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
-      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Sheet Edition</title>
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>ImproveSheet [r: getName(tokenId)]</title>
     </head>
     <body>
-      [r, macro("editSheet@Lib:RQII"): tokenId]
+	  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+      [r, macro("editSheetImprovement@Lib:RQII"): macroParam]
     </body>
 </html>
 }]

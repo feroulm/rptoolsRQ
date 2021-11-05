@@ -1,0 +1,26 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+<h4>Common Magic</h4>
+<table class="content pure-table pure-table-striped">
+ <tbody>
+    <tr>
+      <td>
+	    [h: aSkills = getProperty("magicSkills", tokenId)]
+        [h: skillValues = json.get(aSkills,"Common Magic")]
+        <b>Common Magic :</b> [r: json.get(skillValues,"current")]%
+	   </td>
+	   <td>
+	     [h: spells = getProperty("spells", tokenId)]
+   
+        [foreach(spell, spells, ","), code: {
+          [h: spellValues = json.get(spells,spell)]
+	      [h: spellName = json.get(spellValues,"displayname")]
+	      [h: spellMagnitude = json.get(spellValues,"magnitude")]
+          [r: spellName] ([r: spellMagnitude])
+        }] 		   
+	   </td>
+    </tr>
+ </tbody>
+</table>

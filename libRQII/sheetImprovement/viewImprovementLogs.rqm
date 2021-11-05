@@ -1,0 +1,35 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h: logs = getProperty("improvementLog", tokenId)]
+
+<div class="container pure-g">
+  <div class="content pure-u-1">
+  
+  <table class="content pure-table pure-table-striped">
+      <thead>
+	    <tr>
+	      <th>nbRoll</th>
+	  	  <th>prevPts</th>
+	  	  <th>currPts</th>
+	  	  <th>desc</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  [foreach(log, logs, ""), code: {
+	    [h: logValues = json.get(logs,log)]
+	    <tr>
+	      <td>[r: json.get(logValues,"nbRoll")]</td>
+	  	  <td>[r: json.get(logValues,"prevPts")]</td>
+	  	  <td>[r: json.get(logValues,"currPts")]</td>
+	  	  <td>[r: json.get(logValues,"desc")]</td>
+		</tr>
+	  }]
+	  </tbody>                                       
+    </table>
+	
+  </div>
+</div>

@@ -1,0 +1,120 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: skType = json.get(arguments, "skType")]
+[h: skill = json.get(arguments, "skill")]
+[h: expPts = json.get(arguments, "expPts")]
+[h: actionLabel = json.get(arguments, "edit_btn")]
+
+[h: assert((expPts <= 5),"You cannot add more than 5Pts to a skill",0)]
+
+[r, switch(skType), code:
+  case "common" :{
+  	[h: aSkills = getProperty("commonSkills", tokenId)]
+  };
+  case "advanced" :{
+  	[h: aSkills = getProperty("advSkills", tokenId)]
+  };
+  case "combat" :{
+  	[h: aSkills = getProperty("combatSkills", tokenId)]
+  };
+  case "magic" :{
+  	[h: aSkills = getProperty("magicSkills", tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
+<!-- get existing value -->
+[h: skillValues = json.get(aSkills,skill)]
+[h: skCurrent = json.get(skillValues, "current")]
+[h: skBase = json.get(skillValues, "base")]
+[h: skCulture = json.get(skillValues, "culture")]
+[h: skProfession = json.get(skillValues, "profession")]
+[h: skExperience = json.get(skillValues, "experience")]
+
+<!-- Increase / decrease Pts Pool -->
+[h: pool = getProperty("improvementPool", tokenId)]
+[h: currTmp = json.get(pool,"currTmp")]
+[h: origTmp = json.get(pool,"origTmp")]
+[h, if(actionLabel == "-"): newPoolPts = currTmp + expPts; newPoolPts = currTmp - expPts ]
+
+[h: msgPoolEmpty = strformat("You cannot add %{expPts} there is only %{currTmp} remaining pts")]
+[h: msgAbovePool = strformat("You cannot regain more pts than %{origTmp} , otherwise you go beyond the original pool...nice try :)")]
+
+[h: assert((newPoolPts >= 0),msgPoolEmpty,0)]
+[h: assert((newPoolPts <= origTmp),msgAbovePool,0)]
+
+<!-- check if already improved and if it can still be -->
+[h: skExperienceTmp = json.get(skillValues, "experienceTmp")]
+[h, if(skExperienceTmp != ""),code:{
+  [h, if(actionLabel == "-"): newSkExperienceTmp = skExperienceTmp - expPts;newSkExperienceTmp = skExperienceTmp + expPts]
+  [h: assert((newSkExperienceTmp <= 5),"You cannot add more than 5Pts to a skill",0)]
+};{
+  [h: newSkExperienceTmp = expPts]
+}]
+
+[h: pool = json.set(pool,"currTmp",newPoolPts)]
+<!-- since something is added, status must be "running", not "done" -->
+
+[h: poolStatus = json.get(pool,"status")]
+[h, if(poolStatus == "done"), code:{
+  <!-- Create a log entry if the update is done using remaing point and with no new add roll -->
+  [h: logs = getProperty("improvementLog", tokenId)]
+  [h: len = json.length(logs)]
+  [h: nextId = len + 1]
+  [h: logKey = strformat('improveLog%{nextId}')]
+	
+  [h: newLogValues = json.set("{}","nbRoll","-")]
+  [h: newLogValues = json.set(newLogValues,"prevPts",currTmp)]
+  [h: newLogValues = json.set(newLogValues,"currPts",currTmp)]
+  [h: newLogValues = json.set(newLogValues,"desc","use remaining pts without adding improvement roll")]
+
+  [h: logs = json.set(logs,logKey,newLogValues)]
+	
+	[h: setProperty("improvementLog", logs, tokenId)]
+
+}]
+[h: pool = json.set(pool,"status","running")]
+
+[h: setProperty("improvementPool", pool, tokenId)]
+
+<!-- Add or remove Pts, depending on the button used -->
+
+[h, if(actionLabel == "-"): calcNewSkExperience = skExperience - expPts; calcNewSkExperience = skExperience + expPts ]
+
+[h: calcNewSkCurrent = skBase + skCulture + skProfession + calcNewSkExperience]
+
+[h: skillValues = json.set(skillValues,"current",calcNewSkCurrent)]
+[h: skillValues = json.set(skillValues,"experience",calcNewSkExperience)]
+
+[h: skillValues = json.set(skillValues,"experienceTmp",newSkExperienceTmp)]
+[h: aSkills = json.set(aSkills,skill,skillValues)]
+	
+Update [r: skill] : Current to [r: calcNewSkCurrent] and Experience to [r: calcNewSkExperience]<br>
+
+
+
+[r, switch(skType), code:
+  case "common" :{
+  	[h: setProperty("commonSkills", aSkills, tokenId)]
+  };
+  case "advanced" :{
+  	[h: setProperty("advSkills", aSkills, tokenId)]
+  };
+  case "combat" :{
+  	[h: setProperty("combatSkills", aSkills, tokenId)]
+  };
+  case "magic" :{
+  	[h: setProperty("magicSkills", aSkills, tokenId)]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetImprovement@Lib:RQII"): macroParam]

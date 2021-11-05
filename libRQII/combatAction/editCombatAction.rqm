@@ -192,6 +192,13 @@
         </form>
       </td>
       <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="delay">
+          <input type="submit" name="edit_btn" value="delay">
+        </form>
+      </td>      
+      <td>
       [h, if(castCA == 0): castAction = "firstCast"]
       [h, if(castCA > 0): castAction = "pursueCast"]
         <form action="[r:linkUpdateCombatProactive]" method="json">
@@ -207,13 +214,6 @@
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="[r:rangeAction]">
           <input type="submit" name="edit_btn" value="[r:rangeAction]">
-        </form>
-      </td>
-      <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="delay">
-          <input type="submit" name="edit_btn" value="delay">
         </form>
       </td>
       <td>
@@ -241,6 +241,50 @@
         </form>
       </td>
       }]
+    </tr>
+    <tr>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="Dither">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="Brace">
+        </form>
+      </td>     
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="Hold Magic">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="Move">
+        </form>
+      </td> 
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="regainFooting">
+          <input type="submit" name="edit_btn" value="Regain Footing">
+        </form>
+      </td>
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="attack">
+          <input type="submit" name="edit_btn" value="Ready Weapon">
+        </form>
+      </td>
     </tr>
   </table>
 }]
@@ -386,9 +430,9 @@ Change after combat action
 [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
 [h: tokenType = getPropertyType(tokenId)]
 [h, switch(tokenType):
-  case "RQ_Human" : linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "all");
-  case "RQ_Monster" : linkDamageHeal = macroLinkText("openMonsterLocHp@Lib:RQII", "all");
-  default: linkDamageHeal = macroLinkText("openLocationHp@Lib:RQII", "all");
+  case "RQ_Human" : linkDamageHeal = macroLinkText("openAPHP@Lib:RQII", "all");
+  case "RQ_Monster" : linkDamageHeal = macroLinkText("openAPHP@Lib:RQII", "all");
+  default: linkDamageHeal = macroLinkText("openAPHP@Lib:RQII", "all");
 ]
 <table style="padding: 0px; cellspacing:0px;">
   <tr>

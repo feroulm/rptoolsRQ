@@ -42,6 +42,8 @@ tokenDesc
 wealth
 equipmentDesc
 fatigue
+improvementPool
+improvementLog
 *MP:10
 *SR:9
 *CA:2

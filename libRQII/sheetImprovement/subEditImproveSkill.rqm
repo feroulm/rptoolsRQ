@@ -1,0 +1,72 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: skType = json.get(arguments, "skType")]
+
+[r, switch(skType), code:
+  case "common" :{
+  	[h: aSkills = getProperty("commonSkills", tokenId)]
+	[h: tableSkillTitle = "Common Skill"]
+  };
+  case "advanced" :{
+  	[h: aSkills = getProperty("advSkills", tokenId)]
+	[h: tableSkillTitle = "Advanced Skill"]
+  };
+  case "combat" :{
+  	[h: aSkills = getProperty("combatSkills", tokenId)]
+	[h: tableSkillTitle = "Combat Skill"]
+  };
+  case "magic" :{
+  	[h: aSkills = getProperty("magicSkills", tokenId)]
+	[h: tableSkillTitle = "Magic Skill"]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
+
+[h: linkUpdateSkills = macroLinkText("improveSkills@Lib:RQII", "all")]
+
+<table class="content pure-table pure-table-striped">
+	    <thead>
+           <tr>
+               <th>
+                   [r: tableSkillTitle]
+               </th>
+               <th>Current</th>
+               <th>Base</th>
+               <th>Culture</th>
+               <th>Profession</th>
+               <th>Experience</th>
+			   <th><i>Tmp</i></th>
+               <th>Pts</th>
+			   <th></th>
+           </tr>
+		</thead>
+        <tbody>
+      
+        [foreach(skill, aSkills, ""), code: {
+        	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+        	[h: skillValues = json.get(aSkills,skill)]
+        	[h: skillSubtype = json.get(skillValues,"subtype")]
+          <tr>
+		    <form action="[r:linkUpdateSkills]" method="json">
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <input type="hidden" name="skType" value="[r:skType]">
+			<input type="hidden" name="skill" value="[r:skill]">
+            <td>
+              <b>[r: skill] [r: skillSubtype]</b> ([r: json.get(skillValues,"code")])
+			</td>
+            <td>[r: json.get(skillValues,"current")]</td>
+            <td>[r: json.get(skillValues,"base")]</td>
+            <td>[r: json.get(skillValues,"culture")]</td>
+            <td>[r: json.get(skillValues,"profession")]</td>
+            <td>[r: json.get(skillValues,"experience")]</td>
+			<td>[r: json.get(skillValues,"experienceTmp")]</td>
+            <td><input type="text" name="expPts" size="3" align="right"></td>
+			<td><input class="pure-button pure-button-primary" type="submit" name="edit_btn" value="+"><input class="pure-button pure-button-primary" type="submit" name="edit_btn" value="-"></td>
+			</form>
+          </tr>
+        }]
+		</tbody>
+</table>

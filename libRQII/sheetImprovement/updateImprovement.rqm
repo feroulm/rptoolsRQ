@@ -1,0 +1,106 @@
+[h: tokenId = json.get(macro.args, "tokenId")]
+[h: action = json.get(macro.args, "action")]
+[h: actionLabel = json.get(macro.args, "action_btn")]
+
+[h: logs = getProperty("improvementLog", tokenId)]
+[h: improvementPool = getProperty("improvementPool", tokenId)]
+
+
+[r, switch(action), code:
+  case "updatepool" : {
+  [h: ptsNb = json.get(macro.args, "ptsNb")]
+	[h: desc =json.get(macro.args,"desc")]
+	[h, if(desc == ""): desc = "add / remove pts"]
+
+	[h: currPts =json.get(improvementPool,"currPts")]
+	[h: currTmp =json.get(improvementPool,"currTmp")]
+	[h: origTmp =json.get(improvementPool,"origTmp")]
+	
+	<!-- we add non used pts to the new pts gained from the rolls -->
+  [h, if(actionLabel == "-"): newPts = currPts - ptsNb; newPts = currPts + ptsNb]
+  
+  [h: assert((newPts >= 0),"not enough points in the pool",0)]
+  
+	[h: improvementPool = json.set(improvementPool,"currTmp",newPts)]
+	[h: improvementPool = json.set(improvementPool,"origTmp",newPts)]
+	[h: improvementPool = json.set(improvementPool,"status","running")]
+	
+	[h: setProperty("improvementPool", improvementPool, tokenId)]
+	
+	<!-- Log -->
+    [h: len = json.length(logs)]
+    [h: nextId = len + 1]
+    [h: logKey = strformat('improveLog%{nextId}')]
+	
+    [h: newLogValues = json.set("{}","nbRoll",ptsNb)]
+    [h: newLogValues = json.set(newLogValues,"prevPts",currPts)]
+    [h: newLogValues = json.set(newLogValues,"currPts",newPts)]
+    [h: newLogValues = json.set(newLogValues,"desc",desc)]
+
+  	[h: logs = json.set(logs,logKey,newLogValues)]
+	
+	[h: setProperty("improvementLog", logs, tokenId)]
+  };
+  case "updatestatus" : {
+    [h: res = input("junk|This will validate all the changes, no way back. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+    [h: abort(res)]
+    <!-- Set all experienceTmp values to 0 -->
+    [h: aSkills = getProperty("commonSkills", tokenId)]
+    [h: resetSkills = resetSkillsExperienceTmp(aSkills,tokenId)]
+    [h: setProperty("commonSkills", resetSkills, tokenId)]
+    
+    [h: aSkills = getProperty("advSkills", tokenId)]
+    [h: resetSkills = resetSkillsExperienceTmp(aSkills,tokenId)]
+    [h: setProperty("advSkills", resetSkills, tokenId)]
+    
+    [h: aSkills = getProperty("combatSkills", tokenId)]
+    [h: resetSkills = resetSkillsExperienceTmp(aSkills,tokenId)]
+    [h: setProperty("combatSkills", resetSkills, tokenId)]
+    
+    [h: aSkills = getProperty("magicSkills", tokenId)]
+    [h: resetSkills = resetSkillsExperienceTmp(aSkills,tokenId)]
+    [h: setProperty("magicSkills", resetSkills, tokenId)]
+    
+    <!-- Update pool values -->
+    
+    [h: currTmp =json.get(improvementPool,"currTmp")]
+	  [h: origTmp =json.get(improvementPool,"origTmp")]
+    
+    [h: usedPts = origTmp - currTmp]
+    [h: logDesc = strformat("%{usedPts} / %{origTmp} were used , %{currTmp} are remaining")]
+    
+    <!-- keep an history of the last pts number pool before the last improvement -->
+    [h: improvementPool = json.set(improvementPool,"prevPts",origTmp)]
+    <!-- non used pts, are copied to currPts et origTmp -->
+    [h: improvementPool = json.set(improvementPool,"currPts",currTmp)]
+	  [h: improvementPool = json.set(improvementPool,"origTmp",currTmp)]
+	  [h: improvementPool = json.set(improvementPool,"status","done")]
+    
+    [h: setProperty("improvementPool", improvementPool, tokenId)]
+    
+    <!-- log the validation -->
+    [h: len = json.length(logs)]
+    [h: nextId = len + 1]
+    [h: logKey = strformat('improveLog%{nextId}')]
+	
+    [h: newLogValues = json.set("{}","nbRoll","-")]
+    [h: newLogValues = json.set(newLogValues,"prevPts",origTmp)]
+    [h: newLogValues = json.set(newLogValues,"currPts",currTmp)]
+    [h: newLogValues = json.set(newLogValues,"desc",logDesc)]
+
+  	[h: logs = json.set(logs,logKey,newLogValues)]
+	  [h: setProperty("improvementLog", logs, tokenId)]
+ 
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unexistant action !<br>
+  }
+]
+
+
+<!-- Refresh Combat Action Window for current Active Token-->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[h, macro("openImprovementLogs@Lib:RQII"): macroParam]
+
+[h, macro("openSheetImprovement@Lib:RQII"): macroParam]

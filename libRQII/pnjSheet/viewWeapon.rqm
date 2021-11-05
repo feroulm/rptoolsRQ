@@ -16,7 +16,7 @@
   [h: class = "oddRow"]
   [foreach(weapon, wpList, ""), code: {
   	
-    [h,macro("getWeapon@this"): weapon]
+    [h,macro("getWeapon@this"): "weaponNb="+weapon+"; tokId="+id]
     [h: wProp = macro.return]
     <tr class="[r:class]">
       <th>

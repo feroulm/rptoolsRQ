@@ -3,7 +3,7 @@
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
-[h, if(tokenType != "RQ_Human"): abort(0)]
+[h: assert(((tokenType == "RQ_Human")||(tokenType == "RQ_Monster")),"openEquipmentMgt - wrong tokenType",0)]
 
 [h: nameFilter = json.get(arguments, "nameFilter")]
 [h: typeFilter = json.get(arguments, "typeFilter")]

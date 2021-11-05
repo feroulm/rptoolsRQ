@@ -1,0 +1,39 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+<h4>Divine Magic</h4>
+<table class="content pure-table pure-table-striped">
+ <tbody>
+    [h: aSkills = getProperty("magicSkills", tokenId)]
+    [h: spells = getProperty("divineSpells", tokenId)]
+    [for(i,1,6,1,""), code: {
+      [h: loreName = "Lore"+i]
+      [h: loreValues = json.get(aSkills,loreName)]
+    [r, if(loreValues != ""), code :{
+	  <tr>
+	    <td>
+            <b>[r: loreName] :</b> [r: json.get(loreValues,"current")]%,
+    }]
+    [h: pactName = "Pact"+i]
+      [h: pactValues = json.get(aSkills,pactName)]
+    [r, if(pactValues != ""), code :{
+            <b>[r: pactName] :</b> [r: json.get(pactValues,"current")]%<br>
+	    </td>
+		<td>
+    }]
+    [h: cultName = "cult"+i]	
+    [h: jsonFilter = strformat(".[?(@.cult == '%{cultName}')]")]
+      [h: cultSpells = json.path.read(spells, jsonFilter)]  
+      [foreach(spell,cultSpells), code:{
+      	[h: spellName = json.get(spell,"displayname")]
+        [h: spellMagnitude = json.get(spell,"magnitude")]
+          [r: spellName] ([r: spellMagnitude])  	
+      }]
+	[r, if(loreValues != ""), code :{
+	    </td>
+	  </tr>
+	}]
+    }]
+</tbody>
+</table>

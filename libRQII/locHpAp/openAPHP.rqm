@@ -1,16 +1,17 @@
-[h: link = macroLinkText("openLocationHp@Lib:RQII", "none")]
+[h: link = macroLinkText("openAPHP@Lib:RQII", "none")]
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
-[h, if(tokenType != "RQ_Human"): abort(0)]
-[frame("locHp"): {
+[h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
+[frame("locAPHP"): {
 <html>
 <head>
 <link rel="onChangeSelection" type="macro" href="[r:link]">
 </head>
 <body>
-[r, macro("editLocationHp@Lib:RQII"): tokenId]
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("editAPHP@Lib:RQII"): macroParam]
 </body>
 </html>
 }]

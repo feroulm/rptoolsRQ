@@ -1,0 +1,78 @@
+[h: id = macro.args]
+[h: pLocD20 = getProperty("locD20", id)]
+[h: pLocName= getProperty("locName", id)]
+[h: pLocAP = getProperty("locAP", id)]
+[h: pLocAPorig = getProperty("locAPorig", id)]
+[h: pLocHP = getProperty("locHP", id)]
+[h: pLocHPorig = getProperty("locHPorig", id)]
+[h: pLocNb = getProperty("locNb", id)]
+
+<table class="content pure-table pure-table-striped">
+  <thead>
+	<tr>
+	  <th>d20</th>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      <th>
+	    [r: getStrProp(pLocD20, strformat("loc%{i}"))]
+	  </th>
+      }]
+	</tr>
+	<tr>
+	  <th>Location</th>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      <th>
+	    [r: getStrProp(pLocName, strformat("loc%{i}"))]
+	  </th>
+      }]
+	</tr>
+  </thead>
+  <tbody>
+	<tr>
+		<td style="text-align:left;">AP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocAP, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+	<tr>
+		<td style="text-align:left;">HP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocHP, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+	<tr>
+		<td style="text-align:left;">orig AP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocAPorig, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+	<tr>
+		<td style="text-align:left;">orig HP</td>
+		[for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+	    	[r: getStrProp(pLocHPorig, strformat("loc%{i}"))]
+	  	</td>
+      	}]
+	</tr>
+	<tr>
+	  <td>Wound</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+      	   [h: locOrigValue = getStrProp(pLocHPorig, strformat("loc%{i}"))]
+      	   [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
+      	   [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
+      	   	  <span style="font-weight: bold;color:orange">S</span>
+      	   };{}]
+      	   [r, if((locCurrentValue + locOrigValue) <= 0), code: {
+      	   	  <span style="font-weight: bold;color:red">M</span>
+      	   };{}]
+	  	</td>
+      }]
+	</tr>
+  </tbody>	
+</table>

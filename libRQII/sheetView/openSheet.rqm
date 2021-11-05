@@ -1,0 +1,42 @@
+[h: link = macroLinkText("openSheet@Lib:RQII", "none")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)), code: {
+  [h: tokenId = getSelected()]
+  [h: tab = "main"] 
+ };{
+  [h: tokenId = json.get(arguments,"tokenId")]
+  [h: tab = json.get(arguments,"tab")]
+  [h, if(tab == "") : tab = "main"]
+}]
+
+[h, if(listCount(tokenId) != 1): abort(0)]
+[h: tokenType = getPropertyType(tokenId)]
+[h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
+
+[dialog5("Sheet [r: getName(tokenId)]"): {
+  <html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>[r: getName(tokenId)]</title>
+    </head>
+    <body>
+	  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+	  [r, switch(tab), code:
+        case "main" :{
+  	      [r, macro("viewSheet@Lib:RQII"): macroParam]
+        };
+	    case "magic" :{
+  	      [r, macro("viewSheetMagic@Lib:RQII"): macroParam]
+        };
+		case "skills" :{
+  	      [r, macro("viewSheetSkills@Lib:RQII"): macroParam]
+        };
+        default: {
+          [r, macro("viewSheet@Lib:RQII"): macroParam]
+        }
+      ] 
+    </body>
+</html>
+}]

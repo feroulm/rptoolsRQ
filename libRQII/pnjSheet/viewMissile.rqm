@@ -1,4 +1,5 @@
-[h,macro("getMissileNb@this"): ""]
+[h: id = macro.args]
+[h,macro("getMissileNb@this"): getSelected()]
 [h: wpList = macro.return]
 <table>
   <tr class="WeaponName">
@@ -16,7 +17,7 @@
   </tr>
   [h: class = "oddRow"]
   [foreach(missile, wpList, ""), code: {
-    [h,macro("getMissile@this"): missile]
+    [h,macro("getMissile@this"): "weaponNb="+missile+"; tokId="+id]
     [h: wProp = macro.return]
     <tr class="[r:class]">
       <th>

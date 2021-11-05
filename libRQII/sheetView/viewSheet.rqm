@@ -6,61 +6,198 @@
 
 [h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
 
-<table>
-  <tr>
-    <td>
-      <h2><a href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>[r: getName(tokenId,tokenMap)]</a>
-	  </h2><br>
-      <img src='[r:getTokenPortrait(100,tokenId,tokenMap)]'></img><br>
-      <img src='[r: getTokenImage(100,tokenId,tokenMap)]'></img> 
-      <table>
-      <tr>
-        <td>
-        [h: link = macroLinkText("openSheetMgt@Lib:RQII", "")]
-        <form action="[r:link]" method="json">
-            <input type="hidden" name="tokenId" value=[r: tokenId]>
-            <input type="submit" name="edit_btn" value="Edit Sheet">
-          </form>
-        </td>
-      </tr>
-    </table>         
-    </td>
-    <td>
-      <table id="stats">
-        <tr>
+<div class="pure-g">
+  <div class="header pure-u-1">
+	<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>[r: getName(tokenId,tokenMap)]</a>
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab","magic")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Magic</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "skills")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Skills</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openAPHP@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Damage / Heal</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openSheetMgt@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Edit Sheet</a>
+			</li>
+            <li class="pure-menu-item"><a class="pure-menu-link" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>Wiki</a></li>			
+        </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+  <div class="pure-u-3-24">
+    <p>
+      <img src="[r: getTokenPortrait(100,tokenId,tokenMap)]"></img><br>
+      <img src="[r: getTokenImage(100,tokenId,tokenMap)]"></img>      
+	</p>
+  </div>
+  <div class="pure-u-4-24">
+    <table class="content pure-table pure-table-striped">
+       <thead>
+         <tr>
           <th>Name</th>
           <th>Score</th>
-        </tr>
-        [h: class = "oddRow"]
+         </tr>
+       </thead>
+       <tbody>
         [foreach(prop, propNames, ""), code: {
-          <tr class="[r:class]">
+          <tr>
             <td>[r: prop]</td>
             <td>[r: getProperty(prop, tokenId, tokenMap)]</td>
           </tr>
-          [h: class = if(class=="oddRow", "evenRow", "oddRow")]
         }]
-      </table>
-    </td>
-    <td>
-      [r, macro("viewMonsterAPHP@this"): tokenId]
-    <table style="margin-top: 5px">
-        <tr>
-          <td style="text-align: left"><b>SR :</b> [r: getProperty("SR", tokenId,tokenMap)] <b>CA :</b> [r: getProperty("CA", tokenId,tokenMap)] <b>MP :</b> [r: getProperty("MP", tokenId,tokenMap)] <b>DMG :</b> [r: getProperty("dmgMod", tokenId,tokenMap)]</td>
-        </tr>
-        <tr>
-          <td style="text-align: left"><b>Combat Styles :</b> [r: getProperty("ccStyles", tokenId,tokenMap)]</td>
-        </tr>
-        <tr>
-          <td style="text-align: left"><b>Skills :</b> [r: getProperty("ccSkills", tokenId,tokenMap)]</td>
-        </tr>
-      </table>    
-  </td>
-  <td style="text-align: left">
-      <b>Magic :</b>
-      <br><br>
-      <b>Spells :</b> [r: getProperty("spells", tokenId,tokenMap)]
-    </td>
-  </tr>
-</table>
-  <hr>
-  [r, macro("viewWeapon@this"): tokenId]<br>
+        </tbody>
+    </table>
+  </div>
+  <div class="pure-u-11-24">
+    <section>
+      [r, macro("viewAPHP@this"): tokenId]
+	</section>
+	<section class="section">
+	  [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+	  <p>
+      <b>SR :</b> [r: getProperty("SR", tokenId,tokenMap)]<b>, CA :</b> [r: getProperty("CA", tokenId,tokenMap)]<b>, MP :</b> [r: getProperty("MP", tokenId,tokenMap)]<b>, DMG :</b> [r: json.get(propDamageMod, "current")]
+	  </p>
+    </section>	 
+  </div>
+  <div class="pure-u-1-24">
+  </div>	
+  <div class="pure-u-4-24">
+    [h: propOtherAttr = getProperty("otherAttr",tokenId)]
+    <table class="content pure-table pure-table-striped">
+	  <tbody>
+         <tr>
+           <td>Hero Pts</td>
+		   <td>[r: json.get(propOtherAttr,"currHeroPts")]</td>
+         </tr>
+		 <tr>
+           <td>Hero Pts (prev)</td>
+		   <td><i>[r: json.get(propOtherAttr,"prevHeroPts")]</i></td>
+         </tr>
+         <tr>
+           <td>Movement</td>
+		   <td>[r: json.get(propOtherAttr,"movement")]</td>
+         </tr>
+         <tr>
+           <td>Enc</td>
+		   <td>[r: json.get(propOtherAttr,"currEnc")]</td>
+         </tr>
+		 <tr>
+           <td>Enc (travel)</td>
+		   <td>[r: json.get(propOtherAttr,"travelEnc")]</td>
+         </tr>
+         <tr>
+           <td>Healing Rate</td>
+		   <td>[r: json.get(propOtherAttr,"healRate")]</td>
+         </tr>
+         <tr>
+           <td>ImprovementMod</td>
+		   <td>[r: json.get(propOtherAttr,"improvementMod")]</td>
+         </tr>
+	  </tbody>
+    </table>
+	<p class="section">
+	  [h: propFatigue = getProperty("fatigue",tokenId)]
+	  <b>Fatigue :</b>[r: json.get(propFatigue,"level")]
+	</p>
+  </div>
+  <div class="pure-u-1-24">
+  </div>
+</div>
+
+<div class="container pure-g">
+  <div class="header pure-u-1">
+    <section class="section">
+      <b>Combat skills :</b>
+    [h: aSkills = getProperty("combatSkills", tokenId)]
+	[foreach(skill, aSkills, ","), code: {
+  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	  [h: skillValues = json.get(aSkills,skill)]
+      [r: skill] : [r: json.get(skillValues,"current")]%
+    }]
+    </section>
+    [r, macro("viewMeleeWeapons@this"): tokenId]<br>
+  </div>
+</div>
+
+<div class="container pure-g">
+  <div class="header pure-u-1">
+    [r, macro("viewRangedWeapons@this"): tokenId]<br>
+  </div>
+</div>
+
+<div class="container pure-g">
+  <div class="header pure-u-8-24">
+    <h4>Wealth</h4>
+    [h: wealth = getProperty("wealth", tokenId)]
+    [h: wealthHold = json.get(wealth,"hold")]
+    [h: wealthHidden = json.get(wealth,"hidden")]
+	<table class="content pure-table pure-table-striped">
+	  <thead>
+          <tr>
+            <th></th>
+            <th>GP</th>
+			<th>SP</th>
+			<th>CP</th>
+			<th>Others</th>
+          </tr>
+	  </thead>
+	  <tbody>
+          <tr>
+            <td><b>Hold</b></td>
+            <td>[r: json.get(wealthHold,"gp")]</td>
+			<td>[r: json.get(wealthHold,"sp")]</td>
+			<td>[r: json.get(wealthHold,"cp")]</td>
+			<td>[r: json.get(wealthHold,"others")]</td>
+          </tr>
+		  <tr>
+            <td><b>Hidden</b></td>
+            <td>[r: json.get(wealthHidden,"gp")]</td>
+			<td>[r: json.get(wealthHidden,"sp")]</td>
+			<td>[r: json.get(wealthHidden,"cp")]</td>
+			<td>[r: json.get(wealthHidden,"others")]</td>			
+          </tr>
+	  </tbody>
+    </table>
+  </div>
+  <div class="header pure-u-2-24">
+  </div>
+  <div class="header pure-u-14-24">
+    <h4>Equipment</h4>
+	[h: equipmentDesc = getProperty("equipmentDesc", tokenId)]
+	[h: holdEquipment = json.get(equipmentDesc,"hold")]
+	[h: hiddenEquipment = json.get(equipmentDesc,"hidden")]
+	<table class="content pure-table pure-table-striped">
+	  <thead>
+	    <tr><th>Hold</th></tr>
+	  </thead>
+	  <tbody>
+	    <tr><td>[r: holdEquipment]</td><tr>
+	  </tbody>
+	  <thead>
+	    <tr><th>Hidden</th></tr>
+	  </thead>
+	  <tbody>
+	    <tr><td>[r: hiddenEquipment]</td><tr>
+	  </tbody>
+	</table>
+  </div>
+
+</div>

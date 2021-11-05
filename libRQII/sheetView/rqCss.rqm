@@ -1,0 +1,54 @@
+body {
+    background: #fff;
+    font-size: 85%;
+}
+
+.container {
+    padding-left: 2px;
+}
+ 
+.content {
+    padding: 0 0 0;
+    font-size: 90%;
+}
+
+.section {
+    padding: 2px 0px 10px 0px;
+    font-size: 90%;
+}
+
+.button-small {
+    font-size: 85%;
+}
+
+/*
+ * -- MENU STYLES --
+ */
+
+.home-menu {
+    padding: 0.5em;
+    text-align: left;
+    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+}
+.home-menu {
+    background: #2d3e50;
+}
+.pure-menu.pure-menu-fixed {
+    border-bottom: none;
+    height: 40px;
+    position: static;
+}
+
+.home-menu .pure-menu-heading {
+    color: white;
+    font-weight: 400;
+    font-size: 120%;
+}
+
+.home-menu .pure-menu-selected a {
+    color: white;
+}
+
+.home-menu a {
+    color: #6FBEF3;
+}

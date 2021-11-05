@@ -8,3 +8,4 @@
 [h: defineFunction("htmlSelectCombatToken","htmlSelectCombatToken@Lib:RQII")]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
+[h: defineFunction("resetSkillsExperienceTmp","resetSkillsExperienceTmp@Lib:RQII")]

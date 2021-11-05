@@ -1,0 +1,42 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+<h4>Sorcery Magic</h4>
+<table class="content pure-table pure-table-striped">
+ <tbody>
+   [h: aSkills = getProperty("magicSkills", tokenId)]
+   [h: manipValues = json.get(aSkills,"Manipulation")]
+   [r, if(manipValues != ""), code :{
+    <tr>
+	  <td colspan="2">
+          <b>Manipulation :</b> [r: json.get(manipValues,"current")]%<br>
+	  </td>
+	</tr>
+   }]
+ [h: spells = getProperty("sorcerySpells", tokenId)]
+   <!-- dirty but enable only a fix number of 5 grimoires skill and they must be named Grimoire1, Grimoire2, etc.-->
+   [for(i,1,6,1,""), code: {
+     [h: grimoireName = "Grimoire"+i]
+     [h: grimoireValues = json.get(aSkills,grimoireName)]
+   [r, if(grimoireValues != ""), code :{
+     <tr>
+	   <td>
+       <b>[r: grimoireName] :</b> [r: json.get(grimoireValues,"current")]%
+	   </td><td>
+   }]
+   [h: grimName = "grimoire"+i]	
+   [h: jsonFilter = strformat(".[?(@.grimoire == '%{grimName}')]")]
+     [h: grimSpells = json.path.read(spells, jsonFilter)]  
+     [foreach(spell,grimSpells), code:{
+     	[h: spellName = json.get(spell,"displayname")]
+       [h: spellMagnitude = json.get(spell,"magnitude")]
+         [r: spellName] ([r: spellMagnitude])  	
+     }]
+     [r, if(grimoireValues != ""), code :{
+	   </td>
+	 </tr>
+   }]
+   }]
+ </tbody>
+</table> 

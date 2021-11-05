@@ -26,4 +26,4 @@
 
 <!-- Refresh edit Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openHumSheetMgt@Lib:RQII"): macroParam]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

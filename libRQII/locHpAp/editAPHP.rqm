@@ -1,0 +1,51 @@
+<!--
+ form to manage location HP & AP. 
+ Enable to heal or damage either HP or AP of a specific location.
+-->
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h: pLocNb = getProperty("locNb", tokenId)]
+[h: link = macroLinkText("updateAPHP@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+ <input type="hidden" name="tokenId" value="[r:tokenId]">
+<h3>[r:getName(tokenId)]</h3>
+<hr>
+<table width="*">
+<tr>
+  <td>Damage :</td>
+  <td><input type="radio" name="dmgAction" value="Damage" checked="checked"></t>
+</tr>
+<tr>
+  <td>Heal :</td> 
+  <td><input type="radio" name="dmgAction" value="Heal"></td>
+</tr>
+
+<tr>
+  <td><b>Amount :</b></td>
+  <td><input type="text" name="Amount" size="3" align="right"></td>
+</tr>
+
+[h: pLocName= getProperty("locName", tokenId)]
+
+<tr>
+  <td><b>Location :</b></td>
+  <td>
+    <select name="TokenLoc" size="1">
+      [for(i,1,pLocNb+1,1,""), code: {
+          <option value="[r: i]">[r: getStrProp(pLocName, strformat("loc%{i}"))]</option>
+      }]
+    </select>
+  </td>
+</tr>
+<tr>
+  <td><i>Update :</i></td>
+  <td><input type="submit" name="dmgTarget" value="HP"> <input type="submit" name="dmgTarget" value="AP"></td>
+</tr> 
+</table>
+</form>
+<hr>
+[r, macro("viewAPHP@this"): tokenId]

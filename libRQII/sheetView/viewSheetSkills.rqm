@@ -1,0 +1,159 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+	<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>[r: getName(tokenId,tokenMap)]</a>
+        <ul class="pure-menu-list">
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "main")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "magic")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Magic</a>
+			</li>
+			<li class="pure-menu-item pure-menu-selected">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "skills")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Skills</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openAPHP@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Damage / Heal</a>
+			</li>
+			<li class="pure-menu-item">
+		      [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openSheetMgt@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Edit Sheet</a>
+			</li>
+			<li class="pure-menu-item"><a class="pure-menu-link" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>Wiki</a></li>
+        </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+  <div class="content pure-u-8-24">
+    <section>
+	  <p>
+	     <table class="content pure-table pure-table-striped">
+           <thead>
+             <tr>
+               <th>Common Skill</th>
+               <th>Subtype</th>
+               <th>Current</th>
+             </tr>
+	       </thead>	
+           <tbody>	   
+             [h: aSkills = getProperty("commonSkills", tokenId)]
+             [foreach(skill, aSkills, ""), code: {
+               [h: skillValues = json.get(aSkills,skill)]
+               [h: skillSubtype = json.get(skillValues,"subtype")]
+               <tr>
+                 <td>
+                   <b>[r: skill]</b> ([r: json.get(skillValues,"code")])
+                 </td>
+                 <td>[r: skillSubtype]</td>
+                 <td>[r: json.get(skillValues,"current")]</td>
+               </tr>
+             }]
+           </tbody>			 
+         </table>
+	   </p>
+	</section>
+  </div>
+  <div class="content pure-u-8-24">
+    <section>
+	  <p>
+	    <table class="content pure-table pure-table-striped">
+          <thead>
+            <tr>
+              <th>Advanced Skill</th>
+              <th>Subtype</th>
+              <th>Current</th>
+            </tr>
+	      </thead>	
+          <tbody>	   
+            [h: aSkills = getProperty("advSkills", tokenId)]
+            [foreach(skill, aSkills, ""), code: {
+              [h: skillValues = json.get(aSkills,skill)]
+              [h: skillSubtype = json.get(skillValues,"subtype")]
+              <tr>
+                <td>
+                  <b>[r: skill]</b> ([r: json.get(skillValues,"code")])
+                </td>
+                <td>[r: skillSubtype]</td>
+                <td>[r: json.get(skillValues,"current")]</td>
+              </tr>
+            }]
+          </tbody>			 
+        </table>
+	  </p>
+	</section>
+	<section>
+	  <p>
+	    <table class="content pure-table pure-table-striped">
+          <thead>
+            <tr>
+              <th>Combats Skill</th>
+              <th>Subtype</th>
+              <th>Current</th>
+            </tr>
+	      </thead>	
+          <tbody>	   
+            [h: aSkills = getProperty("combatSkills", tokenId)]
+            [foreach(skill, aSkills, ""), code: {
+              [h: skillValues = json.get(aSkills,skill)]
+              [h: skillSubtype = json.get(skillValues,"subtype")]
+              <tr>
+                <td>
+                  <b>[r: skill]</b> ([r: json.get(skillValues,"code")])
+                </td>
+                <td>[r: skillSubtype]</td>
+                <td>[r: json.get(skillValues,"current")]</td>
+              </tr>
+            }]
+          </tbody>			 
+        </table>
+      </p>
+	</section>
+	<section>
+	  <p>
+	    <table class="content pure-table pure-table-striped">
+          <thead>
+            <tr>
+              <th>Magic Skill</th>
+              <th>Subtype</th>
+              <th>Current</th>
+            </tr>
+	      </thead>	
+          <tbody>	   
+            [h: aSkills = getProperty("magicSkills", tokenId)]
+            [foreach(skill, aSkills, ""), code: {
+              [h: skillValues = json.get(aSkills,skill)]
+              [h: skillSubtype = json.get(skillValues,"subtype")]
+              <tr>
+                <td>
+                  <b>[r: skill]</b> ([r: json.get(skillValues,"code")])
+                </td>
+                <td>[r: skillSubtype]</td>
+                <td>[r: json.get(skillValues,"current")]</td>
+              </tr>
+            }]
+          </tbody>			 
+        </table>
+	  </p>
+	</section>
+  </div>
+  <div class="content pure-u-8-24">
+  </div>
+</div>

@@ -1,0 +1,12 @@
+[h: "<!-- Function to reset experienceTmp to 0 -->"]
+[h: "<!-- return a newSkills Json object -->"]
+[h: currSkills = arg(0)]
+[h: tokenId = arg(1)] 
+
+[h, foreach(skill,currSkills), code:{
+  [h: skillValues = json.get(currSkills,skill)]	
+  [h: skillValues = json.set(skillValues,"experienceTmp",0)]
+  [h: currSkills = json.set(currSkills,skill,skillValues)]
+}]
+
+[r: currSkills]
