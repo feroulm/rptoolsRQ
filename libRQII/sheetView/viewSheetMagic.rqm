@@ -114,9 +114,9 @@
 	<section>
 	  <h4>Heroic Abilities</h4>
 	  [h: propHeroicSkills = getProperty("heroicSkills",tokenId)]
-      [h: heroicDb = getLibProperty("heroicDb","Lib:RQII")]
+    [h: heroicDb = getLibProperty("heroicDb","Lib:RQII")]
 
-      <table class="content pure-table pure-table-striped">
+    <table class="content pure-table pure-table-striped">
 		<tbody>
 			<tr>
 				<td>		
@@ -133,5 +133,30 @@
   </div>
   <div class="pure-u-8-24">
     <h4>Magic Items</h4>
+    [h: magicItemDesc = getProperty("magicItemDesc", tokenId)]
+	  [h: hold = json.get(magicItemDesc,"hold")]
+	  [h: hidden = json.get(magicItemDesc,"hidden")]
+    <table class="content pure-table">
+      <thead>
+          <tr>
+              <th>Hold</th>
+          </tr>                
+      </thead>
+      <tbody>
+          <tr>
+              <td>[r: hold]</td>
+          </tr>
+      </tbody>
+      <thead>
+          <tr>
+              <th>Hidden</th>
+          </tr>                
+      </thead>
+      <tbody>
+          <tr>
+              <td>[r: hidden]</td>
+          </tr>
+      </tbody>
+    </table>
   </div>
 </div>

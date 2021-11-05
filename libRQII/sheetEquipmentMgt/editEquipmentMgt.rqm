@@ -74,4 +74,33 @@ Equipment Management<br>
       </form>
 	</td>
   </tr>
+  <tr>
+    <td colspan="2">
+    [h: link = macroLinkText("updateMagicItem@Lib:RQII", "all")]
+	  [h: magicItemDesc = getProperty("magicItemDesc", tokenId)]
+	  [h: hold = json.get(magicItemDesc,"hold")]
+	  [h: hidden = json.get(magicItemDesc,"hidden")]
+	  <form action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <table>
+		  <tr class="headRow">
+            <th colspan="2">Magic Item</th>
+	      </tr>
+          <tr class="oddRow">
+            <th>Hold</th>
+            <td>
+				<textarea name="hold" cols="30" rows="4" align="left">[r: hold]</textarea>
+			</td>
+          </tr>
+		  <tr class="evenRow">
+            <th>Hidden</th>
+            <td>
+				<textarea name="hidden" cols="30" rows="4" align="left">[r: hidden]</textarea>
+			</td>
+          </tr>
+        </table>
+      <input type="submit" name="edit_btn" value="Update">
+      </form>
+    </td>
+  </tr>
 </table>

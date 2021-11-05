@@ -1,0 +1,117 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+
+<!-- init Charac value -->
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[h: newSTR = getProperty("STR", tokenId)]
+[h: newCON = getProperty("CON", tokenId)]
+[h: newSIZ = getProperty("SIZ", tokenId)]
+[h: newINT = getProperty("INT", tokenId)]
+[h: newPOW = getProperty("POW", tokenId)]
+[h: newDEX = getProperty("DEX", tokenId)]
+[h: newCHA = getProperty("CHA", tokenId)]
+[h: newCharac = ""]
+[foreach(prop, propNames, ""), code: {
+    <!-- construct JSON varName based on prop Name -->
+    [h: basProp = "bas"+prop]
+    [h: tmpProp = "tmp"+prop]
+    [h: propValue = getProperty(prop, tokenId)]
+    [h: newCharac = json.set(newCharac,basProp,propValue,tmpProp,propValue)]
+}]
+[r: setProperty("Charac",newCharac,tokenId)]
+
+<!-- init ArmorPenalty value -->
+[h: armorPenalty = '{"base":0,"current":0}']
+[r: setProperty("ArmorPenalty",armorPenalty,tokenId)]
+
+<!-- init StrikeRank value -->
+[h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+[h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
+[h: newSR = floor((newINT + newDEX)/2) - currentArmorPenalty]
+[h: propStrikeRank = '{"base":0,"current":0}']
+[h: propStrikeRank = json.set(propStrikeRank,"base",newSR)]
+[h: propStrikeRank = json.set(propStrikeRank,"current",newSR)]
+[h: setProperty("StrikeRank",propStrikeRank,tokenId)]
+
+<!-- init DamageMod value -->
+
+[h: damageModTbl = getLibProperty("damageMod","Lib:RQII")]
+[h, if(newSTR+newSIZ>50), code:{
+  <!-- big damage mod progress by range of 10pts -->
+  [h: newDamageModIndex = ceil((newSTR + newSIZ)/10)+4]
+};
+{
+  <!-- damage progress mod by range of 5pts -->
+  [h: newDamageModIndex = ceil((newSTR + newSIZ)/5)-1]
+}]
+
+[h, if(newDamageModIndex<0): newDamageModIndex = 0]
+[r, if(newDamageModIndex>17), code:{
+	[h: newDamageModIndex = 17]
+	Damage Mod when STR + SIZ is above 130 is not implemented...continue the progession<br>
+}]
+[h: newDamageMod = json.get(damageModTbl,newDamageModIndex)]
+[h: newPropDamageMod = '{"base":"+0","current":"+0"}']
+[h: newPropDamageMod = json.set(newPropDamageMod,"current",newDamageMod)]
+[h: newPropDamageMod = json.set(newPropDamageMod,"base",newDamageMod)]
+[h: setProperty("damageMod",newPropDamageMod,tokenId)]
+
+<!-- init otherAttr value -->
+[h: newOtherAttr ='{"currHeroPts":3,"prevHeroPts":3,"currEnc":5,"travelEnc":12,"healRate":1,"movement":"8m","improvementMod":0}']
+[h: setProperty("otherAttr",newOtherAttr,tokenId)]
+
+<!-- init DedicatedPow value -->
+
+[h: newDedicatedPow ='{"godlore1":1,"godlore2":0,"godlore3":0,"godlore4":0,"godlore5":0}']
+[h: setProperty("DedicatedPow",newDedicatedPow,tokenId)]
+
+<!-- init MagicPoint value -->
+[h: lore1 = json.get(newDedicatedPow, "godlore1")]
+[h: lore2 = json.get(newDedicatedPow, "godlore2")]
+[h: lore3 = json.get(newDedicatedPow, "godlore3")]
+[h: lore4 = json.get(newDedicatedPow, "godlore4")]
+[h: lore5 = json.get(newDedicatedPow, "godlore5")]
+
+[h: newDedPOW = lore1 + lore2 + lore3 + lore4 + lore5]
+[h: newCurrMP = newPOW - newDedPOW)]
+  
+[h: newMagicPoint ='{"MP":{"base":16,"current":15},"dedPOW":2}']
+[h: newMagicPoint = json.path.set(newMagicPoint,"MP.base",newCurrMP)]
+[h: newMagicPoint = json.path.set(newMagicPoint,"MP.current",newCurrMP)]
+[h: newMagicPoint = json.path.set(newMagicPoint,"dedPOW",newDedPOW)]
+[h: setProperty("MagicPoint",newMagicPoint,tokenId)]
+
+<!-- init Weapons value -->
+<!-- init Missiles value -->
+<!-- init commonSkills value -->
+<!-- init advSkills value -->
+<!-- init combatSkills value -->
+<!-- init magicSkills value -->
+<!-- init heroicSkills value -->
+<!-- init traits value -->
+<!-- init spells value -->
+<!-- init spiritSpells value -->
+<!-- init divineSpells value -->
+<!-- init draconicSpells value -->
+<!-- init draconicPrepared value -->
+<!-- init sorcerySpells value -->
+<!-- init wiki value -->
+<!-- init combatStatus value -->
+<!-- init combatLog value -->
+<!-- init tokenDesc value -->
+
+<!-- init wealth value -->
+[h: newWealth ='{"hold":{"gp":10,"sp":20,"cp":30,"others":""},"hidden":{"gp":50,"sp":10,"cp":100,"others":""}}']
+[h: setProperty("wealth",newWealth,tokenId)]
+
+<!-- init equipmentDesc value -->
+[h: newEquipment ='{"hold":"nothing","hidden":"nothing"}']
+[h: setProperty("equipmentDesc",newEquipment,tokenId)]
+
+<!-- init equipmentDesc value -->
+[h: newMagicItemDesc ='{"hold":"nothing","hidden":"nothing"}']
+[h: setProperty("magicItemDesc",newMagicItemDesc,tokenId)]
+
+<!-- init fatigue value -->
+[h: newFatigue ='{"level":"Fresh"}']
+[h: setProperty("fatigue",newFatigue,tokenId)]

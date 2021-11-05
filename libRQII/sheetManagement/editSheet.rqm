@@ -231,7 +231,7 @@
     <td valign="top">
        [r, macro("editSheetMeleeWeapon@Lib:RQII"): tokenId]<br>
 	   <br>
-       [r: macroLink("Gold & Equipement", "openEquipmentMgt@Lib:RQII", "all")]<br>
+       [r: macroLink("Gold, Equipement & Magic items", "openEquipmentMgt@Lib:RQII", "all")]<br>
 	</td>
   </tr>
   <tr>

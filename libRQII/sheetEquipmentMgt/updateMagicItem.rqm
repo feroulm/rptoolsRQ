@@ -1,0 +1,15 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: hold = json.get(arguments,"hold")]
+[h: hidden = json.get(arguments,"hidden")]
+
+[h: magicItemDesc = getProperty("magicItemDesc", tokenId)]
+
+[h: magicItemDesc = json.set(magicItemDesc,"hold",hold)]
+[h: magicItemDesc = json.set(magicItemDesc,"hidden",hidden)]
+
+[h: setProperty("magicItemDesc", magicItemDesc, tokenId)]
+  
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openEquipmentMgt@Lib:RQII"): macroParam]
