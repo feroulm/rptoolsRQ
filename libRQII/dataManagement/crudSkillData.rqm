@@ -1,0 +1,74 @@
+[h: arguments = macro.args] 
+
+[h: action = json.get(arguments,"action")]
+[h: skType = json.get(arguments, "skType")]
+[h: objectKey = json.get(arguments, "objectKey")]
+
+[h: newCode = json.get(arguments,"code")]
+[h: newSubtype = json.get(arguments,"subtype")]
+[h: newLnk = json.get(arguments,"lnk")]
+
+[h, switch(skType), code:
+  case "advanced" :{
+    [h: objectsDb = getLibProperty("AdvSkills", "Lib:RQII")]
+  };
+  case "combat" :{
+    [h: objectsDb = getLibProperty("CombatSkills", "Lib:RQII")]
+  };
+  case "magic" :{
+    [h: objectsDb = getLibProperty("MagicSkills", "Lib:RQII")]
+  };
+  default: {
+  <!-- do nothing -->
+    [h: res = input("junk|skType is wrong.|ignored|LABEL|SPAN=true")]
+    [h: abort(0)]
+  }
+]
+
+[h: objectExist = json.contains(objectsDb,objectKey)]
+
+[r, if(! objectExist), code:{
+  <!-- Creation -->
+  [h: newObjectValues = json.set("{}","code",newCode)]
+  [h: newObjectValues = json.set(newObjectValues,"subtype",newSubtype)]
+  [h: newObjectValues = json.set(newObjectValues,"lnk",newLnk)]
+  [h: objectsDb = json.set(objectsDb,objectKey,newObjectValues)]		
+
+  Add a new object : [r: objectKey] 
+};
+{
+  <!-- Update -->
+	Update object: [r: objectKey] 
+  [h: newObjectValues = json.get(objectsDb,objectKey)]
+  [h: newObjectValues = json.set(newObjectValues,"code",newCode)]
+  [h: newObjectValues = json.set(newObjectValues,"subtype",newSubtype)]
+  [h: newObjectValues = json.set(newObjectValues,"lnk",newLnk)]
+  
+  [h: objectsDb = json.set(objectsDb,objectKey,newObjectValues)]
+}]
+
+[r, if(action == "delete"), code:{
+   Delete object : [r: objectKey] 
+  [h: objectsDb = json.remove(objectsDb, objectKey)]
+}]
+
+[h, switch(skType), code:
+  case "advanced" :{
+    [h: setLibProperty("AdvSkills", objectsDb, "Lib:RQII")]
+  };
+  case "combat" :{
+    [h: setLibProperty("CombatSkills", objectsDb, "Lib:RQII")]
+  };
+  case "magic" :{
+    [h: setLibProperty("MagicSkills", objectsDb, "Lib:RQII")]
+  };
+  default: {
+  <!-- do nothing -->
+    [h: res = input("junk|skType is wrong.|ignored|LABEL|SPAN=true")]
+    [h: abort(0)]
+  }
+]
+
+<!-- Refresh Data Mgt Window -->
+[h: macroParam = json.set("{}", "tab", "skills")]
+[r, macro("openDataMgt@Lib:RQII"): macroParam]

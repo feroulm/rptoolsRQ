@@ -1,0 +1,63 @@
+[h: link = macroLinkText("openDataMgt@Lib:RQII", "none")]
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)), code: {
+  [h: tab = "main"]
+  [h: skType = "advanced"]  
+  [h: spellType = "common"] 
+  [h: nameFilter = ".*"]
+  [h: typeFilter = ".*"]
+ };{
+  [h: tab = json.get(arguments,"tab")]
+  [h, if(tab == "") : tab = "main"]
+  [h: skType = json.get(arguments,"skType")]
+  [h, if(skType == "") : skType = "advanced"]
+  [h: spellType = json.get(arguments,"spellType")]
+  [h, if(spellType == "") : spellType = "common"]
+  [h: nameFilter = json.get(arguments, "nameFilter")]
+  [h: typeFilter = json.get(arguments, "typeFilter")]
+  [h, if(nameFilter == "") : nameFilter = ".*"]
+  [h, if(typeFilter == "") : typeFilter = ".*"]
+}]
+
+[dialog5("Data Management"): {
+  <html>
+    <head>
+      <link rel="onChangeSelection" type="macro" href="[r:link]">
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>Data Management</title>
+    </head>
+    <body>
+	  [h: macroParam = json.set("{}", "tab", tab)]
+	  [r, switch(tab), code:
+        case "main" :{
+  	      [r, macro("viewMainData@Lib:RQII"): macroParam]
+        };
+        case "magic" :{
+          [h: macroParam = json.set(macroParam, "spellType", spellType)]
+  	      [r, macro("viewMagicData@Lib:RQII"): macroParam]
+        };
+        case "skills" :{
+          [h: macroParam = json.set(macroParam, "skType", skType)]
+  	      [r, macro("viewSkillsData@Lib:RQII"): macroParam]
+        };
+        case "melee" :{
+          [h: macroParam = json.set(macroParam, "nameFilter", nameFilter, "typeFilter", typeFilter)]
+  	      [r, macro("viewWeaponMeleeData@Lib:RQII"): macroParam]
+        };
+        case "range" :{
+  	      [r, macro("viewWeaponRangeData@Lib:RQII"): macroParam]
+        };
+        case "traits" :{
+  	      [r, macro("viewTraitsData@Lib:RQII"): macroParam]
+        };
+        case "heroic" :{
+  	      [r, macro("viewHeroicData@Lib:RQII"): macroParam]
+        };
+        default: {
+          [r, macro("viewMainData@Lib:RQII"): macroParam]
+        }
+      ] 
+    </body>
+</html>
+}]

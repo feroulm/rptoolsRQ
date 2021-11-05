@@ -13,14 +13,36 @@ body {
 }
 
 .section {
-    padding: 2px 0px 10px 0px;
+    padding: 5px 0px 10px 0px;
     font-size: 90%;
+}
+
+h4,
+label {
+	padding: 10px 0px 5px 0px;
+	margin: 0 0 0 0;
+	font-size: 90%;
+    color: #34495e;
 }
 
 .button-small {
     font-size: 85%;
 }
 
+.button-warning {
+    background: rgb(223, 117, 20);
+    /* this is an orange */
+}
+
+.content-subhead {
+    text-transform: uppercase;
+    color: #aaa;
+    border-bottom: 1px solid #eee;
+    padding: 0.4em 0;
+    font-size: 80%;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+}
 /*
  * -- MENU STYLES --
  */
