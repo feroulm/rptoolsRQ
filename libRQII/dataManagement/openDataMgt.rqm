@@ -48,10 +48,12 @@
         case "range" :{
   	      [r, macro("viewWeaponRangeData@Lib:RQII"): macroParam]
         };
-        case "traits" :{
+        case "trait" :{
+          [h: macroParam = json.set(macroParam, "nameFilter", nameFilter, "typeFilter", typeFilter)]
   	      [r, macro("viewTraitsData@Lib:RQII"): macroParam]
         };
         case "heroic" :{
+          [h: macroParam = json.set(macroParam, "nameFilter", nameFilter, "typeFilter", typeFilter)]
   	      [r, macro("viewHeroicData@Lib:RQII"): macroParam]
         };
         default: {

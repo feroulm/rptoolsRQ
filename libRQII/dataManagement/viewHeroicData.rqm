@@ -1,0 +1,155 @@
+[h: arguments = macro.args] 
+
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+[h, if(nameFilter == "") : nameFilter = ".*"]
+[h, if(typeFilter == "") : typeFilter = ".*"]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+      <a class="pure-menu-heading" href="#">DATA MGT</a>
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item ">
+          [h: macroParam = json.set("{}","tab", "main")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "skills","skType", "advanced")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Skills</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "magic","spellType", "common")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Magic</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "melee")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Weapon Melee</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "range")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Weapon Range</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "trait")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Traits</a>
+        </li>
+        <li class="pure-menu-item pure-menu-selected">
+          [h: macroParam = json.set("{}","tab", "heroic")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Heroic</a>
+        </li>
+      </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+  <div class="pure-u-24-24">
+    [h: link = macroLinkText("openDataMgt@Lib:RQII", "all")]
+    <form class="pure-form" action="[r:link]" method="json">
+      <fieldset>
+          <legend>Filter type</legend>
+          <td><input type="text" placeholder="Name" name="nameFilter" value="[r: nameFilter]"></td>
+          <td><input type="text" placeholder="Type" name="typeFilter" value="[r: typeFilter]"></td>
+          <input type="hidden" name="tab" value="heroic">
+          <button type="submit" class="pure-button pure-button-primary">Filter</button>
+      </fieldset>
+    </form>
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-24-24">
+    <h1 class="content-subhead">Heroic</h1>
+    <table class="content pure-table pure-table-striped">
+    <thead>
+        <tr>
+            <th>Heroic Id</th>
+            <th>Displayname</th>
+            <th>Type</th>
+            <th>Requirements</th>
+            <th>Lnk</th>
+            <th>Desc</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+      <tr>
+          [h: link = macroLinkText("crudHeroicData@Lib:RQII", "all")]
+          <form class="pure-form" action="[r:link]" method="json">
+            <td><input type="text" placeholder="Traits Id" name="objectKey" size="25"/></td>
+            <td><input type="text" placeholder="Displayname" name="displayname" size="25"/></td>
+            <td><input type="text" placeholder="Type" name="type" size="10"/></td>
+            <td><input type="text" placeholder="Requirements" name="requirements" size="15"/></td>
+            <td><input type="text" placeholder="Lnk" name="lnk" size="10"/></td>
+            <td><input type="text" placeholder="Desc" name="desc" size="25"/></td>
+            <td>
+              <input type="hidden" name="action" value="create">
+              <button type="submit" class="pure-button pure-button-primary">Add</button>
+            </td>
+          </form>
+      </tr>
+    </tbody>
+    </table>  
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-24-24"> 
+
+    [h: objectsDb = getLibProperty("heroicDb", "Lib:RQII")]
+      
+    <table class="content pure-table pure-table-striped">
+    <thead>
+        <tr>
+            <th>Traits Id</th>
+            <th>Displayname</th>
+            <th>Type</th>
+            <th>Requirements</th>
+            <th>Lnk</th>
+            <th>Desc</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    [r, foreach(objectKey, objectsDb, ""), code:{
+      [h: jsonObject = json.get(objectsDb,objectKey)]
+      [h: objectType = json.get(jsonObject,"type")]
+      
+      [r, if(matches(objectKey,nameFilter) && matches(objectType,typeFilter)), code:{
+      
+        <tr>
+            [h: link = macroLinkText("crudHeroicData@Lib:RQII", "all")]
+            <form class="pure-form" action="[r:link]" method="json">
+              <td><label>[r: objectKey]</label></td>
+              
+              <td><input type="text" placeholder="Displayname" name="displayname" value='[r: json.get(jsonObject,"displayname")]' size="25"/></td>
+              <td><input type="text" placeholder="Type" name="type" value='[r: json.get(jsonObject,"type")]' size="10"/></td>
+              <td><input type="text" placeholder="Requirements" name="requirements" value='[r: json.get(jsonObject,"requirements")]' size="4"/></td>
+              <td><input type="text" placeholder="Lnk" name="lnk" value='[r: json.get(jsonObject,"lnk")]' size="10"/></td>
+              <td><input type="text" placeholder="Desc" name="desc" value='[r: json.get(jsonObject,"desc")]' size="25"/></td>
+              
+              <td>
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="objectKey" value="[r: objectKey]">
+                <button type="submit" class="pure-button pure-button-primary">update</button>
+              </td>
+            </form>
+            <td>
+              [h: macroParam = json.set("{}", "action","delete","objectKey", objectKey)]
+              [h: link = macroLinkText("crudHeroicData@Lib:RQII", "all",macroParam)]
+              <a class="button-warning pure-button" href="[r: link]">Del</a>
+            </td>
+        </tr>
+      };{}]
+      
+    }]
+    </tbody>
+    </table>  
+  </div>
+</div>

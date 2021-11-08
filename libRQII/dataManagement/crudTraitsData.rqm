@@ -1,0 +1,52 @@
+[h: arguments = macro.args] 
+
+[h: action = json.get(arguments,"action")]
+[h: objectKey = json.get(arguments, "objectKey")]
+
+[h: newDisplayname = json.get(arguments,"displayname")]
+[h: newType = json.get(arguments,"type")]
+[h: newD100 = json.get(arguments,"d100")]
+[h: newLnk = json.get(arguments,"lnk")]
+[h: newDesc = json.get(arguments,"desc")]
+
+
+[h: objectsDb = getLibProperty("traitsDb", "Lib:RQII")]
+  
+
+[h: objectExist = json.contains(objectsDb,objectKey)]
+
+[r, if(! objectExist), code:{
+  <!-- Creation -->
+  [h: newObjectValues = json.set("{}","displayname",newDisplayname)]
+  [h: newObjectValues = json.set(newObjectValues,"type",newType)]
+  [h: newObjectValues = json.set(newObjectValues,"d100",newD100)]
+  [h: newObjectValues = json.set(newObjectValues,"lnk",newLnk)]
+  [h: newObjectValues = json.set(newObjectValues,"desc",newDesc)]
+  [h: objectsDb = json.set(objectsDb,objectKey,newObjectValues)]		
+  
+  Add a new object : [r: objectKey] 
+};
+{
+  <!-- Update -->
+	Update object: [r: objectKey] 
+  [h: newObjectValues = json.get(objectsDb,objectKey)]
+  [h: newObjectValues = json.set(newObjectValues,"displayname",newDisplayname)]
+  [h: newObjectValues = json.set(newObjectValues,"type",newType)]
+  [h: newObjectValues = json.set(newObjectValues,"d100",newD100)]
+  [h: newObjectValues = json.set(newObjectValues,"lnk",newLnk)]
+  [h: newObjectValues = json.set(newObjectValues,"desc",newDesc)]
+  
+  [h: objectsDb = json.set(objectsDb,objectKey,newObjectValues)]
+}]
+
+[r, if(action == "delete"), code:{
+   Delete object : [r: objectKey] 
+  [h: objectsDb = json.remove(objectsDb, objectKey)]
+}]
+
+
+[h: setLibProperty("traitsDb", objectsDb, "Lib:RQII")]
+
+<!-- Refresh Data Mgt Window -->
+[h: macroParam = json.set("{}", "tab", "trait")]
+[r, macro("openDataMgt@Lib:RQII"): macroParam]
