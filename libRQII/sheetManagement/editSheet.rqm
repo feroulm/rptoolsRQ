@@ -270,6 +270,7 @@
     <th>Experience</th>
     <th>Current New</th>
     <th>Experience New</th>
+    <th></th>
   </tr>
   [h: class = "oddRow"]
   [h: aSkills = getProperty("commonSkills", tokenId)]
@@ -290,11 +291,19 @@
       <td>[r: json.get(skillValues,"experience")]</td>
       <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
       <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","common","skillName",skill)]
+      <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
     </tr>
     [h: class = if(class=="oddRow", "evenRow", "oddRow")]
   }]
 </table>
 <input type="submit" name="edit_btn" value="Update">
+</form>
+[h: linkAddAdvSkill = macroLinkText("openAddAdvSkill@Lib:RQII", "all")]
+<form action="[r:linkAddAdvSkill]" method="json">
+  <input type="hidden" name="tokenId" value="[r:tokenId]">
+  <input type="hidden" name="skType" value="common">
+  <input type="submit" name="edit_btn" value="Add Common Skills">
 </form>
 
     </td>

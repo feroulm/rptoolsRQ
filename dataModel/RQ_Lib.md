@@ -260,3 +260,116 @@ On the token, heroicID are stored in a JSON array in the propertie *heroicSkills
 ```
 traitsDb = {"darksense":{"displayname":"Darksense","type":"generic","d100":5,"lnk":"Rq/MonstersTraits#HDarksense","desc":"The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight."},"excellentSwimmer":{"displayname":"Excellent Swimmer","type":"generic","d100":7,"lnk":"Rq/MonstersTraits#HDarksense","desc":"The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight."},"absorbing":{"displayname":"Absorbing","type":"chaotic","d100":1,"lnk":"Rq/TraitChaotiques","desc":"The creature possesses a combination of Dark Sight, olfactory awareness and echolocation to achieve precise underground awareness and orientation.<br>Creatures with this trait function as well underground as humans function above it in broad daylight."},"accursed":{"displayname":"Accursed","type":"chaotic","d100":2,"lnk":"Rq/TraitChaotiques","desc":"Temporarily weakens the soul of an opponent by 1D8 POW each successful hit."}}
 ```
+
+##Skills
+
+### CommonSkills
+
+```
+{
+  "Athletics": {
+    "code": "STR+DEX",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Brawn": {
+    "code": "STR+SIZ",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Culture (Own)": {
+    "code": "INT*2",
+    "subtype": "Jrusteli",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Dance": {
+    "code": "DEX+CHA",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Drive": {
+    "code": "DEX+POW",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Evade": {
+    "code": "DEX*2",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Evaluate": {
+    "code": "INT+CHA",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "First Aid": {
+    "code": "INT+DEX",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Influence": {
+    "code": "CHA*2",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Insight": {
+    "code": "INT+POW",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Lore (Regional)": {
+    "code": "INT*2",
+    "subtype": "Kethaela",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Perception": {
+    "code": "POW+INT",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Persistence": {
+    "code": "POW*2",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Resilience": {
+    "code": "CON*2",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Ride": {
+    "code": "DEX+POW",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Sing": {
+    "code": "CHA+POW",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Sleight": {
+    "code": "DEX+CHA",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Stealth": {
+    "code": "INT+DEX",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Swim": {
+    "code": "STR+CON",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  },
+  "Unarmed": {
+    "code": "STR+DEX",
+    "subtype": "0",
+    "lnk": "/Rq/Skills/CommonSkills/"
+  }
+}
+```
+
+```
+CommonSkills = {"Athletics":{"code":"STR+DEX","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Brawn":{"code":"STR+SIZ","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Culture (Own)":{"code":"INT*2","subtype":"Jrusteli","lnk":"/Rq/Skills/CommonSkills/"},"Dance":{"code":"DEX+CHA","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Drive":{"code":"DEX+POW","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Evade":{"code":"DEX*2","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Evaluate":{"code":"INT+CHA","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"First Aid":{"code":"INT+DEX","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Influence":{"code":"CHA*2","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Insight":{"code":"INT+POW","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Lore (Regional)":{"code":"INT*2","subtype":"Kethaela","lnk":"/Rq/Skills/CommonSkills/"},"Perception":{"code":"POW+INT","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Persistence":{"code":"POW*2","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Resilience":{"code":"CON*2","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Ride":{"code":"DEX+POW","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Sing":{"code":"CHA+POW","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Sleight":{"code":"DEX+CHA","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Stealth":{"code":"INT+DEX","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Swim":{"code":"STR+CON","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"},"Unarmed":{"code":"STR+DEX","subtype":"0","lnk":"/Rq/Skills/CommonSkills/"}}
+```

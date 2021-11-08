@@ -1,6 +1,26 @@
 [h: param = macro.args]
 
-[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+[h: skType = json.get(param, "skType")]
+
+[r, switch(skType), code:
+  case "common" :{
+  	[h: advSkDb = getLibProperty("CommonSkills", "Lib:RQII")]
+  };
+  case "advanced" :{
+  	[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+  };
+  case "combat" :{
+  	[h: advSkDb = getLibProperty("CombatSkills", "Lib:RQII")]
+  };
+  case "magic" :{
+  	[h: advSkDb = getLibProperty("MagicSkills", "Lib:RQII")]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+ 	[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+  }
+]
 
 [h: tokenId = json.get(param,"tokenId")]
 [h: newSkillName = json.get(param,"advSkillName")]
@@ -14,8 +34,26 @@
   [h: newAdvSkillValues = json.set("{}","code",newSkillCode)]
   [h: newAdvSkillValues = json.set(newAdvSkillValues,"subtype",newSkillSubtype)]
   [h: newAdvSkillValues = json.set(newAdvSkillValues,"lnk",newSkillLnk)]
-  [h: advSkDb = json.set(advSkDb,newSkillName,newAdvSkillValues)]		
-  [h: setLibProperty("AdvSkills", advSkDb, "Lib:RQII")]
+  [h: advSkDb = json.set(advSkDb,newSkillName,newAdvSkillValues)]	
+  [r, switch(skType), code:
+    case "common" :{
+  	   [h: setLibProperty("CommonSkills", advSkDb, "Lib:RQII")]
+    };
+    case "advanced" :{
+  	   [h: setLibProperty("AdvSkills", advSkDb, "Lib:RQII")]
+    };
+    case "combat" :{
+      [h: setLibProperty("CombatSkills", advSkDb, "Lib:RQII")]
+    };
+    case "magic" :{
+      [h: setLibProperty("MagicSkills", advSkDb, "Lib:RQII")]
+    };
+    default: {
+ 	<!-- do nothing -->
+ 	  <br>Unknown skill type !<br>
+    }
+  ]	
+
   Add advanced Skill : [r: newSkillName] 
 };
 {
@@ -23,5 +61,5 @@
 }]
 
 <!-- Refresh edit Window for the new token -->
-[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[h: macroParam = json.set("{}", "tokenId", tokenId,"skType",skType)]
 [r, macro("openAddAdvSkill@Lib:RQII"): macroParam]

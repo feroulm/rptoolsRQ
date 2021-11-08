@@ -1,6 +1,25 @@
-[h: tokenId = macro.args]
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: skType = json.get(arguments, "skType")]
 
-[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+[r, switch(skType), code:
+  case "common" :{
+  	[h: advSkDb = getLibProperty("CommonSkills", "Lib:RQII")]
+  };
+  case "advanced" :{
+  	[h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+  };
+  case "combat" :{
+  	[h: advSkDb = getLibProperty("CombatSkills", "Lib:RQII")]
+  };
+  case "magic" :{
+  	[h: advSkDb = getLibProperty("MagicSkills", "Lib:RQII")]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
 
 <!-- global layout table -->
 <table>
@@ -10,6 +29,7 @@
 [h: linkAddAdvSkill = macroLinkText("addAdvSkill@Lib:RQII", "all")]
 <form action="[r:linkAddAdvSkill]" method="json">
 <input type="hidden" name="tokenId" value="[r:tokenId]">
+<input type="hidden" name="skType" value="[r:skType]">
 <table id="stats" cellpadding="2" cellspacing="0" border="0">
   [h: class = "oddRow"]
   [r, foreach(skillName, advSkDb, ""), code:{
@@ -35,6 +55,7 @@
 [h: linkCreateAdvSkill = macroLinkText("createAdvSkill@Lib:RQII", "all")]
 <form action="[r:linkCreateAdvSkill]" method="json">
 <input type="hidden" name="tokenId" value="[r:tokenId]">
+<input type="hidden" name="skType" value="[r:skType]">
 <table id="stats" cellpadding="2" cellspacing="0" border="0">
   <tr class = "oddRow">
     <td class="leftBorder">Name : </td>

@@ -1,9 +1,30 @@
 [h: arguments = macro.args]
 
 [h: tokenId = json.get(arguments, "tokenId")]
+[h: skType = json.get(arguments, "skType")]
 
-[h: aSkills = getProperty("advSkills", tokenId)]
-[r: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+[r, switch(skType), code:
+  case "common" :{
+  	[h: aSkills = getProperty("commonSkills", tokenId)]
+    [h: advSkDb = getLibProperty("CommonSkills", "Lib:RQII")]
+  };
+  case "advanced" :{
+  	[h: aSkills = getProperty("advSkills", tokenId)]
+    [h: advSkDb = getLibProperty("AdvSkills", "Lib:RQII")]
+  };
+  case "combat" :{
+  	[h: aSkills = getProperty("combatSkills", tokenId)]
+  	[h: advSkDb = getLibProperty("CombatSkills", "Lib:RQII")]
+  };
+  case "magic" :{
+  	[h: aSkills = getProperty("magicSkills", tokenId)]
+  	[h: advSkDb = getLibProperty("MagicSkills", "Lib:RQII")]
+  };
+  default: {
+ 	<!-- do nothing -->
+ 	<br>Unknown skill type !<br>
+  }
+]
 
 <!-- get charc value to compute skill base -->
 [h: STR = getProperty("STR",tokenId)]
@@ -13,11 +34,13 @@
 [h: POW = getProperty("POW",tokenId)]
 [h: DEX = getProperty("DEX",tokenId)]
 [h: CHA = getProperty("CHA",tokenId)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+[h: POWded = json.get(propMagicPoint,"dedPOW")]
 
-[r, foreach(param,arguments),code :{
+[h, foreach(param,arguments,""),code :{
   [h: skillExist = json.contains(aSkills,param)]
   <!-- add only new skill -->
-  [r, if((param != "tokenId")&&(param != "edit_btn")&&(! skillExist)), code :{
+  [h, if((param != "tokenId")&&(param != "edit_btn")&&(param != "skType")&&(! skillExist)), code :{
   	<!-- get skill model -->
   	[h: skRef = json.get(advSkDb,param)]
   	[h: newSkCode = json.get(skRef,"code")]
@@ -26,7 +49,7 @@
   	[h: skProfession = 0]
   	[h: skExperience = 0]
   	<!-- works because we have properties with the name DEX, INT etc... -->
-  	[r: skBase = eval(newSkCode)]
+  	[h: skBase = eval(newSkCode)]
   	[h: skCurrent = skBase + skCulture + skProfession + skExperience]
   	[h: newAdvSkillValues = json.set("{}","code",newSkCode)]
   	[h: newAdvSkillValues = json.set(newAdvSkillValues,"subtype",skSubType)]
@@ -40,7 +63,25 @@
 
 }]
 
-[h: setProperty("advSkills",aSkills, tokenId)]
+[h, switch(skType), code:
+    case "common" :{
+  	   [h: setProperty("commonSkills",aSkills, tokenId)]
+    };
+    case "advanced" :{
+  	   [h: setProperty("advSkills",aSkills, tokenId)]
+    };
+    case "combat" :{
+      [h: setProperty("combatSkills",aSkills, tokenId)]
+    };
+    case "magic" :{
+      [h: setProperty("magicSkills",aSkills, tokenId)]
+    };
+    default: {
+ 	<!-- do nothing -->
+ 	  <br>Unknown skill type !<br>
+    }
+]	
+
 
 <!-- Refresh edit Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", tokenId)]

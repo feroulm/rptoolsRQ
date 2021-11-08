@@ -1,0 +1,163 @@
+[h: arguments = macro.args] 
+
+[h: nameFilter = json.get(arguments, "nameFilter")]
+[h: typeFilter = json.get(arguments, "typeFilter")]
+
+[h, if(nameFilter == "") : nameFilter = ".*"]
+[h, if(typeFilter == "") : typeFilter = ".*"]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+      <a class="pure-menu-heading" href="#">DATA MGT</a>
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item ">
+          [h: macroParam = json.set("{}","tab", "main")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "skills","skType", "advanced")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Skills</a>
+        </li>
+        <li class="pure-menu-item pure-menu-selected">
+          [h: macroParam = json.set("{}","tab", "magic","spellType", "common")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Magic</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "melee")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Weapon Melee</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "range")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Weapon Range</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "trait")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Traits</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}","tab", "heroic")]
+          [h: lnkTxt = macroLinktext("openDataMgt@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Heroic</a>
+        </li>
+      </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+  <div class="pure-u-24-24">
+    [h: link = macroLinkText("openDataMgt@Lib:RQII", "all")]
+    <form class="pure-form" action="[r:link]" method="json">
+      <fieldset>
+          <legend>Filter type</legend>
+          <td><input type="text" placeholder="Name" name="nameFilter" value="[r: nameFilter]"></td>
+          <td><input type="text" placeholder="Type" name="typeFilter" value="[r: typeFilter]"></td>
+          <input type="hidden" name="tab" value="melee">
+          <button type="submit" class="pure-button pure-button-primary">Filter</button>
+      </fieldset>
+    </form>
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-24-24">
+    <h1 class="content-subhead">Melee Weapons</h1>
+    <table class="content pure-table pure-table-striped">
+    <thead>
+        <tr>
+            <th>Weapon Id</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Reach</th>
+            <th>Damage</th>
+            <th>ApHp</th>
+            <th>Manoeuvre</th>
+            <th>Special</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+      <tr>
+          [h: link = macroLinkText("crudWeaponMeleeData@Lib:RQII", "all")]
+          <form class="pure-form" action="[r:link]" method="json">
+            <td><input type="text" placeholder="Weapon Id" name="objectKey" size="25"/></td>
+            <td><input type="text" placeholder="Type" name="Type" size="15"/></td>
+            <td><input type="text" placeholder="Size" name="Size" size="3"/></td>
+            <td><input type="text" placeholder="Reach" name="Reach" size="10"/></td>
+            <td><input type="text" placeholder="Damage" name="Damage" size="10"/></td>
+            <td><input type="text" placeholder="ApHp" name="ApHp" size="5"/></td>
+            <td><input type="text" placeholder="Manoeuvre" name="Manoeuvre" size="25"/></td>
+            <td><input type="text" placeholder="Special" name="Special" size="25"/></td>
+            <td>
+              <input type="hidden" name="action" value="create">
+              <button type="submit" class="pure-button pure-button-primary">Add</button>
+            </td>
+          </form>
+      </tr>
+    </tbody>
+    </table>  
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-24-24"> 
+
+    [h: objectsDb = getLibProperty("meleeWeaponDb", "Lib:RQII")]
+      
+    <table class="content pure-table pure-table-striped">
+    <thead>
+        <tr>
+            <th>Weapon Id</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Reach</th>
+            <th>Damage</th>
+            <th>ApHp</th>
+            <th>Manoeuvre</th>
+            <th>Special</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    [r, foreach(objectKey, objectsDb, ""), code:{
+      [h: jsonObject = json.get(objectsDb,objectKey)]
+      [h: objectType = json.get(jsonObject,"Type")]
+      
+      [r, if(matches(objectKey,nameFilter) && matches(objectType,typeFilter)), code:{
+      
+        <tr>
+            [h: link = macroLinkText("crudWeaponMeleeData@Lib:RQII", "all")]
+            <form class="pure-form" action="[r:link]" method="json">
+              <td><label>[r: objectKey]</label></td>
+              
+              <td><input type="text" placeholder="Type" name="Type" value='[r: json.get(jsonObject,"Type")]' size="20"/></td>
+              <td><input type="text" placeholder="Size" name="Size" value='[r: json.get(jsonObject,"Size")]' size="10"/></td>
+              <td><input type="text" placeholder="Reach" name="Reach" value='[r: json.get(jsonObject,"Reach")]' size="10"/></td>
+              <td><input type="text" placeholder="Damage" name="Damage" value='[r: json.get(jsonObject,"Damage")]' size="10"/></td>
+              <td><input type="text" placeholder="ApHp" name="ApHp" value='[r: json.get(jsonObject,"ApHp")]' size="10"/></td>
+              <td><input type="text" placeholder="Manoeuvre" name="Manoeuvre" value='[r: json.get(jsonObject,"Manoeuvre")]' size="10"/></td>
+              <td><input type="text" placeholder="Special" name="Special" value='[r: json.get(jsonObject,"Special")]' size="10"/></td>
+              
+              <td>
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="objectKey" value="[r: objectKey]">
+                <button type="submit" class="pure-button pure-button-primary">update</button>
+              </td>
+            </form>
+            <td>
+              [h: macroParam = json.set("{}", "action","delete","objectKey", objectKey)]
+              [h: link = macroLinkText("crudWeaponMeleeData@Lib:RQII", "all",macroParam)]
+              <a class="button-warning pure-button" href="[r: link]">Del</a>
+            </td>
+        </tr>
+      };{}]
+      
+    }]
+    </tbody>
+    </table>  
+  </div>
+</div>

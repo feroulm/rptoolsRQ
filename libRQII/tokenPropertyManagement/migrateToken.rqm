@@ -62,7 +62,7 @@
 
 <!-- init DedicatedPow value -->
 
-[h: newDedicatedPow ='{"godlore1":1,"godlore2":0,"godlore3":0,"godlore4":0,"godlore5":0}']
+[h: newDedicatedPow ='{"godlore1":0,"godlore2":0,"godlore3":0,"godlore4":0,"godlore5":0}']
 [h: setProperty("DedicatedPow",newDedicatedPow,tokenId)]
 
 <!-- init MagicPoint value -->
@@ -97,18 +97,22 @@
 <!-- init sorcerySpells value -->
 <!-- init wiki value -->
 <!-- init combatStatus value -->
+[h: newCombatStatus ='{"turnStatus":"disabled","activeTurn":0,"chargeStatus":"none","situationMod":"none","activeCA":0,"ccCA":0,"proactiveCA":0,"reactiveCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}']
+ [h: setProperty("combatStatus",newCombatStatus,tokenId)]
 <!-- init combatLog value -->
+[h: newCombatLog ='{"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":"","turnDeclaration":""}']
+ [h: setProperty("combatLog",newCombatLog,tokenId)]
 <!-- init tokenDesc value -->
 
 <!-- init wealth value -->
-[h: newWealth ='{"hold":{"gp":10,"sp":20,"cp":30,"others":""},"hidden":{"gp":50,"sp":10,"cp":100,"others":""}}']
+[h: newWealth ='{"hold":{"gp":0,"sp":5,"cp":10,"others":""},"hidden":{"gp":5,"sp":0,"cp":0,"others":""}}']
 [h: setProperty("wealth",newWealth,tokenId)]
 
 <!-- init equipmentDesc value -->
 [h: newEquipment ='{"hold":"nothing","hidden":"nothing"}']
 [h: setProperty("equipmentDesc",newEquipment,tokenId)]
 
-<!-- init equipmentDesc value -->
+<!-- init magicItemDesc value -->
 [h: newMagicItemDesc ='{"hold":"nothing","hidden":"nothing"}']
 [h: setProperty("magicItemDesc",newMagicItemDesc,tokenId)]
 

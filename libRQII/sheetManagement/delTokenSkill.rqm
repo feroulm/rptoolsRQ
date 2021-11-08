@@ -5,6 +5,11 @@
 [r: skillName = json.get(arguments, "skillName")]
 
 [r, switch(skType), code:
+  case "common" :{
+  	[h: aSkills = getProperty("commonSkills", tokenId)]
+  	[h: aSkills = json.remove(aSkills, skillName)]
+    [h: setProperty("commonSkills", aSkills, tokenId)]
+  };
   case "advanced" :{
   	[h: aSkills = getProperty("advSkills", tokenId)]
   	[h: aSkills = json.remove(aSkills, skillName)]
