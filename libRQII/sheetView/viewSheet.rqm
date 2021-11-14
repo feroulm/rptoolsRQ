@@ -72,8 +72,14 @@
 	</section>
 	<section class="section">
 	  [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+    [h: propStrikeRank = getProperty("StrikeRank",tokenId,tokenMap)]
+    [h: propCombatStatus = getProperty("combatStatus",tokenId,tokenMap)]
+    [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
+    [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
 	  <p>
-      <b>SR :</b> [r: getProperty("SR", tokenId,tokenMap)]<b>, CA :</b> [r: getProperty("CA", tokenId,tokenMap)]<b>, MP :</b> [r: getProperty("MP", tokenId,tokenMap)]<b>, DMG :</b> [r: json.get(propDamageMod, "current")]
+      <b>SR :</b> [r: json.get(propStrikeRank, "current")], <b>CA :</b> [r: json.get(propCombatStatus,"baseCA")], 
+      <b>MP :</b> [r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")] (<i>dedPOW : [r: json.get(propMagicPoint, "dedPOW")]</i>),
+      <b>Armor Penalty : </b>[r: json.get(propArmorPenalty, "current")]
 	  </p>
     </section>	 
   </div>
@@ -132,6 +138,10 @@
   	  [h: skillValues = json.get(aSkills,skill)]
       [r: skill] : [r: json.get(skillValues,"current")]%
     }]
+    [h: aSkills = getProperty("commonSkills", tokenId)]
+    [h: skillValues = json.get(aSkills,"Unarmed")]
+    , Unarmed [r: json.get(skillValues,"current")]%
+    . <b>DMG :</b> [r: json.get(propDamageMod, "current")]
     </section>
     [r, macro("viewMeleeWeapons@this"): tokenId]<br>
   </div>
@@ -198,6 +208,9 @@
 	    <tr><td>[r: hiddenEquipment]</td><tr>
 	  </tbody>
 	</table>
+  <p class="section">
+    <i>Typical Armor</i> : [r: json.get(propArmorPenalty, "desc")]
+  </p>
   </div>
 
 </div>

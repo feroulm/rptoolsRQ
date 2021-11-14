@@ -1,0 +1,335 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)),code: {
+	[h: tokenId = currentToken()]
+	[h: tokenMap = getCurrentMapName()]
+};{ 
+	[h: tokenId = json.get(arguments,"tokenId")]
+	[h: tokenMap = json.get(arguments, "tokenMap")]
+	[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+}] 
+
+<br>
+[h: pLocD20 = getProperty("locD20", tokenId)]
+[h: pLocName= getProperty("locName", tokenId)]
+[h: pLocAP = getProperty("locAP", tokenId)]
+[h: pLocAPorig = getProperty("locAPorig", tokenId)]
+[h: pLocHP = getProperty("locHP", tokenId)]
+[h: pLocHPorig = getProperty("locHPorig", tokenId)]
+[h: pLocNb = getProperty("locNb", tokenId)]
+(% style="border:1px solid white; margin:0px" %)|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
+|=D20
+[for(i,1,pLocNb+1,1,""), code:{
+  |=[r: getStrProp(pLocD20, strformat("loc%{i}"))]
+}]
+<br>
+|=Location ##(&#91;&#91;damage>>Rq.CombatsRule||anchor="HDamage" rel="__blank"&#93;&#93;)##
+[for(i,1,pLocNb+1,1,""), code:{
+  |=[r: getStrProp(pLocName, strformat("loc%{i}"))]
+}]
+<br>
+|=**PNJ current** &#91;&#91;AP>>Rq.WeaponRule.ArmorRule.WebHome&#93;&#93;
+[for(i,1,pLocNb+1,1,""), code:{
+  |=[r: getStrProp(pLocAP, strformat("loc%{i}"))]
+}]
+<br>
+|=**PNJ current** HP
+[for(i,1,pLocNb+1,1,""), code:{
+  |=[r: getStrProp(pLocHP, strformat("loc%{i}"))]
+}]
+<br>
+(% style="background-color:#fffae6" %)|=**PNJ orig ** AP
+[for(i,1,pLocNb+1,1,""), code:{
+  |=[r: getStrProp(pLocAPorig, strformat("loc%{i}"))]
+}]
+<br>
+(% style="background-color:#fffae6" %)|=**PNJ orig** HP
+[for(i,1,pLocNb+1,1,""), code:{
+  |=[r: getStrProp(pLocHPorig, strformat("loc%{i}"))]
+}]
+<br>
+)))|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px" %) |(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
+|=&#91;&#91;CA>>Rq.PersoCreation||rel="__blank"&#93;&#93; |=&#91;&#91;SR>>Rq.PersoCreation||rel="__blank"&#93;&#93; |= MP |= Damage Mod.<br>
+[h: propStrikeRank = getProperty("StrikeRank",tokenId,tokenMap)]
+[h: propCombatStatus = getProperty("combatStatus",tokenId,tokenMap)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
+[h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+|[r: json.get(propCombatStatus,"baseCA")]|[r: json.get(propStrikeRank, "current")]([r: json.get(propStrikeRank, "base")])|[r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")]|[r: json.get(propDamageMod, "current")]
+<br>
+[h: propOtherAttr = getProperty("otherAttr",tokenId)]
+[h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+<br>
+|Movement       |**[r: json.get(propOtherAttr,"movement")]** |Ar. Penalty  |**-[r: json.get(propArmorPenalty, "current")]**<br>
+|Hero Points    |**[r: json.get(propOtherAttr,"currHeroPts")]** |Ded. POU |**[r: json.get(propMagicPoint, "dedPOW")]**<br>
+<br>
+|= STR  |= CON |= SIZ |= INT |= POW |= DEX |= CHA
+<br>|
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[foreach(prop, propNames, "|"), code: {
+[r: getProperty(prop, tokenId, tokenMap)]
+}]
+<br>
+)))<br>
+<br>
+(% style="border:1px solid white; margin:0px; padding:0px" %)|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
+&#47;/&#91;&#91;Typical Armour>>Rq.WeaponRule.ArmorRule.WebHome||rel="__blank"&#93;&#93;//:
+[r: json.get(propArmorPenalty, "desc")]<br>
+<br>
+&#47;/&#91;&#91;Traits>>Rq.MonstersTraits&#93;&#93;// :
+[h: propTraits = getProperty("traits", tokenId)]
+[h: traitsDb = getLibProperty("traitsDb","Lib:RQII")]
+[foreach(trait, propTraits, ","), code: {
+  [h: traitAttr = json.get(traitsDb,trait)]
+  [h: traitName = json.get(traitAttr,"displayname")]
+  [r: traitName]
+}]
+<br>
+<br>
+&#47;/&#91;&#91;Skills>>Rq.Skills.WebHome||rel="__blank"&#93;&#93;//: 
+[h: aSkills = getProperty("commonSkills", tokenId)]
+[foreach(skill, aSkills, ","), code: {
+  [h: skillValues = json.get(aSkills,skill)]
+  [h: skillSubtype = json.get(skillValues,"subtype")]
+  [r: skill] 
+  [r, if(skillSubtype != ""), code:{
+  ([r: skillSubtype])
+  }]
+   [r: json.get(skillValues,"current")]%
+}]
+<br><br>
+[h: aSkills = getProperty("advSkills", tokenId)]
+[foreach(skill, aSkills, ","), code: {
+  [h: skillValues = json.get(aSkills,skill)]
+  [h: skillSubtype = json.get(skillValues,"subtype")]
+  [r: skill] 
+  [r, if(skillSubtype != ""), code:{
+  ([r: skillSubtype])
+  }]
+   [r: json.get(skillValues,"current")]%
+}]
+<br><br>
+**Magic**<br>
+[h: aSkills = getProperty("magicSkills", tokenId)]
+[h, if(json.isEmpty(aSkills)): magicSkillsExist = 0; magicSkillsExist = 1]
+
+[h, if(magicSkillsExist), code :{
+  [h: skillValues = json.get(aSkills,"Common Magic")]
+  [h, if(skillValues != ""), code:{
+  
+&#47;/&#91;&#91;Common>>Rq.SpellBook||rel="__blank"&#93;&#93;//\\
+Common Magic [r: json.get(skillValues,"current")]% :
+
+  }]
+}]
+[h: spells = getProperty("spells", tokenId)]
+[foreach(spell, spells, ","), code: {
+  [h: spellValues = json.get(spells,spell)]
+	[h: spellName = json.get(spellValues,"displayname")]
+	[h: spellMagnitude = json.get(spellValues,"magnitude")]
+  [r: spellName] ([r: spellMagnitude])
+}]
+
+[h: spells = getProperty("divineSpells", tokenId)]
+[h: dedPow = getProperty("DedicatedPow", tokenId)]
+[for(i,1,6,1,""), code: {
+  [h: loreName = "Lore"+i]
+  [h, if(magicSkillsExist) : loreValues = json.get(aSkills,loreName); loreValues = ""]
+  [r, if(loreValues != ""), code :{
+<br>  
+&#47;/&#91;&#91;Divine>>Rq.SpellBookDivine||rel="__blank"&#93;&#93;//
+\\[r: loreName] [r: json.get(loreValues,"current")]%,
+  
+  }]
+  [h: pactName = "Pact"+i]
+  [h: godlore = "godlore"+i]
+  [h, if(magicSkillsExist) : pactValues = json.get(aSkills,pactName); pactValues = ""]
+  [r, if(pactValues != ""), code :{
+  
+[r: pactName] [r: json.get(pactValues,"current")]%, //dedPow ([r: json.get(dedPow,godlore)]//) :
+  
+  }]
+  [h: cultName = "cult"+i]
+  [h: jsonFilter = strformat(".[?(@.cult == '%{cultName}')]")]
+  [h, if(!json.isEmpty(spells)) : cultSpells = json.path.read(spells, jsonFilter); cultSpells = ""]
+  
+  [foreach(spell,cultSpells), code:{
+    [h: spellName = json.get(spell,"displayname")]
+     [h: spellMagnitude = json.get(spell,"magnitude")]
+     [r: spellName] ([r: spellMagnitude])  	
+  }]
+}]
+
+[h: aSkills = getProperty("magicSkills", tokenId)]
+[h: spells = getProperty("sorcerySpells", tokenId)]
+
+[h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Manipulation"); manipValues = ""]
+[r, if(manipValues != ""), code :{
+
+<br>
+&#47;/&#91;&#91;Sorcery>>Rq.SpellBookSorcery.WebHome||rel="__blank"&#93;&#93;//\\
+Manipulation [r: json.get(manipValues,"current")]%
+
+}]
+
+[for(i,1,6,1,""), code: {
+  [h: grimoireName = "Grimoire"+i]
+  [h, if(magicSkillsExist) : grimoireValues = json.get(aSkills,grimoireName); grimoireValues = ""]
+  [r, if(grimoireValues != ""), code :{
+	\\[r: grimoireName] [r: json.get(grimoireValues,"current")]% : 
+  }]
+  
+  [h: grimName = "grimoire"+i]	
+  [h: jsonFilter = strformat(".[?(@.grimoire == '%{grimName}')]")]
+  [h, if(!json.isEmpty(spells)) : grimSpells = json.path.read(spells, jsonFilter); grimSpells = ""] 
+  
+  [foreach(spell,grimSpells), code:{
+    [h: spellName = json.get(spell,"displayname")]
+    [h: spellMagnitude = json.get(spell,"magnitude")]
+    [r: spellName] ([r: spellMagnitude])  	
+  }]
+}]
+
+[h: spells = getProperty("draconicSpells", tokenId)]
+
+[h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Draconic Illumination"); manipValues = ""]
+[r, if(manipValues != ""), code :{
+
+<br>
+&#47;/&#91;&#91;Draconic>>Rq.SpellBookDraconic.WebHome||rel="__blank"&#93;&#93;//\\
+Draconic Illumination [r: json.get(manipValues,"current")]% :
+
+}]
+
+[foreach(spell,spells,","), code:{
+	[h: spellValues = json.get(spells,spell)]
+  [h: spellName = json.get(spellValues,"displayname")]
+	[h: spellMagnitude = json.get(spellValues,"magnitude")]
+  [r: spellName] ([r: spellMagnitude])  	
+}]
+
+[h: spells = getProperty("draconicPrepared", tokenId)]
+
+[r, if(!json.isEmpty(spells)), code:{
+
+<br>
+##prepared : ##
+
+}]
+
+[foreach(spell,spells), code:{
+  [h: spellValues = json.get(spells,spell)]
+  [h: spellName = json.get(spellValues,"displayname")]
+  [h: spellMagnitude = json.get(spellValues,"magnitude")]
+  [r: spellName] ([r: spellMagnitude])  	
+}]
+
+[h, if(magicSkillsExist) : walkingValue = json.get(aSkills,"Spirit Walking"); walkingValue = ""]
+[h, if(magicSkillsExist) : bindingValue = json.get(aSkills,"Spirit Binding"); bindingValue = ""]
+[r, if(walkingValue != ""), code :{
+
+<br>
+&#47;/&#91;&#91;Spirit>>Rq.SpellBookSpirit.WebHome||rel="__blank"&#93;&#93;//\\
+Spirit Walking [r: json.get(walkingValue,"current")]%,
+
+}]
+[r, if(bindingValue != ""), code :{
+Spirit Binding [r: json.get(bindingValue,"current")]% :
+}]
+
+[h: spirits = getProperty("spiritSpells", tokenId)]
+[h: currPage = 1]
+[h: prevLimit = 2]
+[foreach(spirit, spirits, ","), code: {
+  [h: spiritValues = json.get(spirits,spirit)]
+	[h: spiritBaseName = json.get(spiritValues,"spiritBaseName")]
+	[h: spiritCustomName = json.get(spiritValues,"spiritCustomName")]
+  [r: if(currPage>prevLimit,"<br>","")]
+  [h, if(currPage>prevLimit) : prevLimit=prevLimit+3]
+  [h: currPage = currPage + 1]
+  [r: spiritCustomName] ([r: spiritBaseName])  
+}]
+<br>
+<br>
+&#91;&#91;Heroic  Hability>>Rq.HeroicHability||rel="__blank"&#93;&#93; :
+[h: propHeroicSkills = getProperty("heroicSkills",tokenId)]
+[h: heroicDb = getLibProperty("heroicDb","Lib:RQII")]
+[foreach(trait, propHeroicSkills, ","), code: {
+  [h: traitAttr = json.get(heroicDb,trait)]
+  [h: traitName = json.get(traitAttr,"displayname")]
+  [r: traitName]
+}]
+<br>
+<br>
+(% style="border:1px solid white; margin:0px" %)|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
+&#91;&#91;Rune Touched>>Rq.RunicPowerRule&#93;&#93;, **magic items** : <br>
+[h: magicItemDesc = getProperty("magicItemDesc", tokenId)]
+[h: hold = json.get(magicItemDesc,"hold")]
+[h: hidden = json.get(magicItemDesc,"hidden")]
+##Hold : ##\\
+[r: hold]
+<br>
+##Hidden : ##\\
+[r: hidden]
+<br>
+)))|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px" %) |(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
+<br>
+**Equipment**<br>
+[h: equipmentDesc = getProperty("equipmentDesc", tokenId)]
+[h: holdEquipment = json.get(equipmentDesc,"hold")]
+[h: hiddenEquipment = json.get(equipmentDesc,"hidden")]
+##Hold : ##\\
+[r: holdEquipment]
+<br>
+##Hidden : ##\\
+[r: hiddenEquipment]
+<br>)))<br>
+)))|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px" %) |(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
+
+<br>
+**Combat Style :** 
+[h: aSkills = getProperty("combatSkills", tokenId)]
+[foreach(skill, aSkills, ","), code: {
+  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	  [h: skillValues = json.get(aSkills,skill)]
+      [r: skill] [r: json.get(skillValues,"current")]%
+}]
+[h: aSkills = getProperty("commonSkills", tokenId)]
+[h: skillValues = json.get(aSkills,"Unarmed")]
+, Unarmed [r: json.get(skillValues,"current")]%
+. **DMG :** [r: json.get(propDamageMod, "current")]
+<br><br>
+|=Type |=Size |=Reach |= Dmg |= AP/HP |=Manoe. |= Spe.
+<br>
+[h,macro("getWeaponNb@this"): tokenId]
+[h: wpList = macro.return]
+[foreach(weapon, wpList, ""), code: {
+  [h,macro("getWeapon@this"): "weaponNb="+weapon+"; tokId="+tokenId]
+  [h: wProp = macro.return]
+  |[r: getStrProp(wProp, "Name")] ##[r: getStrProp(wProp, "Type")]##
+  |[r: getStrProp(wProp, "Size")]|[r: getStrProp(wProp, "Reach")]|[r: getStrProp(wProp, "Damage")]
+  |[r: getStrProp(wProp, "ApHp")]|[r: getStrProp(wProp, "Manoeuvre")]|[r: getStrProp(wProp, "Special")]
+  <br>
+}]
+<br>
+|=Type |=Size |=Load |=Range |=Dmg |=Mod |=AP/HP |= Manoe. |= Spe.
+<br>
+[h,macro("getMissileNb@this"): tokenId]
+[h: wpList = macro.return]
+[foreach(missile, wpList, ""), code: {
+  [h,macro("getMissile@this"): "weaponNb="+missile+"; tokId="+tokenId]
+  [h: wProp = macro.return]
+  |[r: getStrProp(wProp, "Name")] ##[r: getStrProp(wProp, "Type")]##
+  |[r: getStrProp(wProp, "Size")]|[r: getStrProp(wProp, "Load")]|[r: getStrProp(wProp, "Reach")]|[r: getStrProp(wProp, "Damage")]
+  |[r: getStrProp(wProp, "Modif")]|[r: getStrProp(wProp, "ApHp")]|[r: getStrProp(wProp, "Manoeuvre")]|[r: getStrProp(wProp, "Special")]|
+  <br>
+}]
+)))<br>
+<br>
+== Description ==<br>
+<br>
+=== GM Notes ===
+<br>
+[r: getGMNotes(tokenId, tokenMap)]
+<br>
+=== PJ Notes ===
+<br>
+[r: getNotes(tokenId, tokenMap)]

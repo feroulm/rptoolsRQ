@@ -1,0 +1,34 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: newBase = json.get(arguments,"base")]
+[h: newCurrent = json.get(arguments,"current")]
+[h: newDesc= json.get(arguments,"desc")]
+
+
+[h: propArmorPenalty = getProperty("ArmorPenalty", tokenId)]
+
+[h: propArmorPenalty = json.set(propArmorPenalty,"base",newBase)]
+[h: propArmorPenalty = json.set(propArmorPenalty,"current",newCurrent)]
+[h: propArmorPenalty = json.set(propArmorPenalty,"desc",newDesc)]
+
+
+[h: setProperty("ArmorPenalty", propArmorPenalty, tokenId)]
+
+<!-- Recompute SR -->
+<!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->
+[h: propCharac = getProperty("Charac",tokenId)]
+[h: currDEX = json.get(propCharac,"tmpDEX")]
+[h: currINT = json.get(propCharac,"tmpINT")]
+[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+
+[h: currentSR = json.get(propStrikeRank, "current")]
+[h: newSR = floor((currINT + currDEX)/2) - newCurrent]<br>
+[r, if(newSR != currentSR), code:{
+  SR Change from [r: currentSR] to [r: newSR], you should reroll initiative for next mr<br>
+  [h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
+  [h: setProperty("StrikeRank",newStrikeRank,tokenId)]
+};{}]
+  
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openEquipmentMgt@Lib:RQII"): macroParam]

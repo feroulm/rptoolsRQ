@@ -7,6 +7,7 @@
  <tbody>
     [h: aSkills = getProperty("magicSkills", tokenId)]
     [h: spells = getProperty("divineSpells", tokenId)]
+    [h: dedPow = getProperty("DedicatedPow", tokenId)]
     [for(i,1,6,1,""), code: {
       [h: loreName = "Lore"+i]
       [h: loreValues = json.get(aSkills,loreName)]
@@ -16,9 +17,11 @@
             <b>[r: loreName] :</b> [r: json.get(loreValues,"current")]%,
     }]
     [h: pactName = "Pact"+i]
-      [h: pactValues = json.get(aSkills,pactName)]
+    [h: godlore = "godlore"+i]
+    [h: pactValues = json.get(aSkills,pactName)]
     [r, if(pactValues != ""), code :{
             <b>[r: pactName] :</b> [r: json.get(pactValues,"current")]%<br>
+            <i>dedPow</i> ([r: json.get(dedPow,godlore)])
 	    </td>
 		<td>
     }]

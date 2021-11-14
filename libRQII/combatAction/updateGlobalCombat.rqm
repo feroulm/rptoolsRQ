@@ -115,7 +115,8 @@
 	  [h: setAllStates(0, tokenId)]
 	  [h: setInitiativeHold(0,tokenId)]
 	  <!-- roll Initiative -->
-	  [h: currentSR = getProperty("SR",tokenId)]
+    [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+	  [h: currentSR = json.get(propStrikeRank, "current")]
   	  [h: setInitiative(1d10+currentSR,tokenId)]
 	  [h: sortInitiative()]
     }]
@@ -131,7 +132,8 @@
 	  [h: setState("CurrentTurn", 0, tokenId)]
 	  [h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",0),tokenId)]
 	  <!-- to do : compute SR base on current DEx & INt vlue and wether the token has armour penalty or not -->
-	  [h: currentSR = getProperty("SR",tokenId)]
+    [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+	  [h: currentSR = json.get(propStrikeRank, "current")]
 	  <!-- roll Initiative -->
   	  [h: setInitiative(1d10+currentSR,tokenId)]
 	  [h: sortInitiative()]

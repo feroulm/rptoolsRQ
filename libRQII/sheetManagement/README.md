@@ -154,3 +154,24 @@ graph TB
 ```
 
 ![Traits Mgt flow](../../assets/doc/traitsMgtFlow.png?raw=true)
+
+## Strike Rank Management
+
+**Data Model**
+```
+StrikeRank = {"base":2,"current":2}
+```
+* Base value is computed like that : floor((newINT + newDEX)/2)
+* Current value is computed like that : floor((newINT + newDEX)/2) - currentArmorPenalty
+
+This value is updated by :
+* updateCharac
+* updateArmor
+
+This value is used :
+* updateGlobalCombat : when rolling initiative. But it is not update. we use the initiative value of MapToll after
+
+This value is shown :
+* viewSheet
+* exportSheetWiki
+* exportSheetWkiLight

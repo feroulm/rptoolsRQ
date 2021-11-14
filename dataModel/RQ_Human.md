@@ -30,7 +30,7 @@ Charac = {"basSTR":11,"basCON":14,"basSIZ":12,"basINT":10,"basPOW":11,"basDEX":1
 
 ### ArmorPenalty
 ```
-ArmorPenalty = {"base":2,"current":2}
+ArmorPenalty = {"base":2,"current":2,"desc":"leather, Helmet"}
 ```
 
 ### StrikeRank

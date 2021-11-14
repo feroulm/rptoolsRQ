@@ -60,12 +60,15 @@ Calling :
 <!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->
 [h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
 [h: currentSR = json.get(propStrikeRank, "current")]
+<!-- update base value in case DEX or INT changed -->
+[h: newBaseSR = floor((newINT + newDEX)/2)]
 [h: newSR = floor((newINT + newDEX)/2) - currentArmorPenalty]<br>
 [r, if(newSR != currentSR), code:{
   SR Change from [r: currentSR] to [r: newSR], you should reroll initiative for next mr<br>
-  [h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
-  [h: setProperty("StrikeRank",newStrikeRank,tokenId)]
 };{}]
+[h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
+[h: newStrikeRank = json.set(newStrikeRank,"base",newBaseSR)]
+[h: setProperty("StrikeRank",newStrikeRank,tokenId)]
 
 <!-- recompute base CA roundup (=ceil) (DEX+INT)/12 -->
 [h: currentBaseCA = json.get(propCombatStatus,"baseCA")]
