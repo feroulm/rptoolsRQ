@@ -77,7 +77,7 @@
     [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
     [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
 	  <p>
-      <b>SR :</b> [r: json.get(propStrikeRank, "current")], <b>CA :</b> [r: json.get(propCombatStatus,"baseCA")], 
+      <b>SR :</b> [r: json.get(propStrikeRank, "current")]([r: json.get(propStrikeRank, "base")]), <b>CA :</b> [r: json.get(propCombatStatus,"baseCA")], 
       <b>MP :</b> [r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")] (<i>dedPOW : [r: json.get(propMagicPoint, "dedPOW")]</i>),
       <b>Armor Penalty : </b>[r: json.get(propArmorPenalty, "current")]
 	  </p>

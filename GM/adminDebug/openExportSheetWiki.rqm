@@ -1,0 +1,3 @@
+[r: tokenId = currentToken()]
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openExportSheetWiki@Lib:RQII"): macroParam]  

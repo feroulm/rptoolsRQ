@@ -6,7 +6,7 @@
 <table class="content pure-table pure-table-striped">
  <tbody>
    [h: aSkills = getProperty("magicSkills", tokenId)]
-   [h: manipValues = json.get(aSkills,"Manipulation")]
+   [h, if(!json.isEmpty(aSkills)) : manipValues = json.get(aSkills,"Manipulation"); manipValues = ""]
    [r, if(manipValues != ""), code :{
     <tr>
 	  <td colspan="2">
@@ -18,25 +18,25 @@
    <!-- dirty but enable only a fix number of 5 grimoires skill and they must be named Grimoire1, Grimoire2, etc.-->
    [for(i,1,6,1,""), code: {
      [h: grimoireName = "Grimoire"+i]
-     [h: grimoireValues = json.get(aSkills,grimoireName)]
-   [r, if(grimoireValues != ""), code :{
+     [h, if(!json.isEmpty(aSkills)) : grimoireValues = json.get(aSkills,grimoireName); grimoireValues = ""]
+     [r, if(grimoireValues != ""), code :{
      <tr>
 	   <td>
        <b>[r: grimoireName] :</b> [r: json.get(grimoireValues,"current")]%
 	   </td><td>
-   }]
-   [h: grimName = "grimoire"+i]	
-   [h: jsonFilter = strformat(".[?(@.grimoire == '%{grimName}')]")]
-     [h: grimSpells = json.path.read(spells, jsonFilter)]  
+     }]
+     [h: grimName = "grimoire"+i]	
+     [h: jsonFilter = strformat(".[?(@.grimoire == '%{grimName}')]")]
+     [h, if(!json.isEmpty(spells)) : grimSpells = json.path.read(spells, jsonFilter); grimSpells = ""]  
      [foreach(spell,grimSpells), code:{
      	[h: spellName = json.get(spell,"displayname")]
        [h: spellMagnitude = json.get(spell,"magnitude")]
          [r: spellName] ([r: spellMagnitude])  	
      }]
      [r, if(grimoireValues != ""), code :{
-	   </td>
-	 </tr>
-   }]
+	       </td>
+	    </tr>
+      }]
    }]
  </tbody>
 </table> 

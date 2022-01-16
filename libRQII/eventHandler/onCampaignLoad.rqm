@@ -9,3 +9,4 @@
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
 [h: defineFunction("resetSkillsExperienceTmp","resetSkillsExperienceTmp@Lib:RQII")]
+[h: defineFunction("sortJson","sortJson@Lib:RQII")]

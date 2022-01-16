@@ -37,10 +37,10 @@ Calling :
    Current SR : [r: json.get(propStrikeRank, "current")]<br>
    Current Damage Mod : [r: json.get(propDamageMod, "current")]<br>
    Current PM : <b>[r: json.path.read(propMagicPoint,"MP.current")]</b> / [r: json.path.read(propMagicPoint,"MP.base")]<br>
-
+   <br>
 <!-- Manage Ca change -->
 <form action="[r:linkUpdateCcCA]" method="json">
-<table style="cellspacing:0px">
+<table class = "oddRow">
   <tr>   
     <td style="text-align:left">Active weapon(s) :</td>
     <td> 
@@ -49,23 +49,8 @@ Calling :
       <input type="text" name="newWeaponNb" value="[r:currWeaponNb]" size="2" align="right">
     </td>
     <td>
-      <input type="submit" name="edit_btn" value="change">
+      <input type="submit" name="edit_btn" value="U.">
     </td> 
-  </tr>
-</table>
-</form>
-<form action="[r:linkUpdateCcCA]" method="json">
-<table>
-  <tr>
-    <td style="text-align:left">Magic CA </td>
-    <td> 
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="action" value="magicca">
-      <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
-    </td>
-    <td>
-      <input type="submit" name="edit_btn" value="change">
-    </td>
   </tr>
 </table>
 </form>
@@ -89,7 +74,7 @@ Calling :
 	</td>
     <td>
       <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="submit" name="edit_btn" value="change">
+      <input type="submit" name="edit_btn" value="U.">
     </td>
   </tr>
 </table>
@@ -129,7 +114,39 @@ Calling :
   </tr>
 </table>
 </form>
-<!-- End Manage Charac Change -->
+    </td>
+    <td>
+<!-- Start Manage magic Change -->
+[h: link = macroLinkText("updateCcCA@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+<table valign="middle">
+  <tr class = "oddRow">
+    <td style="text-align:left">Magic CA </td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="magicca">
+      <input type="hidden" name="srcWindow" value="openLightSheetMgt">
+      <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
+    </td>
+    <td><input type="submit" name="edit_btn" value="U."></td>
+  </tr>
+</table>
+</form>
+[h: link = macroLinkText("updateMP@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+<table valign="middle">
+  <tr class = "oddRow">
+    <td style="text-align:left">Curr. MP </td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="currMP">
+      <input type="hidden" name="srcWindow" value="openLightSheetMgt">
+      <input type="text" name="newCurrMP" value='[r: json.path.read(propMagicPoint,"MP.current")]' size="2" align="right">
+    </td>
+    <td><input type="submit" name="edit_btn" value="U."></td>
+  </tr>
+</table>
+</form>
     </td>
   </tr>
 </table> <!-- Global window table -->

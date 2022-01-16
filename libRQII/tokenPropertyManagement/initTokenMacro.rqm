@@ -1,0 +1,29 @@
+[bcolor="blue"]
+[fcolor="white"]
+[group="tokenSheet"]
+
+
+[h:macroProps="autoexec=true;"]
+[h:macroProps=setStrProp(macroProps,"color",bcolor)]
+[h:macroProps=setStrProp(macroProps,"fontColor",fcolor)]
+[h:macroProps=setStrProp(macroProps,"group",group)]
+
+  
+[h:cmdCommon=encode("[r: tokenId = currentToken()]")]
+[h:cmdCommon=cmdCommon+encode('[h: macroParam = json.set("{}", "tokenId", tokenId)]')]
+
+[h:command=cmdCommon+encode('[r, macro("openSheet@Lib:RQII"): macroParam]')]
+[h:macroProps=setStrProp(macroProps,"sortBy ","01")]
+[h:createMacro("viewSheet", decode(command), macroProps)]
+
+[h:command=cmdCommon+encode('[r, macro("openSheetMgt@Lib:RQII"): macroParam]')]
+[h:macroProps=setStrProp(macroProps,"sortBy ","02")]
+[h:createMacro("editSheet", decode(command), macroProps)]
+
+[h:command=cmdCommon+encode('[r, macro("openHumCombatAttr@Lib:RQII"): macroParam]')]
+[h:macroProps=setStrProp(macroProps,"sortBy ","03")]
+[h:createMacro("Light Edit Sheet", decode(command), macroProps)]
+
+[h:command=cmdCommon+encode('[r, macro("openSheetImprovement@Lib:RQII"): macroParam]')]
+[h:macroProps=setStrProp(macroProps,"sortBy ","04")]
+[h:createMacro("improveSheet", decode(command), macroProps)]

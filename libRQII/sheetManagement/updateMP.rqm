@@ -1,0 +1,32 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
+[h: action = json.get(arguments, "action")]
+[h: newCurrMP = json.get(arguments, "newCurrMP")]
+
+[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+
+<!-- update Current Magic Point -->
+[h: baseMP = json.path.read(propMagicPoint,"MP.base")]
+[h: currMP = json.path.read(propMagicPoint,"MP.current")]
+
+[h: msgAssert = strformat("Tsss, you can have more MP than your base value (%{baseMP}), nice try ;) !")]
+[h: assert((baseMP >= newCurrMP),msgAssert,0)]
+
+[r, if(newCurrMP>currMP), code:{
+  You regain [r: newCurrMP - currMP] magic points
+};{
+  You loose [r: currMP - newCurrMP] magic points
+}]
+[h: newPropMagicPoint = json.path.set(propMagicPoint,"MP.current",newCurrMP)]
+
+[h: setProperty("MagicPoint",newPropMagicPoint,tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+
+[h, if(srcWindow == "openSheetMgt"), code:{
+  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+};{
+  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+}]

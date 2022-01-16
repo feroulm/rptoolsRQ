@@ -1,0 +1,19 @@
+[h: currJSON = arg(0)]
+
+[h:keyList = ""] 
+[h:sortedJSON = "{}"]
+
+[h,foreach(item, currJSON),CODE:
+{
+   [h: keyList = listAppend(keyList, item)]
+}]
+
+[h:keyList = listSort(keyList, "N+")]
+
+[h,foreach(key,keyList),CODE:
+{
+  [objectDetail = json.get(currJSON,key)]
+  [sortedJSON = json.set(sortedJSON, key, objectDetail)]
+}]
+
+[r: sortedJSON]

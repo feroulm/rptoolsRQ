@@ -119,3 +119,7 @@
 <!-- init fatigue value -->
 [h: newFatigue ='{"level":"Fresh"}']
 [h: setProperty("fatigue",newFatigue,tokenId)]
+
+<!-- init improvementPool value -->
+[h: newImprovementPool = '{"prevPts":0,"currPts":0,"origTmp":0,"currTmp":0,"status":"done"}']
+[h: setProperty("improvementPool",newImprovementPool,tokenId)]

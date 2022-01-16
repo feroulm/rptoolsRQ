@@ -76,9 +76,9 @@
 <br>
 &#47;/&#91;&#91;Traits>>Rq.MonstersTraits&#93;&#93;// :
 [h: propTraits = getProperty("traits", tokenId)]
-[h: traitsDb = getLibProperty("traitsDb","Lib:RQII")]
+[h: propTraitsDb = getLibProperty("traitsDb","Lib:RQII")]
 [foreach(trait, propTraits, ","), code: {
-  [h: traitAttr = json.get(traitsDb,trait)]
+  [h: traitAttr = json.get(propTraitsDb,trait)]
   [h: traitName = json.get(traitAttr,"displayname")]
   [r: traitName]
 }]
@@ -120,15 +120,15 @@ Common Magic [r: json.get(skillValues,"current")]% :
 
   }]
 }]
-[h: spells = getProperty("spells", tokenId)]
-[foreach(spell, spells, ","), code: {
-  [h: spellValues = json.get(spells,spell)]
+[h: propSpells = getProperty("spells", tokenId)]
+[foreach(spell, propSpells, ","), code: {
+  [h: spellValues = json.get(propSpells,spell)]
 	[h: spellName = json.get(spellValues,"displayname")]
 	[h: spellMagnitude = json.get(spellValues,"magnitude")]
   [r: spellName] ([r: spellMagnitude])
 }]
 
-[h: spells = getProperty("divineSpells", tokenId)]
+[h: propSpells = getProperty("divineSpells", tokenId)]
 [h: dedPow = getProperty("DedicatedPow", tokenId)]
 [for(i,1,6,1,""), code: {
   [h: loreName = "Lore"+i]
@@ -149,7 +149,7 @@ Common Magic [r: json.get(skillValues,"current")]% :
   }]
   [h: cultName = "cult"+i]
   [h: jsonFilter = strformat(".[?(@.cult == '%{cultName}')]")]
-  [h, if(!json.isEmpty(spells)) : cultSpells = json.path.read(spells, jsonFilter); cultSpells = ""]
+  [h, if(!json.isEmpty(propSpells)) : cultSpells = json.path.read(propSpells, jsonFilter); cultSpells = ""]
   
   [foreach(spell,cultSpells), code:{
     [h: spellName = json.get(spell,"displayname")]
@@ -159,7 +159,7 @@ Common Magic [r: json.get(skillValues,"current")]% :
 }]
 
 [h: aSkills = getProperty("magicSkills", tokenId)]
-[h: spells = getProperty("sorcerySpells", tokenId)]
+[h: propSpells = getProperty("sorcerySpells", tokenId)]
 
 [h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Manipulation"); manipValues = ""]
 [r, if(manipValues != ""), code :{
@@ -179,7 +179,7 @@ Manipulation [r: json.get(manipValues,"current")]%
   
   [h: grimName = "grimoire"+i]	
   [h: jsonFilter = strformat(".[?(@.grimoire == '%{grimName}')]")]
-  [h, if(!json.isEmpty(spells)) : grimSpells = json.path.read(spells, jsonFilter); grimSpells = ""] 
+  [h, if(!json.isEmpty(propSpells)) : grimSpells = json.path.read(propSpells, jsonFilter); grimSpells = ""] 
   
   [foreach(spell,grimSpells), code:{
     [h: spellName = json.get(spell,"displayname")]
@@ -188,7 +188,7 @@ Manipulation [r: json.get(manipValues,"current")]%
   }]
 }]
 
-[h: spells = getProperty("draconicSpells", tokenId)]
+[h: propSpells = getProperty("draconicSpells", tokenId)]
 
 [h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Draconic Illumination"); manipValues = ""]
 [r, if(manipValues != ""), code :{
@@ -199,24 +199,24 @@ Draconic Illumination [r: json.get(manipValues,"current")]% :
 
 }]
 
-[foreach(spell,spells,","), code:{
-	[h: spellValues = json.get(spells,spell)]
+[foreach(spell,propSpells,","), code:{
+	[h: spellValues = json.get(propSpells,spell)]
   [h: spellName = json.get(spellValues,"displayname")]
 	[h: spellMagnitude = json.get(spellValues,"magnitude")]
   [r: spellName] ([r: spellMagnitude])  	
 }]
 
-[h: spells = getProperty("draconicPrepared", tokenId)]
+[h: propSpells = getProperty("draconicPrepared", tokenId)]
 
-[r, if(!json.isEmpty(spells)), code:{
+[r, if(!json.isEmpty(propSpells)), code:{
 
 <br>
 ##prepared : ##
 
 }]
 
-[foreach(spell,spells), code:{
-  [h: spellValues = json.get(spells,spell)]
+[foreach(spell,propSpells), code:{
+  [h: spellValues = json.get(propSpells,spell)]
   [h: spellName = json.get(spellValues,"displayname")]
   [h: spellMagnitude = json.get(spellValues,"magnitude")]
   [r: spellName] ([r: spellMagnitude])  	
@@ -251,19 +251,19 @@ Spirit Binding [r: json.get(bindingValue,"current")]% :
 <br>
 &#91;&#91;Heroic  Hability>>Rq.HeroicHability||rel="__blank"&#93;&#93; :
 [h: propHeroicSkills = getProperty("heroicSkills",tokenId)]
-[h: heroicDb = getLibProperty("heroicDb","Lib:RQII")]
+[h: propHeroicDb = getLibProperty("heroicDb","Lib:RQII")]
 [foreach(trait, propHeroicSkills, ","), code: {
-  [h: traitAttr = json.get(heroicDb,trait)]
+  [h: traitAttr = json.get(propHeroicDb,trait)]
   [h: traitName = json.get(traitAttr,"displayname")]
   [r: traitName]
 }]
 <br>
 <br>
 (% style="border:1px solid white; margin:0px" %)|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
-&#91;&#91;Rune Touched>>Rq.RunicPowerRule&#93;&#93;, **magic items** : <br>
-[h: magicItemDesc = getProperty("magicItemDesc", tokenId)]
-[h: hold = json.get(magicItemDesc,"hold")]
-[h: hidden = json.get(magicItemDesc,"hidden")]
+&#91;&#91;Rune Touched>>Rq.RunicPowerRule&#93;&#93;, magic items : <br>
+[h: propMagicItemDesc = getProperty("magicItemDesc", tokenId)]
+[h: hold = json.get(propMagicItemDesc,"hold")]
+[h: hidden = json.get(propMagicItemDesc,"hidden")]
 ##Hold : ##\\
 [r: hold]
 <br>
@@ -273,9 +273,9 @@ Spirit Binding [r: json.get(bindingValue,"current")]% :
 )))|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px" %) |(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
 <br>
 **Equipment**<br>
-[h: equipmentDesc = getProperty("equipmentDesc", tokenId)]
-[h: holdEquipment = json.get(equipmentDesc,"hold")]
-[h: hiddenEquipment = json.get(equipmentDesc,"hidden")]
+[h: propEquipmentDesc = getProperty("equipmentDesc", tokenId)]
+[h: holdEquipment = json.get(propEquipmentDesc,"hold")]
+[h: hiddenEquipment = json.get(propEquipmentDesc,"hidden")]
 ##Hold : ##\\
 [r: holdEquipment]
 <br>

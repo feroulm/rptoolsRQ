@@ -68,6 +68,7 @@
   	   [h: setProperty("commonSkills",aSkills, tokenId)]
     };
     case "advanced" :{
+       [h: aSkills = sortJson(aSkills)]
   	   [h: setProperty("advSkills",aSkills, tokenId)]
     };
     case "combat" :{

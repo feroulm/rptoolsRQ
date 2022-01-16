@@ -222,6 +222,21 @@
   </tr>
 </table>
 </form>
+[h: link = macroLinkText("updateMP@Lib:RQII", "all")]
+<form action="[r:link]" method="json">
+<table valign="middle">
+  <tr class = "oddRow">
+    <td style="text-align:left">Curr. MP </td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="currMP">
+      <input type="hidden" name="srcWindow" value="openSheetMgt">
+      <input type="text" name="newCurrMP" value='[r: json.path.read(propMagicPoint,"MP.current")]' size="2" align="right">
+    </td>
+    <td><input type="submit" name="edit_btn" value="U."></td>
+  </tr>
+</table>
+</form>
     [h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",".*","typeFilter","common")]
     [r: macroLink("Manage Spells", "openSheetSpellMgt@Lib:RQII", "all", macroParam)]
 	 <br>
@@ -455,7 +470,7 @@
       <td>[r: json.get(skillValues,"experience")]</td>
       <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
       <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
-      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","magic","skillName",skill)]
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","advanced","skillName",skill)]
       <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
     </tr>
     [h: class = if(class=="oddRow", "evenRow", "oddRow")]
@@ -466,6 +481,7 @@
 [h: linkAddAdvSkill = macroLinkText("openAddAdvSkill@Lib:RQII", "all")]
 <form action="[r:linkAddAdvSkill]" method="json">
   <input type="hidden" name="tokenId" value="[r:tokenId]">
+   <input type="hidden" name="skType" value="advanced">
   <input type="submit" name="edit_btn" value="Add Advanced Skill">
 </form>
 
