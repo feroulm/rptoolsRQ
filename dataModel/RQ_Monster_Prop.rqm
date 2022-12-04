@@ -1,3 +1,4 @@
+modelVersion:v0.1.1
 hpInit:4
 STR
 CON
@@ -45,10 +46,10 @@ magicItemDesc
 fatigue
 improvementPool
 improvementLog
-*MP:10
-*SR:9
-*CA:2
-*ccCA:4
+MP:10
+SR:9
+CA:2
+ccCA:4
 AP
 dmgMod
 ccStyles

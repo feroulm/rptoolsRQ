@@ -1,5 +1,12 @@
 ## RQ_Human
 
+Current version : v1.0.1
+
+History :
+- v1.0.1 : add modelVersion property
+- v1.0.0 : First stable version (including all improvment to manage combat, pnj sheet, etc.)
+- v0.0.0 : First unstable version
+
 ### Localisation HP & App
 
 * Structure for human :

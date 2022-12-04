@@ -1,3 +1,4 @@
+modelVersion:v1.0.1
 hpInit:4
 STR
 CON
@@ -45,17 +46,3 @@ magicItemDesc
 fatigue
 improvementPool
 improvementLog
-ccStyles
-ccSkills
-*@HP_Head (Head ,):4
-*@HP_Arm_L (L. Arm ,):3
-*@HP_Arm_R (R. Arm ,):3
-*@HP_Che (Chest ,):6
-*@HP_Abd (Abd. ,):5
-*@HP_Leg_L (L. Leg ,):4
-*@HP_Leg_R (R. Leg ,):4
-*@MP:10
-*@SR:9
-*@CA:2
-*@ccCA:4
-AP
