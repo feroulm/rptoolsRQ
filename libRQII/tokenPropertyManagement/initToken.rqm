@@ -1,0 +1,219 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+
+<!-- This macro reset everything to a base to start a new token from scratch -->
+[h: res = input("junk|This will reset all properties on the token to basic value. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+[h: abort(res)]
+
+<!-- set basic value for charac -->
+[r: setProperty("STR","10",tokenId)]
+[r: setProperty("CON","10",tokenId)]
+[r: setProperty("SIZ","10",tokenId)]
+[r: setProperty("INT","10",tokenId)]
+[r: setProperty("POW","10",tokenId)]
+[r: setProperty("DEX","10",tokenId)]
+[r: setProperty("CHA","10",tokenId)]
+
+<!-- init Charac value -->
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+[h: newSTR = getProperty("STR", tokenId)]
+[h: newCON = getProperty("CON", tokenId)]
+[h: newSIZ = getProperty("SIZ", tokenId)]
+[h: newINT = getProperty("INT", tokenId)]
+[h: newPOW = getProperty("POW", tokenId)]
+[h: newDEX = getProperty("DEX", tokenId)]
+[h: newCHA = getProperty("CHA", tokenId)]
+[h: newCharac = ""]
+[foreach(prop, propNames, ""), code: {
+    <!-- construct JSON varName based on prop Name -->
+    [h: basProp = "bas"+prop]
+    [h: tmpProp = "tmp"+prop]
+    [h: propValue = getProperty(prop, tokenId)]
+    [h: newCharac = json.set(newCharac,basProp,propValue,tmpProp,propValue)]
+}]
+[r: setProperty("Charac",newCharac,tokenId)]
+
+<!-- init locName, locD20, locNb and hpInit for Human value -->
+
+[h: locName = "loc1=Tête;loc2=Br. G.;loc3=Br. D.;loc4=Poit-;loc5=Abd.;loc6=Jb. G.;loc7=Jb D."]
+[h: locD20 = "loc1=19-20;loc2=16-18;loc3=13-15;loc4=10-12;loc5=7-9;loc6=4-6;loc7=1-3"]
+[h: locNb = 7]
+
+[h: setProperty("locName", locName, tokenId)]
+[h: setProperty("locD20", locD20, tokenId)]
+[h: setProperty("locNb", locNb, tokenId)]
+[h: setProperty("hpInit", 4, tokenId)]
+
+[h: hpInit = getProperty("hpInit", tokenId)]
+[h: locOrigHP_Head = hpInit]
+[h: locOrigHP_Arm_L = hpInit-1]
+[h: locOrigHP_Arm_R = hpInit-1]
+[h: locOrigHP_Che = hpInit+2]
+[h: locOrigHP_Abd = hpInit+1]
+[h: locOrigHP_Leg_L = hpInit]
+[h: locOrigHP_Leg_R = hpInit]
+
+<!-- init locHP value -->
+[h: newLocHP = getProperty("locHP", tokenId)]
+
+[h: newLocHP = setStrProp(newLocHP,strformat("loc1"),locOrigHP_Head)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc2"),locOrigHP_Arm_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc3"),locOrigHP_Arm_R)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc4"),locOrigHP_Che)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc5"),locOrigHP_Abd)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc6"),locOrigHP_Leg_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc7"),locOrigHP_Leg_R)]
+
+[h: setProperty("locHP", newLocHP, tokenId)]
+
+<!-- init locHPorig value -->
+[h: newLocHP = getProperty("locHPorig", tokenId)]
+
+[h: newLocHP = setStrProp(newLocHP,strformat("loc1"),locOrigHP_Head)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc2"),locOrigHP_Arm_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc3"),locOrigHP_Arm_R)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc4"),locOrigHP_Che)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc5"),locOrigHP_Abd)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc6"),locOrigHP_Leg_L)]
+[h: newLocHP = setStrProp(newLocHP,strformat("loc7"),locOrigHP_Leg_R)]
+
+[h: setProperty("locHPorig", newLocHP, tokenId)]
+
+<!-- Set AP to 1 -->
+[h: ap1 = "1"]
+[h: ap2 = "1"]
+[h: ap3 = "1"]
+[h: ap4 = "1"]
+[h: ap5 = "1"]
+[h: ap6 = "1"]
+[h: ap7 = "1"]
+
+<!-- init locAP value -->
+[h: newLocAP = getProperty("locAP", tokenId)]
+
+[h: newLocAP = setStrProp(newLocAP,strformat("loc1"),ap1)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc2"),ap2)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc3"),ap3)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc4"),ap3)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc5"),ap4)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc6"),ap5)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc7"),ap7)]
+
+[h: setProperty("locAP", newLocAP, tokenId)]
+
+<!-- init locAPorig value -->
+[h: newLocAP = getProperty("locAPorig", tokenId)]
+
+[h: newLocAP = setStrProp(newLocAP,strformat("loc1"),ap1)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc2"),ap2)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc3"),ap3)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc4"),ap3)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc5"),ap4)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc6"),ap5)]
+[h: newLocAP = setStrProp(newLocAP,strformat("loc7"),ap7)]
+
+[h: setProperty("locAPorig", newLocAP, tokenId)]
+
+<!-- init ArmorPenalty value -->
+[h: armorPenalty = '{"base":0,"current":0,"desc":"Clothes & fur"}']
+[r: setProperty("ArmorPenalty",armorPenalty,tokenId)]
+
+<!-- init StrikeRank value -->
+[h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+[h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
+[h: newSR = floor((newINT + newDEX)/2) - currentArmorPenalty]
+[h: propStrikeRank = '{"base":0,"current":0}']
+[h: propStrikeRank = json.set(propStrikeRank,"base",newSR)]
+[h: propStrikeRank = json.set(propStrikeRank,"current",newSR)]
+[h: setProperty("StrikeRank",propStrikeRank,tokenId)]
+
+<!-- init DamageMod value -->
+
+[h: damageModTbl = getLibProperty("damageMod","Lib:RQII")]
+[h, if(newSTR+newSIZ>50), code:{
+  <!-- big damage mod progress by range of 10pts -->
+  [h: newDamageModIndex = ceil((newSTR + newSIZ)/10)+4]
+};
+{
+  <!-- damage progress mod by range of 5pts -->
+  [h: newDamageModIndex = ceil((newSTR + newSIZ)/5)-1]
+}]
+
+[h, if(newDamageModIndex<0): newDamageModIndex = 0]
+[r, if(newDamageModIndex>17), code:{
+	[h: newDamageModIndex = 17]
+	Damage Mod when STR + SIZ is above 130 is not implemented...continue the progession<br>
+}]
+[h: newDamageMod = json.get(damageModTbl,newDamageModIndex)]
+[h: newPropDamageMod = '{"base":"+0","current":"+0"}']
+[h: newPropDamageMod = json.set(newPropDamageMod,"current",newDamageMod)]
+[h: newPropDamageMod = json.set(newPropDamageMod,"base",newDamageMod)]
+[h: setProperty("damageMod",newPropDamageMod,tokenId)]
+
+<!-- init otherAttr value -->
+[h: newOtherAttr ='{"currHeroPts":3,"prevHeroPts":3,"currEnc":5,"travelEnc":12,"healRate":1,"movement":"8m","improvementMod":0}']
+[h: setProperty("otherAttr",newOtherAttr,tokenId)]
+
+<!-- init DedicatedPow value -->
+
+[h: newDedicatedPow ='{"godlore1":0,"godlore2":0,"godlore3":0,"godlore4":0,"godlore5":0}']
+[h: setProperty("DedicatedPow",newDedicatedPow,tokenId)]
+
+<!-- init MagicPoint value -->
+[h: lore1 = json.get(newDedicatedPow, "godlore1")]
+[h: lore2 = json.get(newDedicatedPow, "godlore2")]
+[h: lore3 = json.get(newDedicatedPow, "godlore3")]
+[h: lore4 = json.get(newDedicatedPow, "godlore4")]
+[h: lore5 = json.get(newDedicatedPow, "godlore5")]
+
+[h: newDedPOW = lore1 + lore2 + lore3 + lore4 + lore5]
+[h: newCurrMP = newPOW - newDedPOW)]
+  
+[h: newMagicPoint ='{"MP":{"base":16,"current":15},"dedPOW":2}']
+[h: newMagicPoint = json.path.set(newMagicPoint,"MP.base",newCurrMP)]
+[h: newMagicPoint = json.path.set(newMagicPoint,"MP.current",newCurrMP)]
+[h: newMagicPoint = json.path.set(newMagicPoint,"dedPOW",newDedPOW)]
+[h: setProperty("MagicPoint",newMagicPoint,tokenId)]
+
+<!-- init Weapons value -->
+<!-- init Missiles value -->
+<!-- init commonSkills value -->
+<!-- init advSkills value -->
+<!-- init combatSkills value -->
+<!-- init magicSkills value -->
+<!-- init heroicSkills value -->
+<!-- init traits value -->
+<!-- init spells value -->
+<!-- init spiritSpells value -->
+<!-- init divineSpells value -->
+<!-- init draconicSpells value -->
+<!-- init draconicPrepared value -->
+<!-- init sorcerySpells value -->
+<!-- init wiki value -->
+<!-- init combatStatus value -->
+[h: newCombatStatus ='{"turnStatus":"disabled","activeTurn":0,"chargeStatus":"none","situationMod":"none","activeCA":0,"ccCA":0,"proactiveCA":0,"reactiveCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}']
+ [h: setProperty("combatStatus",newCombatStatus,tokenId)]
+<!-- init combatLog value -->
+[h: newCombatLog ='{"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":"","turnDeclaration":""}']
+ [h: setProperty("combatLog",newCombatLog,tokenId)]
+<!-- init tokenDesc value -->
+
+<!-- init wealth value -->
+[h: newWealth ='{"hold":{"gp":0,"sp":5,"cp":10,"others":""},"hidden":{"gp":5,"sp":0,"cp":0,"others":""}}']
+[h: setProperty("wealth",newWealth,tokenId)]
+
+<!-- init equipmentDesc value -->
+[h: newEquipment ='{"hold":"nothing","hidden":"nothing"}']
+[h: setProperty("equipmentDesc",newEquipment,tokenId)]
+
+<!-- init magicItemDesc value -->
+[h: newMagicItemDesc ='{"hold":"nothing","hidden":"nothing"}']
+[h: setProperty("magicItemDesc",newMagicItemDesc,tokenId)]
+
+<!-- init fatigue value -->
+[h: newFatigue ='{"level":"Fresh"}']
+[h: setProperty("fatigue",newFatigue,tokenId)]
+
+<!-- init improvementPool value -->
+[h: newImprovementPool = '{"prevPts":0,"currPts":0,"origTmp":0,"currTmp":0,"status":"done"}']
+[h: setProperty("improvementPool",newImprovementPool,tokenId)]
