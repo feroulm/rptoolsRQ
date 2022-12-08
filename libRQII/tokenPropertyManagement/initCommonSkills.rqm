@@ -6,7 +6,9 @@
 
 [h: minCommonSkills = '{"Athletics":{"code":"STR+DEX","subtype":"0","current":23,"base":23,"culture":0,"profession":0,"experience":0},"Brawn":{"code":"STR+SIZ","subtype":"0","current":23,"base":23,"culture":0,"profession":0,"experience":0},"Evade":{"code":"DEX*2","subtype":"0","current":24,"base":24,"culture":0,"profession":0,"experience":0},"Perception":{"code":"POW+INT","subtype":"0","current":21,"base":21,"culture":0,"profession":0,"experience":0},"Persistence":{"code":"POW*2","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Resilience":{"code":"CON*2","subtype":"0","current":28,"base":28,"culture":0,"profession":0,"experience":0},"Stealth":{"code":"INT+DEX","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Swim":{"code":"STR+CON","subtype":"0","current":25,"base":25,"culture":0,"profession":0,"experience":0},"Unarmed":{"code":"STR+DEX","subtype":"0","current":23,"base":23,"culture":0,"profession":0,"experience":0}}']
 
-[h:status=input("skTypeList|All, Basic, Spirit|Select a common skill template|RADIO")]
+[h: spiritCommonSkills = '{"Perception":{"code":"POW+INT","subtype":"0","current":21,"base":21,"culture":0,"profession":0,"experience":0},"Persistence":{"code":"POW*2","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Resilience":{"code":"CON*2","subtype":"0","current":28,"base":28,"culture":0,"profession":0,"experience":0},"Stealth":{"code":"INT+DEX","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Unarmed":{"code":"STR+DEX","subtype":"0","current":23,"base":23,"culture":0,"profession":0,"experience":0}}']
+
+[h:status=input("skTypeList|All, Minimum, Spirit|Select a common skill template|RADIO")]
 [h:abort(status)]
 
 [r, switch(skTypeList), code:
@@ -17,7 +19,7 @@
     [r: initSkillsProp = minCommonSkills]
   };
   case 2 :{
-    choix 3
+    [r: initSkillsProp = spiritCommonSkills]
   };
   default: {
   <!-- do nothing -->

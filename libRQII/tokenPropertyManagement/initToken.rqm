@@ -5,14 +5,62 @@
 [h: res = input("junk|This will reset all properties on the token to basic value. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
 [h: abort(res)]
 
-<!-- set basic value for charac -->
-[r: setProperty("STR","10",tokenId)]
-[r: setProperty("CON","10",tokenId)]
-[r: setProperty("SIZ","10",tokenId)]
-[r: setProperty("INT","10",tokenId)]
-[r: setProperty("POW","10",tokenId)]
-[r: setProperty("DEX","10",tokenId)]
-[r: setProperty("CHA","10",tokenId)]
+<!-- Select token type -->
+
+
+[h:status=input("tokenType|Human, Spirit, 4LegsWithTail |Select a token type template|RADIO")]
+[h:abort(status)]
+
+[r, switch(tokenType), code:
+  case 0 :{
+    <!-- set basic value for human -->
+    [r: setProperty("STR","10",tokenId)]
+    [r: setProperty("CON","10",tokenId)]
+    [r: setProperty("SIZ","10",tokenId)]
+    [r: setProperty("INT","10",tokenId)]
+    [r: setProperty("POW","10",tokenId)]
+    [r: setProperty("DEX","10",tokenId)]
+    [r: setProperty("CHA","10",tokenId)]
+
+    [h: locName = "loc1=Tête;loc2=Br. G.;loc3=Br. D.;loc4=Poit-;loc5=Abd.;loc6=Jb. G.;loc7=Jb D."]
+    [h: locD20 = "loc1=19-20;loc2=16-18;loc3=13-15;loc4=10-12;loc5=7-9;loc6=4-6;loc7=1-3"]
+    [h: locNb = 7]
+  };
+  case 1 :{
+    <!-- set basic value for spirit -->
+    [r: setProperty("STR","0",tokenId)]
+    [r: setProperty("CON","0",tokenId)]
+    [r: setProperty("SIZ","0",tokenId)]
+    [r: setProperty("INT","5",tokenId)]
+    [r: setProperty("POW","11",tokenId)]
+    [r: setProperty("DEX","0",tokenId)]
+    [r: setProperty("CHA","4",tokenId)]
+
+    [h: locName = "loc1=Corpse"]
+    [h: locD20 = "loc1=1-20"]
+    [h: locNb = 1]
+  };
+  case 2 :{
+    <!-- set basic value for a monster with 4 leg and a tail (i.e a dinosaur) -->
+    [r: setProperty("STR","14",tokenId)]
+    [r: setProperty("CON","13",tokenId)]
+    [r: setProperty("SIZ","20",tokenId)]
+    [r: setProperty("INT","11",tokenId)]
+    [r: setProperty("POW","7",tokenId)]
+    [r: setProperty("DEX","19",tokenId)]
+    [r: setProperty("CHA","4",tokenId)]
+
+    [h: locName = "loc1=Head;loc2=Fleg G.;loc3=FLeg D.;loc4=Forequarter;loc5=Hindquarter;loc6=BLeg G.;loc7=BLeg D.;loc8=Tail"]
+    [h: locD20 = "loc1=19-20;loc2=17-18;loc3=15-16;loc4=11-14;loc5=7-10;loc6=5-6;loc7=3-4;loc8=1-2"]
+    [h: locNb = 8]
+    
+  };
+  default: {
+  <!-- do nothing -->
+    [h: res = input("junk|tokenType is wrong.|ignored|LABEL|SPAN=true")]
+    [h: abort(0)]
+  }
+]
 
 <!-- init Charac value -->
 [h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
@@ -33,12 +81,7 @@
 }]
 [r: setProperty("Charac",newCharac,tokenId)]
 
-<!-- init locName, locD20, locNb and hpInit for Human value -->
-
-[h: locName = "loc1=Tête;loc2=Br. G.;loc3=Br. D.;loc4=Poit-;loc5=Abd.;loc6=Jb. G.;loc7=Jb D."]
-[h: locD20 = "loc1=19-20;loc2=16-18;loc3=13-15;loc4=10-12;loc5=7-9;loc6=4-6;loc7=1-3"]
-[h: locNb = 7]
-
+<!-- init locName, locD20, locNb and hpInit -->
 [h: setProperty("locName", locName, tokenId)]
 [h: setProperty("locD20", locD20, tokenId)]
 [h: setProperty("locNb", locNb, tokenId)]
