@@ -50,14 +50,14 @@
 <br>
 )))|(% style="border: 2px solid white;" %) |(% style="border: 2px solid white;" %)(((
 <br>
-**Richesses** (//hidden//)
+**Richesses** (% style="color: #A5ACAF;" %)(//hidden//)(%%)
 <br>
 |= GP |= SP |= CP |= Autres
 <br>
 [h: propWealth = getProperty("wealth", tokenId)]
 [h: wealthHold = json.get(propWealth,"hold")]
 [h: wealthHidden = json.get(propWealth,"hidden")]
-|[r: json.get(wealthHold,"gp")] (//[r: json.get(wealthHidden,"gp")]//) |[r: json.get(wealthHold,"sp")] (//[r: json.get(wealthHidden,"sp")]//|[r: json.get(wealthHold,"cp")] (//[r: json.get(wealthHidden,"cp")]//)|[r: json.get(wealthHold,"others")](//[r: json.get(wealthHidden,"others")]//)
+|[r: json.get(wealthHold,"gp")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"gp")]//)(%%) |[r: json.get(wealthHold,"sp")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"sp")]//)(%%)|[r: json.get(wealthHold,"cp")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"cp")]//)(%%)|[r: json.get(wealthHold,"others")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"others")]//)(%%)
 <br>
 )))|(% style="border: 2px solid white;" %) |(% style="border: 2px solid white;" %)(((
 <br>
@@ -90,7 +90,7 @@
 **Combat Style :** 
 [h: aSkills = getProperty("combatSkills", tokenId)]
 [foreach(skill, aSkills, ","), code: {
-  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	  [h: skillValues = json.get(aSkills,skill)]
       [r: skill] [r: json.get(skillValues,"current")]%
 }]
@@ -179,8 +179,8 @@
 <br>
 [h, if(magicSkillsExist) : skillValues = json.get(aSkills,"Common Magic"); skillValues = ""] 
 |**&#91;&#91;Common>>Rq.SpellBook||rel="__blank"&#93;&#93;**\\
-[h, if(skillValues != ""), code:{
-Common Magic [r: json.get(skillValues,"current")]%
+[r, if(skillValues != ""), code:{
+##Common Magic [r: json.get(skillValues,"current")]%##
 }]
 [h: propSpells = getProperty("spells", tokenId)]
 |
@@ -198,13 +198,13 @@ Common Magic [r: json.get(skillValues,"current")]%
   [h: loreName = "Lore"+i]
   [h, if(magicSkillsExist) : loreValues = json.get(aSkills,loreName); loreValues = ""]
   [r, if(loreValues != ""), code :{
-	[r: loreName] [r: json.get(loreValues,"current")]%,
+	##[r: loreName] [r: json.get(loreValues,"current")]%##,
   }]
   [h: pactName = "Pact"+i]
   [h: godlore = "godlore"+i]
   [h, if(magicSkillsExist) : pactValues = json.get(aSkills,pactName); pactValues = ""]
   [r, if(pactValues != ""), code :{
-  [r: pactName] [r: json.get(pactValues,"current")]% \\
+  ##[r: pactName] [r: json.get(pactValues,"current")]%## \\
   //dedPow ([r: json.get(dedPow,godlore)])//\\
   }]
 }]
@@ -228,14 +228,14 @@ Common Magic [r: json.get(skillValues,"current")]%
 [h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Manipulation"); manipValues = ""]
 |(((**&#91;&#91;Sorcery>>Rq.SpellBookSorcery.WebHome||rel="__blank"&#93;&#93;**\\
 [r, if(manipValues != ""), code :{
-Manipulation [r: json.get(manipValues,"current")]%\\
+##Manipulation [r: json.get(manipValues,"current")]%##\\
 }]
 
 [for(i,1,6,1,""), code: {
   [h: grimoireName = "Grimoire"+i]
   [h, if(magicSkillsExist) : grimoireValues = json.get(aSkills,grimoireName); grimoireValues = ""]
   [r, if(grimoireValues != ""), code :{
-	  [r: grimoireName] [r: json.get(grimoireValues,"current")]%\\
+	  ##[r: grimoireName] [r: json.get(grimoireValues,"current")]%##\\
   }]
 }]
 )))|(((
@@ -259,7 +259,7 @@ Manipulation [r: json.get(manipValues,"current")]%\\
 
 [h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Draconic Illumination"); manipValues = ""]
 [r, if(manipValues != ""), code :{
-  Draconic Illumination [r: json.get(manipValues,"current")]%
+##Draconic Illumination [r: json.get(manipValues,"current")]%##
 }]
 )))|(((
 <br>
@@ -291,10 +291,10 @@ Manipulation [r: json.get(manipValues,"current")]%\\
 [h, if(magicSkillsExist) : walkingValue = json.get(aSkills,"Spirit Walking"); walkingValue = ""]
 [h, if(magicSkillsExist) : bindingValue = json.get(aSkills,"Spirit Binding"); bindingValue = ""]
 [r, if(walkingValue != ""), code :{
-  Spirit Walking [r: json.get(walkingValue,"current")]%\\
+##Spirit Walking [r: json.get(walkingValue,"current")]%##\\
 }]
 [r, if(bindingValue != ""), code :{
-	Spirit Binding [r: json.get(bindingValue,"current")]%
+##Spirit Binding [r: json.get(bindingValue,"current")]%##
 }]
 )))|(((
 <br>
@@ -323,7 +323,7 @@ Manipulation [r: json.get(manipValues,"current")]%\\
   [h: traitName = json.get(traitAttr,"displayname")]
   [r: traitName]
 }]
-\\<br>
+<br><br>
 **&#91;&#91;Traits>>Rq.MonstersTraits||rel="__blank"&#93;&#93;**
 <br>
 [h: propTraits = getProperty("traits", tokenId)]
