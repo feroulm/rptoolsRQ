@@ -1,0 +1,13 @@
+== [r: getName()] ==
+<br>
+&#123;&#123;velocity&#125;&#125;$xwiki.ssfx.use("js/xwiki/table/table.css")<br>
+$xwiki.jsfx.use("js/xwiki/table/tablefilterNsort.js", true)&#123;&#123;/velocity&#125;&#125;<br>
+<br>
+(% class="grid sortable filterable doOddEven" id="table1" %)<br>
+(% class="sortHeader" %)|=MacroName |= Group |=Tooltip<br>
+[h: macroLabels = getMacros()]
+[foreach(macro, macroLabels, "<br>"), code: {
+	[h: macroIndex = getMacroIndexes(macro)]
+	[h: macroProps = getMacroProps(macroIndex,"json")]
+	| [r: macro] | [r: json.get(macroProps,"group")] | [r: json.get(macroProps,"tooltip")]
+}]
