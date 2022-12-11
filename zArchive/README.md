@@ -1,0 +1,1 @@
+Macro that are no longuer installed into maptool but that we want to keep for history and/or as useful examples
