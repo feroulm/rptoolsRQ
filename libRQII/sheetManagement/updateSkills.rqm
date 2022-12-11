@@ -1,4 +1,4 @@
-[h: arguments = macro.args] 
+[r: arguments = macro.args] 
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: skType = json.get(arguments, "skType")]
 
@@ -32,7 +32,7 @@
 	[h: skProfession = json.get(skillValues, "profession")]
 
 	<!-- grab new value from param -->
-  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	[h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	[h: newSkSubtype = json.get(arguments, strformat("%{skillName}Subtype"))]
   	[h: newSkCurrent = json.get(arguments, strformat("%{skillName}Current"))]
   	[h: newSkExperience = json.get(arguments, strformat("%{skillName}Experience"))]

@@ -134,7 +134,7 @@
       <b>Combat skills :</b>
     [h: aSkills = getProperty("combatSkills", tokenId)]
 	[foreach(skill, aSkills, ","), code: {
-  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	  [h: skillValues = json.get(aSkills,skill)]
       [r: skill] : [r: json.get(skillValues,"current")]%
     }]

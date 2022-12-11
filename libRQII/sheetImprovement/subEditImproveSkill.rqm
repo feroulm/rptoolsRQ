@@ -46,7 +46,7 @@
         <tbody>
       
         [foreach(skill, aSkills, ""), code: {
-        	[h: skillName = replace(lower(skill),"[^a-zA-Z0-1_.]","")]
+        	[h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
         	[h: skillValues = json.get(aSkills,skill)]
         	[h: skillSubtype = json.get(skillValues,"subtype")]
           <tr>

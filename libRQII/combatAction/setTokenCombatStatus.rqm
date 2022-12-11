@@ -6,7 +6,7 @@
 [h: inputStr = "tip|Modify combat status||LABEL|SPAN=TRUE"]
 [r, foreach(combatProp, combatStatus), CODE:{
    <!-- make sure your combat properties has a valid variable format -->
-   [r: prop = "input." + replace(lower(combatProp),"[^a-zA-Z0-1_.]","")]
+   [r: prop = "input." + replace(lower(combatProp),"[^a-zA-Z0-9_.]","")]
    <!-- save the variable name for later use -->
    [H: propList = json.set(propList,prop,combatProp)]
    [H: value = json.get(combatStatus,combatProp)]
