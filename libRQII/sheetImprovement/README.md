@@ -1,4 +1,4 @@
-# Mange Improvement for a token
+# Manage Improvement for a token
 
 Called from :
 - viewSheet -Y menu Improve

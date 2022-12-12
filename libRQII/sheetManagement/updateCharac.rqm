@@ -1,7 +1,10 @@
 <!-- updateCharac 
 Update token Charac json properties, it update only the current Value (tmpCharacName)
-Called by :  editHumCombatAttr@lib:RQII (sheetManagement Group)
+Called by :  
+- editSheet@lib:RQII
+- editHumCombatAttr@lib:RQII (sheetManagement Group)
 Calling : 
+- openSheetMgt@Lib:RQII
 - openHumCombatAttr@lib:RQII (sheetManagement Group)
 -->
 
