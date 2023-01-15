@@ -8,6 +8,7 @@
 
 [r, switch(action), code:
   case "updatepool" : {
+  Start Improvement session for [r: getName(tokenId)]
   [h: ptsNb = json.get(macro.args, "ptsNb")]
 	[h: desc =json.get(macro.args,"desc")]
 	[h, if(desc == ""): desc = "add / remove pts"]
@@ -44,6 +45,8 @@
   case "updatestatus" : {
     [h: res = input("junk|This will validate all the changes, no way back. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
     [h: abort(res)]
+
+    End Improvement session for [r: getName(tokenId)]
     <!-- Set all experienceTmp values to 0 -->
     [h: aSkills = getProperty("commonSkills", tokenId)]
     [h: resetSkills = resetSkillsExperienceTmp(aSkills,tokenId)]
