@@ -115,7 +115,7 @@
   [h: skillValues = json.get(aSkills,"Common Magic")]
   [r, if(skillValues != ""), code:{
   
-&#47;/&#91;&#91;Common>>Rq.SpellBook||rel="__blank"&#93;&#93;//\\
+&#47;/&#91;&#91;Common>>Rq.MagicRules.SpellBook.WebHome||rel="__blank"&#93;&#93;//\\
 Common Magic [r: json.get(skillValues,"current")]% :
 
   }]
@@ -136,7 +136,7 @@ Common Magic [r: json.get(skillValues,"current")]% :
   [h, if(magicSkillsExist) : loreValues = json.get(aSkills,loreName); loreValues = ""]
   [r, if(loreValues != ""), code :{
 <br>  
-&#47;/&#91;&#91;Divine>>Rq.SpellBookDivine||rel="__blank"&#93;&#93;//
+&#47;/&#91;&#91;Divine>>Rq.MagicRules.SpellBookDivine.WebHome||rel="__blank"&#93;&#93;//
 \\[r: loreName] ([r: json.get(loreValues,"subtype")]) [r: json.get(loreValues,"current")]%,
   
   }]
@@ -166,7 +166,7 @@ Common Magic [r: json.get(skillValues,"current")]% :
 [r, if(manipValues != ""), code :{
 
 <br>
-&#47;/&#91;&#91;Sorcery>>Rq.SpellBookSorcery.WebHome||rel="__blank"&#93;&#93;//\\
+&#47;/&#91;&#91;Sorcery>>Rq.MagicRules.SpellBookSorcery.WebHome||rel="__blank"&#93;&#93;//\\
 Manipulation [r: json.get(manipValues,"current")]%
 
 }]
@@ -195,7 +195,7 @@ Manipulation [r: json.get(manipValues,"current")]%
 [r, if(manipValues != ""), code :{
 
 <br>
-&#47;/&#91;&#91;Draconic>>Rq.SpellBookDraconic.WebHome||rel="__blank"&#93;&#93;//
+&#47;/&#91;&#91;Draconic>>Rq.MagicRules.SpellBookDraconic.WebHome||rel="__blank"&#93;&#93;//
 \\Draconic Illumination [r: json.get(manipValues,"current")]% :
 
 }]
@@ -228,7 +228,7 @@ Manipulation [r: json.get(manipValues,"current")]%
 [r, if(walkingValue != ""), code :{
 
 <br>
-&#47;/&#91;&#91;Spirit>>Rq.SpellBookSpirit.WebHome||rel="__blank"&#93;&#93;//\\
+&#47;/&#91;&#91;Spirit>>Rq.MagicRules.SpellBookSpirit.WebHome||rel="__blank"&#93;&#93;//\\
 Spirit Walking [r: json.get(walkingValue,"current")]%,
 
 }]

@@ -178,7 +178,7 @@
 **Magic**
 <br>
 [h, if(magicSkillsExist) : skillValues = json.get(aSkills,"Common Magic"); skillValues = ""] 
-|**&#91;&#91;Common>>Rq.SpellBook||rel="__blank"&#93;&#93;**\\
+|**&#91;&#91;Common>>Rq.MagicRules.SpellBook.WebHome||rel="__blank"&#93;&#93;**\\
 [r, if(skillValues != ""), code:{
 ##Common Magic [r: json.get(skillValues,"current")]%##
 }]
@@ -191,7 +191,7 @@
           [r: spellName] ([r: spellMagnitude])
 }] 	
 <br>
-|(((**&#91;&#91;Divine>>Rq.SpellBookDivine||rel="__blank"&#93;&#93;** \\
+|(((**&#91;&#91;Divine>>Rq.MagicRules.SpellBookDivine.WebHome||rel="__blank"&#93;&#93;** \\
 [h: propSpells = getProperty("divineSpells", tokenId)]
 [h: dedPow = getProperty("DedicatedPow", tokenId)]
 [for(i,1,6,1,""), code: {
@@ -226,7 +226,7 @@
 <br>
 [h: propSpells = getProperty("sorcerySpells", tokenId)]
 [h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Manipulation"); manipValues = ""]
-|(((**&#91;&#91;Sorcery>>Rq.SpellBookSorcery.WebHome||rel="__blank"&#93;&#93;**\\
+|(((**&#91;&#91;Sorcery>>Rq.MagicRules.SpellBookSorcery.WebHome||rel="__blank"&#93;&#93;**\\
 [r, if(manipValues != ""), code :{
 ##Manipulation [r: json.get(manipValues,"current")]%##\\
 }]
@@ -255,7 +255,7 @@
 <br>
 )))
 <br>
-|(((**&#91;&#91;Draconic>>Rq.SpellBookDraconic.WebHome||rel="__blank"&#93;&#93;**\\
+|(((**&#91;&#91;Draconic>>Rq.MagicRules.SpellBookDraconic.WebHome||rel="__blank"&#93;&#93;**\\
 
 [h, if(magicSkillsExist) : manipValues = json.get(aSkills,"Draconic Illumination"); manipValues = ""]
 [r, if(manipValues != ""), code :{
@@ -286,7 +286,7 @@
 <br>
 )))
 <br>
-|(((**&#91;&#91;Spirit>>Rq.SpellBookSpirit.WebHome||rel="__blank"&#93;&#93;**\\
+|(((**&#91;&#91;Spirit>>Rq.MagicRules.SpellBookSpirit.WebHome||rel="__blank"&#93;&#93;**\\
 [h: aSkills = getProperty("magicSkills", tokenId)]
 [h, if(magicSkillsExist) : walkingValue = json.get(aSkills,"Spirit Walking"); walkingValue = ""]
 [h, if(magicSkillsExist) : bindingValue = json.get(aSkills,"Spirit Binding"); bindingValue = ""]

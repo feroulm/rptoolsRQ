@@ -63,9 +63,9 @@
 
 <!-- Show last action result (erased at each refresh) -->
 [r, if (msg != ""), code:{
-<b>[r: msg]</b><br>
+<b>[r: msg]</b><br><br>
 }]
-<br>
+
 <!-- Compute condition based on various value -->
 [h: showProactiveAction = 0]
 [h: showOnlyChargingAction = 0]
@@ -131,7 +131,7 @@
 <!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
 [r, if (showProactiveAction), code :{
   [r, if(turnDeclaration == ""), code:{
-  	Declare the action first :<br>  	
+  	<b>STEP1</b> - If opponent can react, declare the action first :<br>  	
   	<form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
@@ -177,10 +177,10 @@
   	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
      <br>
   }]
-  <b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.<br>
+  <span style="font-weight: bold;color:red"><b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.</span><br>
   <br>
-  Select the proactive action <b>that has been done</b>, this will end the turn :<br>
-  [r, if(castCA > 0): "<b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br>"]
+  <b>STEP2</b> - Select the proactive action <b>that has been done</b>, this will end the active turn<hr>
+  [r, if(castCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br></span>"]
   [r, if(reloadCA > 0): "<b>!!</b> You have "+reloadCA+" remaining reloadCA, you should reload before shooting.<br>"]
   <table>
     <tr>
@@ -331,6 +331,7 @@
           <input type="submit" name="edit_btn" value="Outmanoeuvre: Resist">
         </form>
       </td>
+      <td></td>
       <td>
         <form action="[r:linkUpdateCombatReactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
@@ -347,7 +348,14 @@
           <input type="hidden" name="action" value="chargeRiposte">
           <input type="submit" name="edit_btn" value="Charge: Riposte">
         </form>
-      </td>    
+      </td>  
+      <td>
+        <form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="chargeRiposte">
+          <input type="submit" name="edit_btn" value="Charge: Mounted Attack">
+        </form>
+      </td>  
       <td>
         <form action="[r:linkUpdateCombatReactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
@@ -366,6 +374,44 @@
 <!-- Charge specific case -->
 
 [r, if (showOnlyChargingAction), code :{
+  [r, if(turnDeclaration == ""), code:{
+  	<b>STEP1</b> - If opponent can react, declare the action first :<br>  	
+  	<form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <select name="declaredAction" size="">
+             [r, if(chargeStatus == "none"): "<option selected='selected'>Charging</option>"]
+             [r, if(chargeStatus == "prepareCharge"): "<option selected='selected'>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "passageDone"): "<option selected='selected'>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option selected='selected'>Charge: Passage</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option>Charge: Crash</option>"]
+          </select>
+          [r: htmlSelectCombatToken("actionTarget",tokenId)]
+          <input type="text" name="actionDesc" size="20">
+          <input type="hidden" name="action" value="declareProactive">
+          <input type="submit" name="edit_btn" value="Declare Action">
+    </form> 	
+  };{
+  	<form action="[r:linkUpdateCombatProactive]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <select name="declaredAction" size="">
+             [r, if(chargeStatus == "none"): "<option selected='selected'>Charging</option>"]
+             [r, if(chargeStatus == "prepareCharge"): "<option selected='selected'>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "passageDone"): "<option selected='selected'>"+chargeAction+"</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option selected='selected'>Charge: Passage</option>"]
+             [r, if(chargeStatus == "chargeReady"): "<option>Charge: Crash</option>"]
+          </select>
+          [r: htmlSelectCombatToken("actionTarget",tokenId)]
+          <input type="text" name="actionDesc" size="20">
+          <input type="hidden" name="action" value="declareProactive">
+          <input type="submit" name="edit_btn" value="Change declared action">
+    </form> 
+    <br>	
+  	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
+     <br>
+  }]
+  <span style="font-weight: bold;color:red"><b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.</span><br>
+
+	
   [r, if(chargeStatus == "chargeReady"), code:{
   	 Charge is ready, select either Passage or Crash Action :
   }]
