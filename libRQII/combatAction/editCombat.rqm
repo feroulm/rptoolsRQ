@@ -1,6 +1,5 @@
 [h: arguments = macro.args]
 [h: tokens = json.get(arguments, "tokens")]
-[h: link = macroLinkText("updateCombat@Lib:RQII", "all")]
 [h: linkCA = macroLinkText("openCombatAction@Lib:RQII", "all")]
 
 [h: globalCombat = getLibProperty("combat", "Lib:RQII")]

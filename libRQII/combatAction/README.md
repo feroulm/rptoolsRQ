@@ -22,3 +22,52 @@ For the moment improvement forms doesn't update CA since it enable only skill im
 
 editSheet
 ## CA Management during a Combat
+
+
+## openCombat.rqm
+- open the combat window and put all the token that are in the initiative list / window in a table
+- provide global button to manage the comabt phase (next cycle & mr, reste,...)
+- enable to open the combat action window on a specific token
+  - only one action combat window at a time for a specific token, does not support to open two windows in parrallel
+
+```
+Logic - Mermaid Diagram
+graph LR
+    A[openCombat] -->|tokens - from getInitiativeList | B(editCombat)
+    B -->B1(refresh lnk)
+    B1 -->A
+    B -->B2[/Roll Init Btn/]
+    B2 -->|tokens,rollinit|C1(updateGlobalCombat)
+	B -->B3[/Next Cycle Btn/]
+    B3 -->|tokens,nxtcycle|C1(updateGlobalCombat)
+	B -->B4[/Next MR Btn/]
+    B4 -->|tokens,nxtmr|C1(updateGlobalCombat)
+	B -->B5[/Start Reset Btn/]
+    B5 -->|tokens,reset|C1(updateGlobalCombat)
+	B -->B6[/Act Btn/]
+    B6 -->|tokenId,msg|C2[openCombatAction]
+	C1 -->A
+	C1 -->C2
+```
+![openCombat Mgt flow](../../assets/doc/openCombat.png?raw=true)
+
+## openCombatAction.rqm
+
+```
+Logic - Mermaid Diagram
+graph LR
+    A[openCombatAction] -->|tokenId| B(editCombatAction)
+	B -->B1[/Active action buttons/]
+	B1 -->|tokenId,action|C1(updateCombatProactive)
+	B -->B2[/Reactive action buttons/]
+	B2 -->|tokenId,action|C2(updateCombatReactive)
+	B -->B3[/Status buttons/]
+	B3 -->|tokenId,action|C4(updateCombat)
+	B -->B4[/Damage heal button/]
+	B4 -->|tokenId|C3(openAPHP)
+	B -->B5[/Change carac button/]
+	B5 -->|tokenId|C5(openHumCombatAttr)
+	B -->B6[/Edit combat status/]
+	B6 -->|tokenId|C5(setTokenCombatStatus)
+```
+![openCombatAction Mgt flow](../../assets/doc/openCombatAction.png?raw=true)
