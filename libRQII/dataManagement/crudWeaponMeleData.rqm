@@ -1,0 +1,60 @@
+[h: arguments = macro.args] 
+
+[h: action = json.get(arguments,"action")]
+[h: objectKey = json.get(arguments, "objectKey")]
+
+[h: newType = json.get(arguments,"Type")]
+[h: newSize = json.get(arguments,"Size")]
+[h: newReach = json.get(arguments,"Reach")]
+[h: newDamage = json.get(arguments,"Damage")]
+[h: newEnc = json.get(arguments,"Enc")]
+[h: newApHp = json.get(arguments,"ApHp")]
+[h: newManoeuvre = json.get(arguments,"Manoeuvre")]
+[h: newSpecial = json.get(arguments,"Special")]
+
+
+[h: objectsDb = getLibProperty("meleeWeaponDb", "Lib:RQII")]
+  
+[h: objectExist = json.contains(objectsDb,objectKey)]
+
+[r, if(! objectExist), code:{
+  <!-- Creation -->
+  [h: newObjectValues = json.set("{}","Type",newType)]
+  [h: newObjectValues = json.set(newObjectValues,"Size",newSize)]
+  [h: newObjectValues = json.set(newObjectValues,"Reach",newReach)]
+  [h: newObjectValues = json.set(newObjectValues,"Damage",newDamage)]
+  [h: newObjectValues = json.set(newObjectValues,"Enc",newEnc)]
+  [h: newObjectValues = json.set(newObjectValues,"ApHp",newApHp)]
+  [h: newObjectValues = json.set(newObjectValues,"Manoeuvre",newManoeuvre)]
+  [h: newObjectValues = json.set(newObjectValues,"Special",newSpecial)]
+  [h: objectsDb = json.set(objectsDb,objectKey,newObjectValues)]		
+  
+  Add a new object : [r: objectKey] 
+};
+{
+  <!-- Update -->
+	Update object: [r: objectKey] 
+  [h: newObjectValues = json.get(objectsDb,objectKey)]
+  [h: newObjectValues = json.set(newObjectValues,"Type",newType)]
+  [h: newObjectValues = json.set(newObjectValues,"Size",newSize)]
+  [h: newObjectValues = json.set(newObjectValues,"Reach",newReach)]
+  [h: newObjectValues = json.set(newObjectValues,"Damage",newDamage)]
+  [h: newObjectValues = json.set(newObjectValues,"Enc",newEnc)]
+  [h: newObjectValues = json.set(newObjectValues,"ApHp",newApHp)]
+  [h: newObjectValues = json.set(newObjectValues,"Manoeuvre",newManoeuvre)]
+  [h: newObjectValues = json.set(newObjectValues,"Special",newSpecial)]
+  
+  [h: objectsDb = json.set(objectsDb,objectKey,newObjectValues)]
+}]
+
+[r, if(action == "delete"), code:{
+   Delete object : [r: objectKey] 
+  [h: objectsDb = json.remove(objectsDb, objectKey)]
+}]
+
+
+[h: setLibProperty("meleeWeaponDb", objectsDb, "Lib:RQII")]
+
+<!-- Refresh Data Mgt Window -->
+[h: macroParam = json.set("{}", "tab", "melee")]
+[r, macro("openDataMgt@Lib:RQII"): macroParam]
