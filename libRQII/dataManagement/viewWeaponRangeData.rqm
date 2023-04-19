@@ -58,7 +58,7 @@
           <legend>Filter type</legend>
           <td><input type="text" placeholder="Name" name="nameFilter" value="[r: nameFilter]"></td>
           <td><input type="text" placeholder="Type" name="typeFilter" value="[r: typeFilter]"></td>
-          <input type="hidden" name="tab" value="melee">
+          <input type="hidden" name="tab" value="range">
           <button type="submit" class="pure-button pure-button-primary">Filter</button>
       </fieldset>
     </form>
@@ -66,15 +66,18 @@
 </div>
 <div class="container pure-g">
   <div class="pure-u-24-24">
-    <h1 class="content-subhead">Melee Weapons</h1>
+    <h1 class="content-subhead">Range Weapons</h1>
     <table class="content pure-table pure-table-striped">
     <thead>
         <tr>
             <th>Weapon Id</th>
             <th>Type</th>
+			<th>DmgMod</th>
+			<th>Damage</th>
+			<th>Range</th>
+			<th>Load</th>
+			<th>StrDex</th>
             <th>Size</th>
-            <th>Reach</th>
-            <th>Damage</th>
             <th>ApHp</th>
             <th>Manoeuvre</th>
             <th>Special</th>
@@ -83,16 +86,19 @@
     </thead>
     <tbody>
       <tr>
-          [h: link = macroLinkText("crudWeaponMeleeData@Lib:RQII", "all")]
+          [h: link = macroLinkText("crudWeaponRangeData@Lib:RQII", "all")]
           <form class="pure-form" action="[r:link]" method="json">
             <td><input type="text" placeholder="Weapon Id" name="objectKey" size="25"/></td>
-            <td><input type="text" placeholder="Type" name="Type" size="15"/></td>
-            <td><input type="text" placeholder="Size" name="Size" size="3"/></td>
-            <td><input type="text" placeholder="Reach" name="Reach" size="10"/></td>
-            <td><input type="text" placeholder="Damage" name="Damage" size="10"/></td>
-            <td><input type="text" placeholder="ApHp" name="ApHp" size="5"/></td>
-            <td><input type="text" placeholder="Manoeuvre" name="Manoeuvre" size="25"/></td>
-            <td><input type="text" placeholder="Special" name="Special" size="25"/></td>
+            <td><input type="text" placeholder="Type" name="Type" size="20"/></td>
+              <td><input type="text" placeholder="DmgMod" name="DmgMod" size="10"/></td>
+              <td><input type="text" placeholder="Damage" name="Damage" size="10"/></td>
+              <td><input type="text" placeholder="Range" name="Range" size="10"/></td>
+			  <td><input type="text" placeholder="Load" name="Load" size="10"/></td>
+			  <td><input type="text" placeholder="StrDex" name="StrDex" size="10"/></td>
+			  <td><input type="text" placeholder="Size" name="Size" size="10"/></td>
+              <td><input type="text" placeholder="ApHp" name="ApHp" size="10"/></td>
+              <td><input type="text" placeholder="Manoeuvre" name="Manoeuvre" size="10"/></td>
+            <td><input type="text" placeholder="Special" name="Special" size="10"/></td>
             <td>
               <input type="hidden" name="action" value="create">
               <button type="submit" class="pure-button pure-button-primary">Add</button>
@@ -106,22 +112,26 @@
 <div class="container pure-g">
   <div class="pure-u-24-24"> 
 
-    [h: objectsDb = getLibProperty("meleeWeaponDb", "Lib:RQII")]
+    [h: objectsDb = getLibProperty("rangeWeaponDb", "Lib:RQII")]
       
     <table class="content pure-table pure-table-striped">
     <thead>
         <tr>
             <th>Weapon Id</th>
             <th>Type</th>
+			<th>DmgMod</th>
+			<th>Damage</th>
+			<th>Range</th>
+			<th>Load</th>
+			<th>StrDex</th>
             <th>Size</th>
-            <th>Reach</th>
-            <th>Damage</th>
             <th>ApHp</th>
             <th>Manoeuvre</th>
             <th>Special</th>
             <th></th>
         </tr>
     </thead>
+	
     <tbody>
     [r, foreach(objectKey, objectsDb, ""), code:{
       [h: jsonObject = json.get(objectsDb,objectKey)]
@@ -130,14 +140,17 @@
       [r, if(matches(objectKey,nameFilter) && matches(objectType,typeFilter)), code:{
       
         <tr>
-            [h: link = macroLinkText("crudWeaponMeleeData@Lib:RQII", "all")]
+            [h: link = macroLinkText("crudWeaponRangeData@Lib:RQII", "all")]
             <form class="pure-form" action="[r:link]" method="json">
               <td><label>[r: objectKey]</label></td>
               
               <td><input type="text" placeholder="Type" name="Type" value='[r: json.get(jsonObject,"Type")]' size="20"/></td>
-              <td><input type="text" placeholder="Size" name="Size" value='[r: json.get(jsonObject,"Size")]' size="10"/></td>
-              <td><input type="text" placeholder="Reach" name="Reach" value='[r: json.get(jsonObject,"Reach")]' size="10"/></td>
+              <td><input type="text" placeholder="DmgMod" name="DmgMod" value='[r: json.get(jsonObject,"DmgMod")]' size="10"/></td>
               <td><input type="text" placeholder="Damage" name="Damage" value='[r: json.get(jsonObject,"Damage")]' size="10"/></td>
+              <td><input type="text" placeholder="Range" name="Range" value='[r: json.get(jsonObject,"Range")]' size="10"/></td>
+			  <td><input type="text" placeholder="Load" name="Load" value='[r: json.get(jsonObject,"Load")]' size="10"/></td>
+			  <td><input type="text" placeholder="StrDex" name="StrDex" value='[r: json.get(jsonObject,"StrDex")]' size="10"/></td>
+			  <td><input type="text" placeholder="Size" name="Size" value='[r: json.get(jsonObject,"Size")]' size="10"/></td>
               <td><input type="text" placeholder="ApHp" name="ApHp" value='[r: json.get(jsonObject,"ApHp")]' size="10"/></td>
               <td><input type="text" placeholder="Manoeuvre" name="Manoeuvre" value='[r: json.get(jsonObject,"Manoeuvre")]' size="10"/></td>
               <td><input type="text" placeholder="Special" name="Special" value='[r: json.get(jsonObject,"Special")]' size="10"/></td>
@@ -150,7 +163,7 @@
             </form>
             <td>
               [h: macroParam = json.set("{}", "action","delete","objectKey", objectKey)]
-              [h: link = macroLinkText("crudWeaponMeleeData@Lib:RQII", "all",macroParam)]
+              [h: link = macroLinkText("crudWeaponRangeData@Lib:RQII", "all",macroParam)]
               <a class="button-warning pure-button" href="[r: link]">Del</a>
             </td>
         </tr>

@@ -44,7 +44,27 @@ RQ_Lib Property : *meleeWeaponDb*
 		"Special": "-5% to bow skill"
 	}
 }
+```
 
+### Range Weapon DB
+
+RQ_Lib Property : *rangeWeaponDb*
+
+```
+{
+	"Arbalest": {
+		"Type": "Crossbow",
+		"DmgMod": "N",
+		"Damage": "1D12",
+		"Range": "180m",
+		"Load": "4",
+		"StrDex": "STR/DEX",
+		"Size": "E",
+		"Manoeuvre": "Impale, Sunder",
+		"ApHp": "AP/HP",
+		"Special": ""
+	}
+}
 ```
 
 ### Spell DB
