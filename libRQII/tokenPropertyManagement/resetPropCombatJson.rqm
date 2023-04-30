@@ -24,6 +24,7 @@
     "turnStatus": "disabled",
     "activeTurn": 0,
     "chargeStatus": "none",
+	"spellReady": 0,
     "situationMod": "none",
     "activeCA": 0,
     "ccCA": 0,

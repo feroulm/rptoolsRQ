@@ -94,6 +94,7 @@
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+	  [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
 	  <!-- reset weapon CA-->
 	  [h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",defWeaponNb)]

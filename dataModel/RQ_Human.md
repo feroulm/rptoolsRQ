@@ -1,8 +1,9 @@
 ## RQ_Human
 
-Current version : v1.0.1
+Current version : v1.0.2
 
 History :
+- v1.0.2 : update combatStatus property to manage holdmagic action
 - v1.0.1 : add modelVersion property
 - v1.0.0 : First stable version (including all improvment to manage combat, pnj sheet, etc.)
 - v0.0.0 : First unstable version
@@ -73,6 +74,7 @@ Used on each token during a combat to track various status
     "turnStatus": "disabled",
     "activeTurn": 0,
     "chargeStatus": "none",
+	"spellReady": 0,
     "situationMod": "none",
     "activeCA": 0,
     "ccCA": 0,
@@ -137,6 +139,7 @@ TST_WARRIOR2 (one weapon + magCA) :
   * **passageDone** : token as done its charge and conitnue moving till end of the turn.
 * **currWeaponNb** : current nb of weapon hold by the token (could not be <0). Use to manage the lost weapon vent during a combat
 * **defWeaponNb** : def nb of weapon usually hold by the token (usually set during charchetr creation adn use to reste a token combat status before a new combat
+* **spellReady** : indicate if a spell is ready (1) but not yet cast because the token is using holdmagic
 
 
 ### combatLog

@@ -9,6 +9,13 @@ CA is modified
 - When a PNJ is created / updated (i.e following an improvement session)
 - During a combat
 
+## Combat Status
+When this structure evolves it must be patched on all token, to do this use the macro :
+- cf [resetPropCombatJson](../tokenPropertyManagement/resetPropCombatJson.rqm)
+Process is described inside the macro.
+
+Don't forget also to change the macro [updateGlobalCombat](./updateGlobalCombat.rqm) that reset the Combat Status.
+
 ## CA creation / update
 The following macro are involved
 - *initToken* : it define a default value (set to 0) for all. These values are wrong (a.k.a not calculated based on DEX & INT) but will be updated when charac will be modified later.

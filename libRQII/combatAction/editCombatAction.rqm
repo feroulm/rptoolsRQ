@@ -14,6 +14,7 @@
 [h: turnStatus = json.get(tCombatStatus,"turnStatus")]
 [h: activeTurn = json.get(tCombatStatus,"activeTurn")]
 [h: chargeStatus = json.get(tCombatStatus,"chargeStatus")]
+[h: spellReady = json.get(tCombatStatus,"spellReady")]
 [h: situationMod = json.get(tCombatStatus,"situationMod")]
 
 [h: activeCA = json.get(tCombatStatus,"activeCA")]
@@ -260,7 +261,7 @@
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
+          <input type="hidden" name="action" value="holdMagic">
           <input type="submit" name="edit_btn" value="Hold Magic">
         </form>
       </td>
@@ -473,6 +474,7 @@
 <br>
 Change after combat action
 <hr>
+[r, if(spellReady > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have used Hold Magic, and have a spell to release<br></span>"]
 [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
 [h: tokenType = getPropertyType(tokenId)]
 [h, switch(tokenType):
@@ -559,14 +561,22 @@ Change after combat action
         </form>
       </td>
     }]
-    <td >
-    </td>
-    <td>
-    </td>
-    <td>
-    </td>
-    <td>
-    </td>
+	[r, if(spellReady>0), code:{
+      <td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="releaseSpell">
+          <input type="submit" name="edit_btn" value="Release Spell">
+        </form>
+      </td>
+    }]
+	<td>
+        <form action="[r:linkUpdateCombat]" method="json">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="action" value="dismissMagic">
+          <input type="submit" name="edit_btn" value="Dismiss Magic">
+        </form>
+     </td>
   </tr>
 </table>
 <br>
@@ -607,6 +617,13 @@ Combat status - Data
     <td>magicCA</td><td> [r: magicCA] </td>
     <td>weaponReach</td><td> [r: weaponReach]</td>
     <td>defWeaponNb</td><td> [r: defWeaponNb]</td>
+  </tr>
+  <tr>
+    <td>spellReady</td><td>[r: spellReady]</td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td><td></td>
   </tr>
   <tr>
     <td colspan="5">
