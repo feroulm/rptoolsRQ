@@ -1,5 +1,6 @@
 
 ### spiritManagement
+Usage : cf [xwiki - MapTool - Pnj Manager](https://www.inyanga.me/xwiki/bin/view/Rq/MapTool/PnjManager/)
 
 Principle :
   - spirits are managed as token, the ref library of all spirits is a specific map named (_Spirit_Lib) with all the token on it.
