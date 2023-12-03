@@ -1,7 +1,0 @@
-[h, macro("getWeaponNb@this"): ""]
-[weaponNb = macro.return]
-[foreach(num, weaponNb, ""), code: {
-	[r, macro("delWeapon@this"): num]
-}]
-<!-- Reset NumWeapons to 0-->
-[h: Weapons = setStrProp(Weapons, "NumWeapons", "0")]
