@@ -1,0 +1,29 @@
+<!--
+  Retrieves a missile from the Missiles Property list.
+ 
+  Parameters
+    Missile Number
+ 
+  Returns
+    A string property list with all weapon keys
+    If the weapon is not found then an empty string ("") is returned.
+-->
+[h: num = getStrProp(macro.args, "weaponNb")]
+[h: id = getStrProp(macro.args, "tokId")]
+[h: Missiles = getProperty("Missiles", id)]
+
+[h: name = getStrProp(Missiles, strformat("Missile%{num}Name"))]
+[h: type = getStrProp(Missiles, strformat("Missile%{num}Type"))]
+[h: size = getStrProp(Missiles, strformat("Missile%{num}Size"))]
+[h: load = getStrProp(Missiles, strformat("Missile%{num}Load"))]
+[h: reach = getStrProp(Missiles, strformat("Missile%{num}Reach"))]
+[h: damage = getStrProp(Missiles, strformat("Missile%{num}Damage"))]
+[h: modif = getStrProp(Missiles, strformat("Missile%{num}Modif"))]
+[h: aphp = getStrProp(Missiles, strformat("Missile%{num}ApHp"))]
+[h: manoeuvre = getStrProp(Missiles, strformat("Missile%{num}Manoeuvre"))]
+[h: special = getStrProp(Missiles, strformat("Missile%{num}Special"))]
+[h, if(name == ""):
+   macro.return = ""
+;
+   macro.return = strformat("Number=%{num}; Name=%{name}; Type=%{type}; Size=%{size}; Load=%{load}; Reach=%{reach}; Damage=%{damage}; Modif=%{modif}; ApHp=%{aphp}; Manoeuvre=%{manoeuvre}; Special=%{special}")
+]
