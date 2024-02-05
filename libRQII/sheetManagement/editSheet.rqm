@@ -416,7 +416,7 @@
       <td>[r: json.get(skillValues,"experience")]</td>
       <td><input type="text" name="[r: strformat('%{skillName}Current')]" size="3" align="right"></td>
       <td><input type="text" name="[r: strformat('%{skillName}Experience')]" size="3" align="right"></td>
-      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType",skillSubtype,"skillName",skill)]
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"skType","combat","skillName",skill)]
       <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
     </tr>
     [h: class = if(class=="oddRow", "evenRow", "oddRow")]

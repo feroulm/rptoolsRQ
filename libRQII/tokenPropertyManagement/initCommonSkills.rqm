@@ -8,7 +8,9 @@
 
 [h: spiritCommonSkills = '{"Perception":{"code":"POW+INT","subtype":"0","current":21,"base":21,"culture":0,"profession":0,"experience":0},"Persistence":{"code":"POW*2","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Resilience":{"code":"CON*2","subtype":"0","current":28,"base":28,"culture":0,"profession":0,"experience":0},"Stealth":{"code":"INT+DEX","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Unarmed":{"code":"STR+DEX","subtype":"0","current":23,"base":23,"culture":0,"profession":0,"experience":0}}']
 
-[h:status=input("skTypeList|All, Minimum, Spirit|Select a common skill template|RADIO")]
+[h: objectCommonSkills = '{"Perception":{"code":"POW+INT","subtype":"0","current":21,"base":21,"culture":0,"profession":0,"experience":0},"Persistence":{"code":"POW*2","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Resilience":{"code":"CON*2","subtype":"0","current":28,"base":28,"culture":0,"profession":0,"experience":0},"Stealth":{"code":"INT+DEX","subtype":"0","current":22,"base":22,"culture":0,"profession":0,"experience":0},"Unarmed":{"code":"STR+DEX","subtype":"0","current":23,"base":23,"culture":0,"profession":0,"experience":0}}']
+
+[h:status=input("skTypeList|All, Minimum, Spirit, Object|Select a common skill template|RADIO")]
 [h:abort(status)]
 
 [r, switch(skTypeList), code:
@@ -20,6 +22,9 @@
   };
   case 2 :{
     [r: initSkillsProp = spiritCommonSkills]
+  };
+  case 3 :{
+    [r: initSkillsProp = objectCommonSkills]
   };
   default: {
   <!-- do nothing -->

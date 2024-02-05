@@ -21,7 +21,7 @@
 [h: abort(res)]	
 
 [h: newCombatStatusModel = '{
-    "turnStatus": "disabled",
+    "turnStatus": "on",
     "activeTurn": 0,
     "chargeStatus": "none",
 	"spellReady": 0,
@@ -41,7 +41,8 @@
     "firstEvade": 0,
     "weaponReach": "ok",
     "currWeaponNb": 1,
-    "defWeaponNb": 1
+    "defWeaponNb": 1,
+	"spellReady": 0
 }']
 
 [h: oldCombatStatus = getProperty("combatStatus",tokenId)]

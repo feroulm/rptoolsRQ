@@ -8,7 +8,7 @@
 <!-- Select token type -->
 
 
-[h:status=input("tokenType|Human, Spirit, 4LegsWithTail |Select a token type template|RADIO")]
+[h:status=input("tokenType|Human, Spirit, 4LegsWithTail, Object |Select a token type template|RADIO")]
 [h:abort(status)]
 
 [r, switch(tokenType), code:
@@ -54,6 +54,20 @@
     [h: locD20 = "loc1=19-20;loc2=17-18;loc3=15-16;loc4=11-14;loc5=7-10;loc6=5-6;loc7=3-4;loc8=1-2"]
     [h: locNb = 8]
     
+  };
+  case 3 :{
+    <!-- set basic value for object -->
+    [r: setProperty("STR","0",tokenId)]
+    [r: setProperty("CON","0",tokenId)]
+    [r: setProperty("SIZ","0",tokenId)]
+    [r: setProperty("INT","0",tokenId)]
+    [r: setProperty("POW","0",tokenId)]
+    [r: setProperty("DEX","0",tokenId)]
+    [r: setProperty("CHA","0",tokenId)]
+
+    [h: locName = "loc1=Corpse"]
+    [h: locD20 = "loc1=1-20"]
+    [h: locNb = 1]
   };
   default: {
   <!-- do nothing -->
@@ -234,7 +248,7 @@
 <!-- init sorcerySpells value -->
 <!-- init wiki value -->
 <!-- init combatStatus value -->
-[h: newCombatStatus ='{"turnStatus":"disabled","activeTurn":0,"chargeStatus":"none","situationMod":"none","activeCA":0,"ccCA":0,"proactiveCA":0,"reactiveCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}']
+[h: newCombatStatus ='{"turnStatus":"on","activeTurn":0,"chargeStatus":"none","situationMod":"none","activeCA":0,"ccCA":0,"proactiveCA":0,"reactiveCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1,"spellReady": 0}']
  [h: setProperty("combatStatus",newCombatStatus,tokenId)]
 <!-- init combatLog value -->
 [h: newCombatLog ='{"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":"","turnDeclaration":""}']
