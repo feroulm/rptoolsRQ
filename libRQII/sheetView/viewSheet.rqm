@@ -212,5 +212,9 @@
     <i>Typical Armor</i> : [r: json.get(propArmorPenalty, "desc")]
   </p>
   </div>
-
+</div>
+<div class="container pure-g">
+  <div class="header pure-u-1">
+    [r,if(isGM()): getGMNotes(tokenId,tokenMap)+"<br><br>"+getNotes(tokenId,tokenMap); getNotes(tokenId,tokenMap)]
+  </div>
 </div>
