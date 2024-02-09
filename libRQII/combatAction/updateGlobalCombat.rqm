@@ -119,7 +119,16 @@
 	  <!-- roll Initiative -->
     [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
 	  [h: currentSR = json.get(propStrikeRank, "current")]
-  	  [h: setInitiative(1d10+currentSR,tokenId)]
+	  [h:status=input(
+	  "junk|<html>Select bonus / malus for :<b>"+getName(tokenId)+"</b><br></html>|-|LABEL|SPAN=TRUE",
+	  "SRbonus|0|SR Bonus",
+	  "SRmalus|0|SR Malus")]
+	  [h:abort(status)]
+	  [h: diceRoll = roll(1,1d10)]
+	  [h: initiative = diceRoll+SRbonus+currentSR-SRmalus]
+	  [r: getName(tokenId)] - Initiative = <b>[r: initiative]</b> : diceRoll ([r: diceRoll]) + SRbonus([r: SRbonus]) + currentSR([r: currentSR]) - SRmalus([r: SRmalus])<br>
+	  <!-- roll Initiative -->
+  	  [h: setInitiative(initiative,tokenId)]
 	  [h: sortInitiative()]
     }]
     [h: msg = "Initiative rolled, First to act"]
@@ -134,10 +143,18 @@
 	  [h: setState("CurrentTurn", 0, tokenId)]
 	  [h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",0),tokenId)]
 	  <!-- to do : compute SR base on current DEx & INt vlue and wether the token has armour penalty or not -->
-    [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+      [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
 	  [h: currentSR = json.get(propStrikeRank, "current")]
+      [h:status=input(
+	  "junk|<html>Select bonus / malus for :<b>"+getName(tokenId)+"</b><br></html>|-|LABEL|SPAN=TRUE",
+	  "SRbonus|0|SR Bonus",
+	  "SRmalus|0|SR Malus")]
+	  [h:abort(status)]
+	  [h: diceRoll = roll(1,1d10)]
+	  [h: initiative = diceRoll+SRbonus+currentSR-SRmalus]
+	  [r: getName(tokenId)] - Initiative = <b>[r: initiative]</b> : diceRoll ([r: diceRoll]) + SRbonus([r: SRbonus]) + currentSR([r: currentSR]) - SRmalus([r: SRmalus])<br>
 	  <!-- roll Initiative -->
-  	  [h: setInitiative(1d10+currentSR,tokenId)]
+  	  [h: setInitiative(initiative,tokenId)]
 	  [h: sortInitiative()]
     }] 
     <!-- Increment Init Roll Number -->
