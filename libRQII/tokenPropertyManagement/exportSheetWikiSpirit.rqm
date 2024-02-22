@@ -1,0 +1,82 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)),code: {
+	[h: tokenId = currentToken()]
+	[h: tokenMap = getCurrentMapName()]
+};{ 
+	[h: tokenId = json.get(arguments,"tokenId")]
+	[h: tokenMap = json.get(arguments, "tokenMap")]
+	[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+}] 
+
+
+
+[h: propStrikeRank = getProperty("StrikeRank",tokenId,tokenMap)]
+[h: propCombatStatus = getProperty("combatStatus",tokenId,tokenMap)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
+[h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+
+(% style="background-color:#f8f8f8" %)|(% style="width:200px" %)**[r: getName(tokenId)]** (//[r: getGMName(tokenId)]//) |((( [r: getNotes(tokenId, tokenMap)]<br>
+[r: getGMNotes(tokenId, tokenMap)]
+)))
+<br>
+|((( INT [r: getProperty("INT", tokenId, tokenMap)], POW [r: getProperty("POW", tokenId, tokenMap)], CHA [r: getProperty("CHA", tokenId, tokenMap)]
+))) |(% style="width:500px" %)(((
+
+[h: aSkills = getProperty("commonSkills", tokenId)]
+[foreach(skill, aSkills, ","), code: {
+  [h: skillValues = json.get(aSkills,skill)]
+  [h: skillSubtype = json.get(skillValues,"subtype")]
+  [r: skill] 
+  [r, if(skillSubtype != ""), code:{
+  ([r: skillSubtype])
+  }]
+   [r: json.get(skillValues,"current")]%
+}]
+<br>
+[h: aSkills = getProperty("advSkills", tokenId)]
+[foreach(skill, aSkills, ","), code: {
+  [h: skillValues = json.get(aSkills,skill)]
+  [h: skillSubtype = json.get(skillValues,"subtype")]
+  [r: skill] 
+  [r, if(skillSubtype != ""), code:{
+  ([r: skillSubtype])
+  }]
+   [r: json.get(skillValues,"current")]%
+}]
+<br>
+[h: aSkills = getProperty("magicSkills", tokenId)]
+[h, if(json.isEmpty(aSkills)): magicSkillsExist = 0; magicSkillsExist = 1]
+
+[r, if(magicSkillsExist), code :{
+  [h: skillValues = json.get(aSkills,"Common Magic")]
+  [r, if(skillValues != ""), code:{
+  
+&#47;/&#91;&#91;Common>>Rq.MagicRules.SpellBook.WebHome||rel="__blank"&#93;&#93;//\\
+Common Magic [r: json.get(skillValues,"current")]% :
+
+  }]
+}]
+
+)))
+<br>
+(% style="background-color:#f8f8f8" %)|(((
+**Combat Style :** 
+[h: aSkills = getProperty("combatSkills", tokenId)]
+[foreach(skill, aSkills, ","), code: {
+  	  [h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
+  	  [h: skillValues = json.get(aSkills,skill)]
+      [r: skill] [r: json.get(skillValues,"current")]%
+}]
+<br><br>
+**CA:** [r: json.get(propCombatStatus,"baseCA")], **SR:** [r: json.get(propStrikeRank, "current")], **HP**(//MP//)**:** [r: getProperty("POW", tokenId, tokenMap)] 
+))) | (((
+[h,macro("getWeaponNb@this"): tokenId]
+[h: wpList = macro.return]
+[foreach(weapon, wpList, ""), code: {
+  [h,macro("getWeapon@this"): "weaponNb="+weapon+"; tokId="+tokenId]
+  [h: wProp = macro.return]
+  [r: getStrProp(wProp, "Name")] ##[r: getStrProp(wProp, "Type")]## : [r: getStrProp(wProp, "Damage")]
+  <br>
+}]
+
+)))
