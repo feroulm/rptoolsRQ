@@ -42,7 +42,7 @@ Action : [r: locAction = concat(dmgAction,dmgTarget)], [r: json.get(arguments, "
 [if((dmgTarget == "HP")), code: {	
   [h: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLocH)]
   [h: setProperty("locHP", newLocHP, tokenId)]
-  [r, if((newLocH <= 0)&&(locHPorig + newLocH)>0), code: {
+  [r, if((curHP >0)&&(newLocH <= 0)&&(locHPorig + newLocH)>0), code: {
   	<b>Serious Wound</b><br>
   	Lost proactive CA (1d3) = [r: lostProCA = 1d3]<br>
     [h: logMsg = logMsg+" -> Serious Wound: loose "+lostProCA+" proCA"]
