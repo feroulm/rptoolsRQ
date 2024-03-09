@@ -3,7 +3,7 @@
 <html>
   <head>
     <link rel="onChangeSelection" type="macro" href="[r:link]">
-    <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+    <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
   </head>
 <body>
   [r, macro("editCombat@Lib:RQII"): getInitiativeList()]
