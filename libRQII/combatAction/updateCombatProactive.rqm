@@ -128,7 +128,45 @@
     [r, macro("openCombatAction@Lib:RQII"): macroParam]
   };
   case "firstCast" : {
-  	[h: input("castCA|1|Nb of CA to cast the spell|TEXT")]
+    [h: res = input(
+		"spellMP|1|Nb of Magic Point (MP) to cast the spell|TEXT",
+		"spellType|Common,Sorcery,Divine,Draconic,Spirit|Spell Magic Type|LIST|SELECT=0 VALUE=STRING"
+	)]
+    
+	<!-- Test remaining MP -->
+	[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+    [h: baseMP = json.path.read(propMagicPoint,"MP.base")]
+    [h: currMP = json.path.read(propMagicPoint,"MP.current")]
+	[h: newCurrMP = currMP - spellMP]
+
+    [h: mpMsg = strformat("You have only %{currMP} left, you can't spent %{spellMP}. Reduce the magnitude of your speel or choose another action.")]
+    [r: assert((newCurrMP >= 0),"<b>"+getName(tokenId)+"</b>: First Cast action failed ! <br>"+mpMsg,0)]
+
+	[h: computedCastCA = 1]
+	[h: spellMsg = "Cast "+spellType+" spell [CA = 1]"]
+	[h, if (spellType == "Common"),code:{
+		[h: computedCastCA = round(spellMP/2)]
+		[h: spellMsg = "Cast "+spellType+" spell [CA = round up (MP/2)]"]
+	}]
+	[h, if (spellType == "Sorcery"),code:{
+		[h: computedCastCA = spellMP]
+		[h: spellMsg = "Cast "+spellType+" spell [CA = MP]"]
+	}]
+	[h, if (spellType == "Divine"): computedCastCA = 1 ]
+	[h, if (spellType == "Draconic"),code:{
+		[h: computedCastCA = "Change Me"]
+		[h: spellMsg = "Cast "+spellType+" spell [CA = defined on the spell]"]
+	}]
+	[h, if (spellType == "Spirit"): computedCastCA = 1 ]
+  	[h: input(
+  		"junkVar|"+spellMP+"|MP spent |LABEL",
+  		"junkVar|"+computedCastCA+"|"+spellMsg+"|LABEL",
+  		"castCA|"+computedCastCA+"|Nb of CA to cast the spell|TEXT"
+  	)]
+  	[r, if(isNumber(castCA) != 1), code: {
+ 		 <b>Invalid input for cast CA : [r: castCA]</b>, castCA is set to 1<br>
+ 		 [h: castCA = 1]
+	}]
     [h: remainingCastCA = castCA - 1]
   	[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",remainingCastCA)]
   	[h: remainingCA = activeCA - 1]
@@ -143,7 +181,7 @@
 
     [h: isHolding = false]
 	[h: logMsg = "First cast, spell has been released"]
-    [h, if (remainingCastCA == 0): isHolding = input("junk|Do you hold the spell ? if yes you must use holdmagic next turn  Click OK to hold.|ignored|LABEL|SPAN=true")]
+    [h, if (remainingCastCA == 0): isHolding = input("junk|<html>Do you hold the spell ? <br>if yes, you must use <i>holdmagic</i> next turn.Click OK to hold.<br> Otherwise, click Cancel to release the spell now</html>|ignored|LABEL|SPAN=true")]
     [h, if (isHolding),code:{
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",1)]
 	  [h: logMsg = "First cast, spell has been hold"]
@@ -154,13 +192,26 @@
     	[h: logMsg = "First cast, spell will be ready in "+remainingCastCA+ "CA"]
     }]
     
-    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+	[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+	
+	<!-- update Current Magic Point -->
+	[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+    [h: baseMP = json.path.read(propMagicPoint,"MP.base")]
+    [h: currMP = json.path.read(propMagicPoint,"MP.current")]
+	[h: newCurrMP = currMP - spellMP]
+
+	[r: getName(tokenId)] loose [r: currMP - newCurrMP] magic points.<br>
+	
+    [h: newPropMagicPoint = json.path.set(propMagicPoint,"MP.current",newCurrMP)]
+    [h: setProperty("MagicPoint",newPropMagicPoint,tokenId)]
+   
     <!-- switch to next token -->
     [h: nextInitiative()]
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "pursueCast" : {
   	[h: castCA = json.get(currentCombatStatus,"castCA")]
@@ -178,7 +229,7 @@
 
     [h: isHolding = false]
 	[h: logMsg = "Pursue cast, spell has been released"]
-    [h, if (remainingCastCA == 0): isHolding = input("junk|Do you hold the spell ? if yes you must use holdmagic next turn  Click OK to hold.|ignored|LABEL|SPAN=true")]
+    [h, if (remainingCastCA == 0): isHolding = input("junk|<html>Do you hold the spell ? <br>if yes, you must use <i>holdmagic</i> next turn.Click OK to hold.<br> Otherwise, click Cancel to release the spell now</html>|ignored|LABEL|SPAN=true")]
 	[h, if (isHolding),code:{
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",1)]
 	  [h: logMsg = "Pursue cast, spell has been hold"]

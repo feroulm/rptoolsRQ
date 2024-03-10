@@ -10,7 +10,7 @@
 [h: baseMP = json.path.read(propMagicPoint,"MP.base")]
 [h: currMP = json.path.read(propMagicPoint,"MP.current")]
 
-[h: msgAssert = strformat("Tsss, you can have more MP than your base value (%{baseMP}), nice try ;) !")]
+[h: msgAssert = strformat("Tsss, you can't have more MP than your base value (%{baseMP}), nice try ;) !")]
 [h: assert((baseMP >= newCurrMP),msgAssert,0)]
 
 [r, if(newCurrMP>currMP), code:{
