@@ -1,4 +1,4 @@
-[h: "<!-- Return the offset of the token in the initiative list->"]
+[h: "<!-- Function to return the offset of the token in the initiative list->"]
 [h: tokenId = arg(0)]
 [h: initList = getInitiativeList()]
 [h: tokenArray = json.get(initList,"tokens")]

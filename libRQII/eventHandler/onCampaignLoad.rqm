@@ -1,3 +1,4 @@
+[h: "<!-- Combat Management UDFs -->"]
 [h: defineFunction("getNextTurn", "getNextTurn@Lib:RQII")]
 [h: defineFunction("resetDelayedTurn", "resetDelayedTurn@Lib:RQII")]
 [h: defineFunction("showDelayedAction", "showDelayedAction@Lib:RQII")]
@@ -6,7 +7,15 @@
 [h: defineFunction("getInitiativeTokenOffset","getInitiativeTokenOffset@Lib:RQII")]
 [h: defineFunction("logCombatAction","logCombatAction@Lib:RQII")]
 [h: defineFunction("htmlSelectCombatToken","htmlSelectCombatToken@Lib:RQII")]
+[h: defineFunction("processReactiveCA","processReactiveCA@Lib:RQII")]
+
+[h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
-[h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
+
+[h: "<!-- Sheet Improvement UDFs -->"]
 [h: defineFunction("resetSkillsExperienceTmp","resetSkillsExperienceTmp@Lib:RQII")]
+
+[h: "<!-- Generic UDFs -->"]
+[h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
 [h: defineFunction("sortJson","sortJson@Lib:RQII")]
+

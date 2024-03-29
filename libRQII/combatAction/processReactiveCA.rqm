@@ -1,0 +1,26 @@
+[h: "<!-- Function to recompute CA and combatStatus values after a reactive Action -->"]
+[h: "<!-- return a newCombatStatus Json Object -->"]
+[h: newCombatStatus = arg(0)]
+[h: tokenId = arg(1)]
+
+[h: activeCA = json.get(newCombatStatus,"activeCA")]
+[h: reactiveCA = json.get(newCombatStatus,"reactiveCA")]
+[h: lostProCA = json.get(newCombatStatus,"lostProCA")]
+
+[h: remainingCA = activeCA - 1]
+[h: newCombatStatus = json.set(newCombatStatus,"activeCA",remainingCA)]
+
+[h: "<!-- reactiveCA indicate the nb of CA spent -->"]
+[h: reactiveCA = reactiveCA + 1]
+[h: newCombatStatus = json.set(newCombatStatus,"reactiveCA",reactiveCA)] 
+
+[h: "<!-- decrement lostProCA -->"]
+[h, if (lostProCA > 0), code: {
+	[h: lostProCA = lostProCA -1 ]
+	[h: newCombatStatus = json.set(newCombatStatus,"lostProCA",lostProCA)]	
+};{}]	
+
+[h, if (remainingCA == 0): newCombatStatus = json.set(newCombatStatus,"turnStatus","out")]
+[h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+	
+[r: newCombatStatus]

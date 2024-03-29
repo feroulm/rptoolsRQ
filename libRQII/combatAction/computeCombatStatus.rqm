@@ -1,0 +1,29 @@
+[h: "<!-- Function to recompute and reset all computable combatStatus value -->"]
+[h: "<!-- mainly ccCa and weaponCA -->"]
+[h: "<!-- return a newCombatStatus Json Object -->"]
+[h: newCombatStatus = arg(0)]
+[h: tokenId = arg(1)]
+
+[h: currActiveCA = json.get(newCombatStatus,"activeCA")]
+[h: currCcCA = json.get(newCombatStatus,"ccCA")]
+[h: bonusCA = json.get(newCombatStatus,"bonusCA")]
+[h: magicCA = json.get(newCombatStatus,"magicCA")]
+[h: currWeaponNb = json.get(newCombatStatus,"currWeaponNb")]
+
+[h: currINT = getProperty("INT",tokenId)]
+[h: currDEX = getProperty("DEX",tokenId)]
+[h: newBaseCA = ceil((currINT + currDEX)/12)]
+[h: newCombatStatus = json.set(newCombatStatus,"baseCA",newBaseCA)]
+
+[h: newWeaponCA = currWeaponNb - 1]
+[h: newCombatStatus = json.set(newCombatStatus,"weaponCA",newWeaponCA)]
+
+[h: newCcCA = newBaseCA + bonusCA + newWeaponCA + magicCA]
+[h: newCombatStatus = json.set(newCombatStatus,"ccCA",newCcCA)]
+
+[h: "<!-- recompute activeCA, increase or decrease but can't be < 0 -->"]
+[h: newActiveCA = currActiveCA + (newCcCA - currCcCA)]
+[h, if (newActiveCA < 0): newActiveCA = 0]
+[h: newCombatStatus = json.set(newCombatStatus,"activeCA",newActiveCA)]
+
+[r: newCombatStatus]

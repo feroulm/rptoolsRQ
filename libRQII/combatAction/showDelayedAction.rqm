@@ -1,4 +1,4 @@
-[h: "<!-- Display specific actions when turn has been delayed -->"]
+[h: "<!-- Function to Display specific actions when turn has been delayed -->"]
 [h: "<!-- return nothing, just the html form -->"]
 [h: tokenId = arg(0)] 
 [h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]

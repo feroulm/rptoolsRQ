@@ -30,6 +30,17 @@ For the moment improvement forms doesn't update CA since it enable only skill im
 editSheet
 ## CA Management during a Combat
 
+### lostProCA principle
+
+If lostProCA>0 the player can't take any proactive action : 
+ - this condition is evaluated in *editCombatAction* , it sets the flag *showNoProactiveAction*, which results in enabling the player to only choose the *Delay* (cf proactive action desc in xwiki).
+ 
+ Logic with *Delay* + *lostProcCA*
+ - If the player try to interrupt, the *editComabtAction* will still only show the delay action when lostProCA > 0
+ - At the end of a cycle, if turn status = *Delay*, the *resetDelayTurn* function is called and will decrement *lostProCA*
+	- cf *updateGlobalCombat* for this implementation.
+- Note : after choosing *delay*, the token may still use reactive ation which will also decrement "lostProCA*. If he use all its CA its status will became *out* instead of *delay*, so *resetDelayTuen* will no be triggered (otherwise it would have created an issue by removing an extra *lostProCA* without having any Ca left !)
+
 
 ## openCombat.rqm
 - open the combat window and put all the token that are in the initiative list / window in a table
@@ -60,6 +71,7 @@ graph LR
 
 ## openCombatAction.rqm
 
+* they are described in https://www.inyanga.me/xwiki/bin/view/Rq/MapTool/MaptoolCombat/#HTableaudesactions
 ```
 Logic - Mermaid Diagram
 graph LR
@@ -78,3 +90,10 @@ graph LR
 	B6 -->|tokenId|C5(setTokenCombatStatus)
 ```
 ![openCombatAction Mgt flow](../../assets/doc/openCombatAction.png?raw=true)
+
+## UDF for this module
+
+| Function | Desc |
+| ---- | ---- |
+| processReactiveCA | UDF : decrease remaining CA and increase nb of reactive CA spent.<br> Update the state & turnStatus if token is out of CA.|
+| another UDF | |
