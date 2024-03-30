@@ -77,7 +77,8 @@
   	[h: logCombatAction(tokenId,"turndeclare",logMsg)] 	
   	<!-- Refresh Action Window for the current token -->
     [h: macroParam = json.set("{}", "tokenId", tokenId)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "attack" : {
     [h: remainingCA = activeCA - 1]
@@ -97,7 +98,8 @@
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "chargeRiposte" : {
   	<!-- no done during active Turn -->
@@ -112,7 +114,8 @@
 
     <!-- Refresh Action Window for the current token -->
     [h: macroParam = json.set("{}", "tokenId", tokenId)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "delay" : {
     [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","delay")]
@@ -125,7 +128,8 @@
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "firstCast" : {
     [h: res = input(
@@ -248,7 +252,8 @@
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "holdMagic" : {
   	[h: remainingCA = activeCA - 1]
@@ -269,7 +274,8 @@
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "Shoot" : {
   	[h: input("reloadCA|1|Nb of CA to reload the weapon|TEXT")]
@@ -292,7 +298,8 @@
     [h: newToken = getInitiativeToken()]
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   case "Reload" : {
   	[h: reloadCA = json.get(currentCombatStatus,"reloadCA")]
@@ -313,13 +320,15 @@
     <!-- switch to next token -->
     [h: nextInitiative()]
     [h: newToken = getInitiativeToken()]
+	
     <!-- Refresh Action Window for the new token -->
     [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [r, macro("openCombatAction@Lib:RQII"): macroParam]
+    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
   };
   default: {
  	<!-- do nothing -->
- 	<br>Unexistant action !<br>
+ 	<br><b>[r: action]</b> is not implemented in <i>updateCombatProactive</i> !<br>
  }
 ]
 
@@ -334,4 +343,6 @@
 }]
 
 <!-- Refresh Combat Window -->
-[r, macro("openCombat@Lib:RQII"): ""]
+[h: macroParam = ""]
+[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]

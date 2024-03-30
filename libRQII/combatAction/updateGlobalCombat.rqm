@@ -164,6 +164,10 @@
 	[r: initRoll] serie of initiative rolls is done.
 	[h: msg = "Initiative rolled, First to act"]
   };
+  default: {
+ 	<!-- do nothing -->
+ 	<br><b>[r: action]</b> is not implemented in <i>updateGlobalCombat</i> !<br>
+  }
 ]
 <!-- Each time we roll initiative, change cycle or change mr we focus on the token with highest SR -->
 <!-- select the token with the highest SR and set activeTurn to 1 -->
@@ -179,6 +183,10 @@
   
 <!-- Refresh / Open Combat Action Window for current Active Token-->
 [h: macroParam = json.set("{}", "tokenId", firstToken,"msg",msg)]
-[r, macro("openCombatAction@Lib:RQII"): macroParam]
+[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
+
 <!-- Refresh Combat Window -->
-[r, macro("openCombat@Lib:RQII"): ""]
+[h: macroParam = ""]
+[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]

@@ -170,7 +170,7 @@
   };
   default: {
  	<!-- do nothing -->
- 	<br>Unexistant action !<br>
+ 	<br><b>[r: action]</b> is not implemented in <i>updateCombat</i> !<br>
   }
 ]
 
@@ -178,6 +178,10 @@
 
 <!-- Refresh Action Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", refreshTokenId,"msg",msg)]
-[r, macro("openCombatAction@Lib:RQII"): macroParam]
+[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
+
 <!-- Refresh Combat Window -->
-[r, macro("openCombat@Lib:RQII"): ""]
+[h: macroParam = ""]
+[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]

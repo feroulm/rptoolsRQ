@@ -74,7 +74,10 @@
 
 <!-- Refresh Combat Action Window for current Active Token-->
 [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg)]
-[h, macro("openCombatAction@Lib:RQII"): macroParam]
+[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
     
 <!-- Refresh Global Combat Window -->
-[r, macro("openCombat@Lib:RQII"): ""]
+[h: macroParam = ""]
+[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
