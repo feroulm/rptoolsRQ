@@ -1,3 +1,4 @@
+<!-- Replaced by sheetEquipmentMgt/openEquipmentMgt-->
 [h: link = macroLinkText("openSheetEquipementMgt@Lib:RQII", "")]
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
@@ -10,7 +11,7 @@
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Sheet Equipment Edition</title>
+      <title>Sheet Equipment Edition - [r: getName(tokenId)]</title>
     </head>
     <body>
       [r, macro("editSheetEquipementMgt@Lib:RQII"): tokenId]

@@ -5,12 +5,14 @@
 [h: tokenType = getPropertyType(tokenId)]
 [h: assert(((tokenType == "RQ_Human")||(tokenType == "RQ_Monster")),"openSheetMgt - wrong tokenType",0)]
 
+[h: selectTokens(tokenId)]
+
 [dialog("CharSheet"): {
   <html>
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Sheet Edition</title>
+      <title>Sheet Edition - [r: getName(tokenId)]</title>
     </head>
     <body>
       [r, macro("editSheet@Lib:RQII"): tokenId]

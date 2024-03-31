@@ -1,6 +1,6 @@
 [h: tokenId = macro.args]
 
-[h,macro("getWeaponNb@this"): tokenId]
+[h,macro("getWeaponNb@Lib:RQII"): tokenId]
 [h: wpList = macro.return]
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]

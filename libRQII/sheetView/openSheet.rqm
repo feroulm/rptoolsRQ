@@ -1,8 +1,6 @@
-[h: link = macroLinkText("openSheet@Lib:RQII", "none")]
 [h: arguments = macro.args]
-[h, if(json.isEmpty(arguments)), code: {
-  [h: tokenId = getSelected()]
-  [h: tab = "main"] 
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>sheetView::openSheet</i> : no arguments, this macro can't be called without mandatory parameters",0)]
  };{
   [h: tokenId = json.get(arguments,"tokenId")]
   [h: tab = json.get(arguments,"tab")]
@@ -13,10 +11,11 @@
 [h: tokenType = getPropertyType(tokenId)]
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
 
-[dialog5("Sheet [r: getName(tokenId)]"): {
+[h: dialogName = "Sheet"+tokenId]
+
+[dialog5(dialogName,"width=888; height=830; temporary=1"): {
   <html>
     <head>
-      <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
       <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
       <title>[r: getName(tokenId)]</title>

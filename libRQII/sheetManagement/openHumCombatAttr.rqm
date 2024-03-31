@@ -11,13 +11,13 @@ Calling :
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
-[h: assert(((tokenType == "RQ_Human")||(tokenType == "RQ_Monster")),"openSheetMgt - wrong tokenType",0)]
+[h: assert(((tokenType == "RQ_Human")||(tokenType == "RQ_Monster")),"openHumCombatAttr - wrong tokenType",0)]
 [dialog("Token Combat Attributes"): {
   <html>
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Token Combat Attributes</title>
+      <title>Token Combat Attributes - [r: getName(tokenId)]</title>
     </head>
     <body>
       [r, macro("editHumCombatAttr@Lib:RQII"): tokenId]

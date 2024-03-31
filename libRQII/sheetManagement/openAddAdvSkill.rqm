@@ -1,18 +1,30 @@
-[h: link = macroLinkText("openAddAdvSkill@Lib:RQII", "none")]
 [h: arguments = macro.args]
-[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+
+[h, if(json.isEmpty(arguments)), code: {
+  [h: tokenId = getSelected()]
+  <!-- we need to define an arbitrary value cf #73 -->
+  [h: skType = "advanced"]
+  [h: arguments = json.set("{}", "tokenId", tokenId,"skType",skType)]
+};{
+  [h: tokenId = json.get(arguments,"tokenId")]
+  [h: skType = json.get(arguments,"skType")]
+}] 
+
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h, if(tokenType != "RQ_Human"): abort(0)]
+[h: frameName = "AddAdvSkill"+tokenId]
+
+[h: link = macroLinkText("openAddAdvSkill@Lib:RQII", "")]
 [frame("Add Adv Skill"): {
 <html>
     <head>
-      <link rel="onChangeSelection" type="macro" href="[r:link]">
+	  <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Add Advanced Skills</title>
+      <title>Add [r: skType] Skills - [r: getName(tokenId)]</title>
     </head>
 <body>
-[r, macro("editAddAdvSkill@Lib:RQII"): tokenId]
+[r, macro("editAddAdvSkill@Lib:RQII"): arguments]
 </body>
 </html>
 }]

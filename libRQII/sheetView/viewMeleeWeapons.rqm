@@ -1,5 +1,5 @@
-[h: id = macro.args]
-[h,macro("getWeaponNb@this"): getSelected()]
+[h: tokenId = macro.args]
+[h,macro("getWeaponNb@Lib:RQII"): tokenId]
 [h: wpList = macro.return]
 <table class="content pure-table pure-table-striped">
   <thead>
@@ -16,7 +16,7 @@
   <tbody>
     [h: class = "oddRow"]
     [foreach(weapon, wpList, ""), code: {
-      [h,macro("getWeapon@this"): "weaponNb="+weapon+"; tokId="+id]
+      [h,macro("getWeapon@Lib:RQII"): "weaponNb="+weapon+"; tokId="+tokenId]
       [h: wProp = macro.return]
       <tr>
         <td>

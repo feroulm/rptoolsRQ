@@ -13,6 +13,9 @@ Compose of a main window
 And sub-module for 
 - Spell, Spirit & Equipement management
 
+We use a single window logic, the main windows (and its sub-windows) are refreh when another token is selected.
+- cf #73 for more detail on the implementation.
+
 ## editSheet
 ```
 Logic - Mermaid Diagram
