@@ -1,7 +1,6 @@
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)), code:{
-	[h: tokenId = getSelected()]
-	[h: msg = ""]
+	[assert(0,"<i>combatAction::editCombatAction</i> : no arguments, this macro can't be called without mandatory parameters",0)]
 };
 {
 	[h: tokenId = json.get(arguments,"tokenId")]

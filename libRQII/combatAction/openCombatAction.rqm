@@ -18,6 +18,7 @@
 <html>
 <head>
 <link rel="onChangeSelection" type="macro" href="[r:link]">
+<title>Combat Action - [r: getName(tokenId)]</title>
 </head>
 <body>
 [r, macro("editCombatAction@Lib:RQII"): param]

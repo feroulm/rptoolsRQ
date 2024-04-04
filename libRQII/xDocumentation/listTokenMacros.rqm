@@ -1,13 +1,20 @@
-== [r: getName()] ==
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)), code:{
+	[assert(0,"<i>xDocumentation::listTokenMacros</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+};
+{
+	[h: tokenId = json.get(arguments,"tokenId")]
+}]
+== [r: getName(tokenId)] ==
 <br>
 &#123;&#123;velocity&#125;&#125;$xwiki.ssfx.use("js/xwiki/table/table.css")<br>
 $xwiki.jsfx.use("js/xwiki/table/tablefilterNsort.js", true)&#123;&#123;/velocity&#125;&#125;<br>
 <br>
 (% class="grid sortable filterable doOddEven" id="table1" %)<br>
 (% class="sortHeader" %)|=MacroName |= Group |=Tooltip<br>
-[h: macroLabels = getMacros()]
+[h: macroLabels = getMacros(",",tokenId)]
 [foreach(macro, macroLabels, "<br>"), code: {
-	[h: macroIndex = getMacroIndexes(macro)]
-	[h: macroProps = getMacroProps(macroIndex,"json")]
-	| [r: macro] | [r: json.get(macroProps,"group")] | [r: json.get(macroProps,"tooltip")]
+	[h: macroIndex = getMacroIndexes(macro,",",tokenId)]
+	[h: macroProps = getMacroProps(macroIndex,"json",tokenId)]
+	| [r: macro] | [r: json.get(macroProps,"group")] |((( [r: json.get(macroProps,"tooltip")] )))
 }]

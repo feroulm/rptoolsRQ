@@ -8,6 +8,7 @@
 <html>
 <head>
 <link rel="onChangeSelection" type="macro" href="[r:link]">
+<title>Update AP or HP - [r: getName(tokenId)]</title>
 </head>
 <body>
 [h: macroParam = json.set("{}", "tokenId", tokenId)]

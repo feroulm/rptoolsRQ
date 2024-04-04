@@ -11,13 +11,13 @@
 
 [h, if(listCount(tokenId) != 1): abort(0)]
 
-[dialog5("Export Macro List for [r: getName(tokenId)]"): {
+[dialog5("Export Macro List"): {
   <html>
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
       <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
-      <title>Export [r: getName(tokenId)]</title>
+      <title>Export Macro List for [r: getName(tokenId)]</title>
     </head>
     <body>
 	  [h: macroParam = json.set("{}", "tokenId", tokenId)]

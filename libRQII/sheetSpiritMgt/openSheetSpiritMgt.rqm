@@ -10,7 +10,7 @@
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
       <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Sheet Spirit Spell Edition</title>
+      <title>Sheet Spirit Spell Edition - [r: getName(tokenId)]</title>
     </head>
     <body>
       [h: macroParam = json.set("{}", "tokenId", tokenId)]
