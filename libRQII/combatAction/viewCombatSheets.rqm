@@ -1,0 +1,92 @@
+[h: arguments = macro.args]
+[h: tokens = json.get(arguments, "tokens")]
+[h: linkCA = macroLinkText("openCombatAction@Lib:RQII", "all")]
+[h: tokenMap = getCurrentMapName()]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+	<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected">
+			  [h: macroParam = json.set("{}", "tab", "main")]
+              [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tab","log")]
+              [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Combat Log</a>
+			</li>
+        </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+  <div class="pure-u-1">
+  <table class="content pure-table pure-table-striped">
+  <thead>
+	<tr>
+		<th colspan="2">Token (and Condition)</th>
+		<th>CA</th>
+		<th>Turn</th>
+		<th>MP</th>
+		<th>Skills</th>
+		<th>AP / HP / Wound</th>
+	</tr>
+  </thead>
+  <tbody>
+
+[r, foreach(item, tokens, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+  [h: currentCombatLog = getProperty("combatLog",tokenId)]
+  [h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+  [h: activeTurn = json.get(currentCombatStatus,"activeTurn")]
+  [h: situationMod = json.get(currentCombatStatus,"situationMod")]
+  [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
+  [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+
+  <!-- concat various condition situationMod, range, charging -->
+  [h: tokenOtherStatus = ""]
+  [h, if(weaponReach != "ok"): tokenOtherStatus=tokenOtherStatus+"<li>"+weaponReach+"</li>"]
+  [h, if(situationMod != "none"): tokenOtherStatus=tokenOtherStatus+"<li>"+situationMod+"</li>"]
+  [h, if(chargeStatus != "none"): tokenOtherStatus=tokenOtherStatus+"<li>"+chargeStatus+"</li>"]
+  
+  [h,if(activeTurn) : class = "activeRow"]
+
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+
+  <tr>
+	<td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
+	<td><a class="pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a><ul>[r: tokenOtherStatus ]</ul></td>
+	<td>[r: json.get(currentCombatStatus,"activeCA")] / <b>[r: json.get(currentCombatStatus,"ccCA")]</b></td>
+	<td style="text-align:center">[r: upper(json.get(currentCombatStatus,"turnStatus"))]<br><br>
+	  [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","")]
+      [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+      <a class="pure-button pure-button-primary" href="[r: lnkTxt]">Act</a>
+	</td>
+	[h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
+	<td>
+		[r, if(isNPC(tokenId) && !isGM()), code: {
+		};{
+			[r: json.path.read(propMagicPoint,"MP.current")]/<b>[r: json.path.read(propMagicPoint,"MP.base")]</b>
+		}]
+	</td>
+	<td>
+	   [r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]
+	</td>
+	<td>
+		[h: macroParam = json.set("{}", "tokenId", tokenId)]
+		[r, if(isNPC(tokenId) && !isGM()), code: {
+			[r, macro("viewWoundOnly@Lib:RQII"): macroParam]
+		};{
+		    [r, macro("viewCurrentAPHP@Lib:RQII"): macroParam]
+		}]
+	</td>
+  </tr>
+}]
+  </tbody>
+  </table>
+  </div>
+</div>

@@ -8,6 +8,7 @@
 [h: defineFunction("logCombatAction","logCombatAction@Lib:RQII")]
 [h: defineFunction("htmlSelectCombatToken","htmlSelectCombatToken@Lib:RQII")]
 [h: defineFunction("processReactiveCA","processReactiveCA@Lib:RQII")]
+[h: defineFunction("showActionSkillsOnly","showActionSkillsOnly@Lib:RQII")]
 
 [h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
@@ -18,4 +19,3 @@
 [h: "<!-- Generic UDFs -->"]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
 [h: defineFunction("sortJson","sortJson@Lib:RQII")]
-

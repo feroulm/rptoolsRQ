@@ -1,0 +1,45 @@
+[h: arguments = macro.args]
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>locHpAp::viewWoundOnly</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: tokenId = json.get(arguments,"tokenId")]
+}]
+
+[h: pLocD20 = getProperty("locD20", tokenId)]
+[h: pLocName= getProperty("locName", tokenId)]
+[h: pLocAP = getProperty("locAP", tokenId)]
+[h: pLocAPorig = getProperty("locAPorig", tokenId)]
+[h: pLocHP = getProperty("locHP", tokenId)]
+[h: pLocHPorig = getProperty("locHPorig", tokenId)]
+[h: pLocNb = getProperty("locNb", tokenId)]
+
+<table class="content pure-table pure-table-striped">
+  <thead>
+	<tr>
+	  <th>Location</th>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      <th>
+	    [r: getStrProp(pLocName, strformat("loc%{i}"))]<br>
+		([r: getStrProp(pLocD20, strformat("loc%{i}"))])
+	  </th>
+      }]
+	</tr>
+  </thead>
+  <tbody>
+	<tr>
+	  <td>Wound</td>
+	  [for(i,1,pLocNb+1,1,""), code:{
+      	<td>
+      	   [h: locOrigValue = getStrProp(pLocHPorig, strformat("loc%{i}"))]
+      	   [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
+      	   [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
+      	   	  <span style="font-weight: bold;color:orange">S</span>
+      	   };{}]
+      	   [r, if((locCurrentValue + locOrigValue) <= 0), code: {
+      	   	  <span style="font-weight: bold;color:red">M</span>
+      	   };{}]
+	  	</td>
+      }]
+	</tr>
+  </tbody>	
+</table>

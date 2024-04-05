@@ -10,6 +10,7 @@
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
+[h, assert((isNPC(tokenId) && !isGM()),"<i>sheetView::openSheet</i> : you can view an NPC sheet",0)]
 
 [h: dialogName = "Sheet"+tokenId]
 
