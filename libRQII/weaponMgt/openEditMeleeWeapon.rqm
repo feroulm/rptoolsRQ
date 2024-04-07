@@ -1,0 +1,21 @@
+[h: arguments = macro.args]
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>weaponMgt::openEditMeleeWeapon</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: tokenId = json.get(arguments,"tokenId")]
+  [h: weaponId = json.get(arguments,"weaponId")]
+}]
+
+[dialog5("Edit Melee Weapon"): {
+<html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>Edit Melee Weapon(s) - [r: getName(tokenId)]</title>
+    </head>
+<body class="body-custom">
+  [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",weaponId)]
+  [r, macro("editMeleeWeapon@Lib:RQII"): macroParam]
+</body>
+</html>
+}]

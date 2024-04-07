@@ -1,0 +1,20 @@
+[h: "<!--  Return a string list of the valid weapon numbers -->"]
+[h: "<!--  the current implementation always increment the NumWeapons value (even after a delete) which is used to define the weaponId in the keyName of the property list.-->"]
+[h: "<!--  so some weaponId number can no longueur exist in the property list -->"]
+
+[h: tokenId = arg(0)] 
+
+[h: "<!-- If Weapons token property is empty set it to a default value -->"]
+[h,if(isPropertyEmpty("Weapons",tokenId)): setProperty("Weapons","NumWeapons=0;",tokenId)]
+[h: Weapons = getProperty("Weapons",tokenId)]
+ 
+[h: maxNum = getStrProp(Weapons, "NumWeapons")]
+[h: wnumList=""]
+[h,c(maxNum), code: {
+  [h: wnum = roll.count+1]
+  [h: name = getStrProp(Weapons, strformat("Weapon%{wnum}Name"))]
+  [if(name != ""):
+    wnumList = listAppend(string(wnumList), string(wnum))
+  ]
+}]
+[r: wnumList]

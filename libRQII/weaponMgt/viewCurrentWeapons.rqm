@@ -1,0 +1,5 @@
+[h: arguments = macro.args]
+[h: tokens = json.get(arguments, "tokens")]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: currWeapons = json.get(currentCombatStatus,"currWeapons")]

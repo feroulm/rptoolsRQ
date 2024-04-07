@@ -23,7 +23,7 @@
 </div> 
 <div class="container pure-g">
   <div class="pure-u-1">
-  <table class="content pure-table pure-table-striped">
+  <table class="content pure-table pure-table-striped table-striped-custom">
   <thead>
 	<tr>
 		<th colspan="2">Token (and Condition)</th>
@@ -52,14 +52,14 @@
   [h, if(situationMod != "none"): tokenOtherStatus=tokenOtherStatus+"<li>"+situationMod+"</li>"]
   [h, if(chargeStatus != "none"): tokenOtherStatus=tokenOtherStatus+"<li>"+chargeStatus+"</li>"]
   
-  [h,if(activeTurn) : class = "activeRow"]
+  [h,if(activeTurn) : cssSelector = "active"; cssSelector = ""]
 
     [h: macroParam = json.set("{}", "tokenId", tokenId)]
     [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
 
-  <tr>
+  <tr class="[r:cssSelector]">
 	<td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
-	<td><a class="pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a><ul>[r: tokenOtherStatus ]</ul></td>
+	<td><a id="[r:cssSelector]" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a><ul>[r: tokenOtherStatus ]</ul></td>
 	<td>[r: json.get(currentCombatStatus,"activeCA")] / <b>[r: json.get(currentCombatStatus,"ccCA")]</b></td>
 	<td style="text-align:center">[r: upper(json.get(currentCombatStatus,"turnStatus"))]<br><br>
 	  [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","")]

@@ -21,7 +21,9 @@
 [h: propTraits = getProperty("traits",tokenId)]
 [h: traitsDb = getLibProperty("traitsDb","Lib:RQII")]
 
-<table>
+<div class="container pure-g">
+  <div class="pure-u-1">
+<table class="content pure-table pure-table-striped table-striped-custom">
  <tr>
    <td style="text-align:left;" valign="top">
      <b>[r: getName(tokenId)]</b> ([r: macroLink("Refresh", "openSheetMgt@Lib:RQII", "all")])<br><br>
@@ -558,3 +560,5 @@
     </td>
   </tr>
 </table>
+</div>
+</div>

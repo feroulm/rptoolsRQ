@@ -1,0 +1,28 @@
+<!--
+  Deletes a weapon from the Weapons property List.
+ 
+  Parameters
+    The weapon number
+-->
+
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponId = json.get(arguments, "weaponId")]
+
+[h: Weapons = getProperty("Weapons",tokenId)]
+
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Name"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Type"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Size"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Reach"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Damage"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}ApHp"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Manoeuvre"))]
+[h: Weapons = deleteStrProp(Weapons, strformat("Weapon%{weaponId}Special"))]
+
+[h: setProperty("Weapons",Weapons,tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

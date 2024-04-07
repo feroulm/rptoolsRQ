@@ -1,0 +1,29 @@
+<!--
+  Deletes a missile from the Missiles property List.
+ 
+  Parameters
+    The missile number
+-->
+
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponId = json.get(arguments, "weaponId")]
+[h: Missiles = getProperty("Missiles",tokenId)]
+
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Name"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Type"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Size"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Load"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Reach"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Damage"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Modif"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}ApHp"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Manoeuvre"))]
+[h: Missiles = deleteStrProp(Missiles, strformat("Missile%{weaponId}Special"))]
+
+[h: setProperty("Missiles",Missiles,tokenId)]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

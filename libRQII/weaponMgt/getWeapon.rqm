@@ -20,8 +20,10 @@
 [h: aphp = getStrProp(Weapons, strformat("Weapon%{num}ApHp"))]
 [h: manoeuvre = getStrProp(Weapons, strformat("Weapon%{num}Manoeuvre"))]
 [h: special = getStrProp(Weapons, strformat("Weapon%{num}Special"))]
+[h: "<!-- If hold is not set we default it to 0 (unhold) -->"]
+[h: hold = getStrProp(Weapons, strformat("Weapon%{num}Hold"),0)]
 [h, if(name == ""):
    macro.return = ""
 ;
-   macro.return = strformat("Number=%{num}; Name=%{name}; Type=%{type}; Size=%{size}; Reach=%{reach}; Damage=%{damage}; ApHp=%{aphp}; Manoeuvre=%{manoeuvre}; Special=%{special}")
+   macro.return = strformat("Number=%{num}; Name=%{name}; Type=%{type}; Size=%{size}; Reach=%{reach}; Damage=%{damage}; ApHp=%{aphp}; Manoeuvre=%{manoeuvre}; Special=%{special}; Hold=%{hold}")
 ]

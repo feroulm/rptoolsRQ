@@ -1,10 +1,8 @@
 [h: arguments = macro.args]
 [r, if(json.isEmpty(arguments)), code: {
-  [assert(0,"<i>sheetView::openSheet</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+  [assert(0,"<i>weaponMgt::openEditCurrentWeapons</i> : no arguments, this macro can't be called without mandatory parameters",0)]
  };{
   [h: tokenId = json.get(arguments,"tokenId")]
-  [h: tab = json.get(arguments,"tab")]
-  [h, if(tab == "") : tab = "main"]
 }]
 
 [h, if(listCount(tokenId) != 1): abort(0)]
@@ -12,31 +10,18 @@
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
 [h, if(isNPC(tokenId)&&!isGM()): abort(0)]
 
-[h: dialogName = "Sheet"+tokenId]
+[h: dialogName = "editCurrentWeapons"]
 
 [dialog5(dialogName,"width=888; height=830; temporary=1"): {
   <html>
     <head>
       <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
       <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
-      <title>[r: getName(tokenId)]</title>
+      <title>Change current weapons - [r: getName(tokenId)]</title>
     </head>
     <body class="body-custom">
 	  [h: macroParam = json.set("{}", "tokenId", tokenId)]
-	  [r, switch(tab), code:
-        case "main" :{
-  	      [r, macro("viewSheet@Lib:RQII"): macroParam]
-        };
-	    case "magic" :{
-  	      [r, macro("viewSheetMagic@Lib:RQII"): macroParam]
-        };
-		case "skills" :{
-  	      [r, macro("viewSheetSkills@Lib:RQII"): macroParam]
-        };
-        default: {
-          [r, macro("viewSheet@Lib:RQII"): macroParam]
-        }
-      ] 
+  	[r, macro("editCurrentWeapons@Lib:RQII"): macroParam]
     </body>
 </html>
 }]

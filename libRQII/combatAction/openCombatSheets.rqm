@@ -15,7 +15,7 @@
       <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
       <title>Combat Sheets</title>
     </head>
-    <body>
+    <body class="body-custom">
 	  [h: macroParam = getInitiativeList()]
 	  [r, switch(tab), code:
         case "main" :{

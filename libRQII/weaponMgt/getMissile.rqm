@@ -22,8 +22,10 @@
 [h: aphp = getStrProp(Missiles, strformat("Missile%{num}ApHp"))]
 [h: manoeuvre = getStrProp(Missiles, strformat("Missile%{num}Manoeuvre"))]
 [h: special = getStrProp(Missiles, strformat("Missile%{num}Special"))]
+[h: "<!-- If hold is not set we default it to 0 (unhold) -->"]
+[h: hold = getStrProp(Missiles, strformat("Missile%{num}Hold"),0)]
 [h, if(name == ""):
    macro.return = ""
 ;
-   macro.return = strformat("Number=%{num}; Name=%{name}; Type=%{type}; Size=%{size}; Load=%{load}; Reach=%{reach}; Damage=%{damage}; Modif=%{modif}; ApHp=%{aphp}; Manoeuvre=%{manoeuvre}; Special=%{special}")
+   macro.return = strformat("Number=%{num}; Name=%{name}; Type=%{type}; Size=%{size}; Load=%{load}; Reach=%{reach}; Damage=%{damage}; Modif=%{modif}; ApHp=%{aphp}; Manoeuvre=%{manoeuvre}; Special=%{special}; Hold=%{hold}")
 ]

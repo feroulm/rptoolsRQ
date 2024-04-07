@@ -7,14 +7,15 @@
 
 [h: selectTokens(tokenId)]
 
-[dialog("CharSheet"): {
+[dialog5("CharSheet","width=1200; height=830; temporary=1"): {
   <html>
     <head>
       <link rel="onChangeSelection" type="macro" href="[r:link]">
-      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
       <title>Sheet Edition - [r: getName(tokenId)]</title>
     </head>
-    <body>
+    <body class="body-custom">
       [r, macro("editSheet@Lib:RQII"): tokenId]
     </body>
 </html>

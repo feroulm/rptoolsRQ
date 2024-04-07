@@ -1,0 +1,52 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponId = json.get(arguments, "weaponId")]
+[h: Weapons = getProperty("Missiles",tokenId)]
+
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <table class="content pure-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Size</th>
+        <th>Load</th>
+        <th>Reach</th>
+        <th>Damage</th>
+        <th>Modif</th>
+        <th>AP/HP</th>
+        <th>Manoeuvre</th>
+        <th>Special</th>
+        <th>Hold</th>
+      </tr>
+    <thead>
+    <tbody>
+      [h,macro("getMissile@Lib:RQII"): "weaponNb="+weaponId+"; tokId="+tokenId]
+      [h: wProp = macro.return]
+      [h: "<!-- If hold is not set we default it to 0 (unhold) -->"]
+      [h: holdValue = getStrProp(wProp, "Hold", 0)]
+      <tr>
+        [h: link = macroLinkText("updateRangeWeapon@Lib:RQII", "all")]
+        <form class="pure-form" action="[r:link]" method="json">
+        <input type="hidden" name="tokenId" value="[r:tokenId]">
+        <input type="hidden" name="weaponId" value="[r:weaponId]">
+        <td><input type="text" size="25" placeholder="Name" name="Name" value='[r:getStrProp(wProp, "Name")]'></td>
+        <td><input type="text" size="10" placeholder="Type" name="Type" value='[r:getStrProp(wProp, "Type")]'></td>
+        <td><input type="text" size="3" placeholder="Size" name="Size" value='[r:getStrProp(wProp, "Size")]'></td>
+        <td><input type="text" size="3" placeholder="Load" name="Load" value='[r:getStrProp(wProp, "Load")]'></td>
+        <td><input type="text" size="6" placeholder="Reach" name="Reach" value='[r:getStrProp(wProp, "Reach")]'></td>
+        <td><input type="text" size="6" placeholder="Damage" name="Damage" value='[r:getStrProp(wProp, "Damage")]'></td>
+        <td><input type="text" size="3" placeholder="Modif" name="Modif" value='[r:getStrProp(wProp, "Modif")]'></td>
+        <td><input type="text" size="6" placeholder="ApHp" name="ApHp" value='[r:getStrProp(wProp, "ApHp")]'></td>
+        <td><input type="text" size="20" placeholder="Manoeuvre" name="Manoeuvre" value='[r:getStrProp(wProp, "Manoeuvre")]'></td>
+        <td><input type="text" size="25" placeholder="Special" name="Special" value='[r:getStrProp(wProp, "Special")]'></td>  
+        <td><input type="text" size="3" placeholder="Hold" name="Hold" value='[r:holdValue]'></td> 
+      </tr>
+    </tbody>
+    </table>
+    <button type="submit" class="pure-button pure-button-primary">Update</button>
+    </form>
+  </div>
+</div>

@@ -1,25 +1,26 @@
 [h: tokenId = macro.args]
-[h,macro("getWeaponNb@Lib:RQII"): tokenId]
-[h: wpList = macro.return]
-<table class="content pure-table pure-table-striped">
+
+[h: wpList = getWeaponNbLst(tokenId)]
+<table id="inner" class="content pure-table pure-table-striped table-striped-custom">
   <thead>
     <tr>
       <th>Name(<i>Type</i>)</th>
       <th>Size</th>
-	  <th>Reach</th>
+			<th>Reach</th>
       <th>Damage</th>
-	  <th>AP/HP</th>
+			<th>AP/HP</th>
       <th>Manoeuvre</th>
-	  <th>Special</th>
+			<th>Special</th>
     </tr>
   </thead>
   <tbody>
-    [h: class = "oddRow"]
     [foreach(weapon, wpList, ""), code: {
       [h,macro("getWeapon@Lib:RQII"): "weaponNb="+weapon+"; tokId="+tokenId]
       [h: wProp = macro.return]
+			[h: isHold = getStrProp(wProp, "Hold", 0)]
+      [h,if(isHold) : cssSelector = "hold"; cssSelector = ""]
       <tr>
-        <td>
+        <td class="[r:cssSelector]">
           <b>[r: getStrProp(wProp, "Name")](<i>[r: getStrProp(wProp, "Type")]</i>)</b>
         </td>
         <td>[r: getStrProp(wProp, "Size")]</td>

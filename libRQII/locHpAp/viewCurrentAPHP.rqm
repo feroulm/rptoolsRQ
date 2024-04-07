@@ -13,7 +13,7 @@
 [h: pLocHPorig = getProperty("locHPorig", tokenId)]
 [h: pLocNb = getProperty("locNb", tokenId)]
 
-<table class="content pure-table pure-table-striped">
+<table id="inner" class="content pure-table pure-table-striped table-striped-custom">
   <thead>
 	<tr>
 	  <th>Location</th>

@@ -1,0 +1,26 @@
+[h: "<!-- Function to recompute the number of hold weapons (currWeaponNb) -->"]
+[h: "<!-- Called by : updateMeleeWeapon@Lib:RQII (combatAction Group) -->"]
+[h: "<!-- return a newCurrWeaponNb value for the combatStatusProp -->"]
+[h: tokenId = arg(0)] 
+
+[h: newCurrWeaponNb = 0]
+[h: Weapons = getProperty("Weapons", tokenId)]
+
+[h: weaponNb = getWeaponNbLst(tokenId)]
+
+[foreach(weaponId, weaponNb, ""), code: {
+
+  [h: hold = getStrProp(Weapons, strformat("Weapon%{weaponId}Hold"),0)]
+  [h: newCurrWeaponNb = newCurrWeaponNb + hold]  
+}]
+
+[h: Missiles = getProperty("Missiles", tokenId)]
+[h: missileNb = getMissileNbLst(tokenId)]
+
+[foreach(missileId, missileNb, ""), code: {
+
+  [h: hold = getStrProp(Missiles, strformat("Missile%{missileId}Hold"),0)]
+  [h: newCurrWeaponNb = newCurrWeaponNb + hold]  
+}]
+
+[r: newCurrWeaponNb]

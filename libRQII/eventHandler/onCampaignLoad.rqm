@@ -16,6 +16,11 @@
 [h: "<!-- Sheet Improvement UDFs -->"]
 [h: defineFunction("resetSkillsExperienceTmp","resetSkillsExperienceTmp@Lib:RQII")]
 
+[h: "<!-- Weapons Management UDFs -->"]
+[h: defineFunction("getWeaponNbLst","getWeaponNbLst@Lib:RQII")]
+[h: defineFunction("getMissileNbLst","getMissileNbLst@Lib:RQII")]
+[h: defineFunction("computeHoldWeaponNb","computeHoldWeaponNb@Lib:RQII")]
+
 [h: "<!-- Generic UDFs -->"]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
 [h: defineFunction("sortJson","sortJson@Lib:RQII")]

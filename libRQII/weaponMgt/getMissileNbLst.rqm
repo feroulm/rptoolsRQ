@@ -1,0 +1,20 @@
+[h: "<!--  Return a string list of the valid missiles (ranged weapon) numbers -->"]
+[h: "<!--  the current implementation always increment the NumMissiles value (even after a delete) which is used to define the weaponId in the keyName of the property list.-->"]
+[h: "<!--  so some weaponId number can no longueur exist in the property list -->"]
+
+[h: tokenId = arg(0)] 
+
+[h: "<!-- If Missiles token property is empty set it to a default value -->"]
+[h,if(isPropertyEmpty("Missiles",tokenId)): setProperty("Missiles","NumMissiles=0;",tokenId)]
+[h: Missiles = getProperty("Missiles",tokenId)]
+ 
+[h: maxNum = getStrProp(Missiles, "NumMissiles")]
+[h: wnumList=""]
+[h,c(maxNum), code: {
+  [h: wnum = roll.count+1]
+  [h: name = getStrProp(Missiles, strformat("Missile%{wnum}Name"))]
+  [if(name != ""):
+    wnumList = listAppend(string(wnumList), string(wnum))
+  ]
+}]
+[r: wnumList]

@@ -1,0 +1,105 @@
+[h: arguments = macro.args]
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>weaponMgt::editCurrentWeapons</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: tokenId = json.get(arguments,"tokenId")]
+}]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: currMeleeWeapons = json.get(currentCombatStatus,"currMeleeWeapons")]
+[h: currRangedWeapons = json.get(currentCombatStatus,"currRangedWeapons")]
+
+<div class="container pure-g">
+  <div class="pure-u-1-2">
+    <h1 class="content-subhead">Melee Weapons</h1>
+    <table class="content pure-table pure-table-striped table-striped-custom">
+    <thead>
+      <tr>
+          <th>Melee weapon</th>
+          <th>Number</th>
+          <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+    [foreach(weapon, currMeleeWeapons, ""), code: {
+      [h: weaponValues = json.get(currMeleeWeapons,weapon)]
+      [h: weaponId = json.get(weaponValues,"weaponId")]
+      <tr>
+        <td>[r: weapon]</td>
+        <td>[r: weaponId]</td>              
+		    [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponType","melee","weaponNum",weaponId)]
+        <td>[r: macroLink("Del", "delCurrentWeapon@Lib:RQII", "all",macroParam)]</td>
+      </tr>
+    }]
+    </tbody>
+    </table>
+  </div>
+  <div class="pure-u-1-2">
+    <h1 class="content-subhead">Ranged Weapons</h1>
+    <table class="content pure-table pure-table-striped table-striped-custom">
+    <thead>
+      <tr>
+          <th>Ranged weapon</th>
+          <th>Number</th>
+          <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+    [foreach(weapon, currRangedWeapons, ""), code: {
+      [h: weaponValues = json.get(currRangedWeapons,weapon)]
+      [h: weaponId = json.get(weaponValues,"weaponId")]
+      <tr>
+        <td>[r: weapon]</td>
+        <td>[r: weaponId]</td>              
+		    [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponType","ranged","weaponNum",weaponId)]
+        <td>[r: macroLink("Del", "updateCurrentWeapon@Lib:RQII", "all",macroParam)]</td>
+      </tr>
+    }]
+    </tbody>
+    </table>
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1-2">
+  [h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
+  [h,macro("getWeaponNb@Lib:RQII"): tokenId]
+  [h: wpList = macro.return]
+  <table class="content pure-table pure-table-striped table-striped-custom">
+  <thead>
+    <tr>
+    <th>id</th>
+      <th>
+        Name(<i>Type</i>)
+      </th>
+      <th>Size</th>
+      <th>Reach</th>
+      <th>Damage</th>
+      <th>AP/HP</th>
+      <th>Manoeuvre</th>
+      <th>Special</th>
+    </tr>
+  </thead>
+  <tbody>
+  [foreach(weapon, wpList, ""), code: {
+    [h,macro("getWeapon@Lib:RQII"): "weaponNb="+weapon+"; tokId="+tokenId]
+    [h: wProp = macro.return]
+    <tr>
+      <td>[r: weapon]</td>
+      <td>
+        [r: getStrProp(wProp, "Name")](<i>[r: getStrProp(wProp, "Type")]</i>)
+      </td>
+      <td>[r: getStrProp(wProp, "Size")]</td>
+      <td>[r: getStrProp(wProp, "Reach")]</td>
+      <td>[r: getStrProp(wProp, "Damage")]</td>
+      <td>[r: getStrProp(wProp, "ApHp")]</td>
+      <td>[r: getStrProp(wProp, "Manoeuvre")]</td>
+      <td>[r: getStrProp(wProp, "Special")]</td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",weaponId,"crud","add")]
+      <td>[r: macroLink("Add", "updateCurrentWeapon@Lib:RQII", "all",macroParam)]</td> 
+    </tr>
+  }]
+</table>
+  </div>
+  <div class="pure-u-1-2">
+  </div>
+</div>

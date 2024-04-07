@@ -1,0 +1,39 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponId = json.get(arguments, "weaponId")]
+
+[h: Weapons = getProperty("Weapons",tokenId)]
+
+[h: name = json.get(arguments, "Name")]
+[h: type = json.get(arguments, "Type")]
+[h: size = json.get(arguments, "Size")]
+[h: reach = json.get(arguments, "Reach")]
+[h: damage = json.get(arguments, "Damage")]
+[h: aphp = json.get(arguments, "ApHp")]
+[h: manoeuvre = json.get(arguments, "Manoeuvre")]
+[h: special = json.get(arguments, "Special")]
+[h: hold = json.get(arguments, "Hold")]
+
+
+
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Name"), name)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Type"), type)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Size"), size)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Reach"), reach)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Damage"), damage)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}ApHp"), aphp)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Manoeuvre"), manoeuvre)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Special"), special)]
+[h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Hold"), hold)]
+
+[h: setProperty("Weapons",Weapons,tokenId)]
+
+[h: "<!-- Recompute currWeaponNb & ccCA based on Hold new value -->"]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"action","weaponca","srcWindow","openSheetMgt","newWeaponNb",computeHoldWeaponNb(tokenId))]
+[r, macro("updateCcCA@Lib:RQII"): macroParam]
+
+[h: "<!-- Refresh edit Window for the new token -->"]
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

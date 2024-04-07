@@ -1,64 +1,45 @@
-<!-- Sub section of editSheet -->
+[h: "<!-- Sub section of editSheet -->"]
 [h: tokenId = macro.args]
 
-[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-[h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
-
-[h,macro("getWeaponNb@this"): tokenId]
-[h: wpList = macro.return]
-<table>
-  <tr class="WeaponName">
-      <th>
-        Name(<i>Type</i>)
-      </th>
+[h: wpList = getWeaponNbLst(tokenId)]
+<table id="inner" class="content pure-table pure-table-striped table-striped-custom">
+<thead>
+  <tr>
+    <th>Name(<i>Type</i>)</th>
     <th>Size</th>
-	<th>Reach</th>
-      <th>Damage</th>
-	<th>AP/HP</th>
-      <th>Manoeuvre</th>
-	<th>Special</th>
+    <th>Reach</th>
+    <th>Damage</th>
+	  <th>AP/HP</th>
+    <th>Manoeuvre</th>
+    <th>Special</th>
+    <th>H.</th>
+    <th></th>
   </tr>
-  [h: class = "oddRow"]
-  [foreach(weapon, wpList, ""), code: {
-  	
+</thead>
+<tbody>
+  [foreach(weapon, wpList, ""), code: { 	
     [h,macro("getWeapon@this"): "weaponNb="+weapon+"; tokId="+tokenId]
     [h: wProp = macro.return]
-    <tr class="[r:class]">
-      <th>
-        [r: getStrProp(wProp, "Name")](<i>[r: getStrProp(wProp, "Type")]</i>)
-      </th>
+    [h: isHold = getStrProp(wProp, "Hold", 0)]
+    [h,if(isHold) : cssSelector = "hold"; cssSelector = ""]
+    <tr class="[r:cssSelector]">
+      <td>
+        <b>[r: getStrProp(wProp, "Name")](<i>[r: getStrProp(wProp, "Type")]</i>)</b>
+      </td>
       <td>[r: getStrProp(wProp, "Size")]</td>
       <td>[r: getStrProp(wProp, "Reach")]</td>
       <td>[r: getStrProp(wProp, "Damage")]</td>
       <td>[r: getStrProp(wProp, "ApHp")]</td>
       <td>[r: getStrProp(wProp, "Manoeuvre")]</td>
       <td>[r: getStrProp(wProp, "Special")]</td>
-      [h: macroParam = json.set("{}", "tokenId", tokenId,"num",weapon)]
-      <td>[r: macroLink("Edit", "openMeleeWeapon@Lib:RQII", "all",macroParam)] <br> [r: macroLink("Del", "delWeapon@this", "all",macroParam)]</td>
-      
+      [h: "<!-- If hold is not set we default it to 0 (unhold) -->"]
+  	  <td>[r: getStrProp(wProp, "Hold", 0)]</td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",weapon)]
+      <td>[r: macroLink("Edit", "openEditMeleeWeapon@Lib:RQII", "all",macroParam)] <br> [r: macroLink("Del", "delWeapon@Lib:RQII", "all",macroParam)]</td>
     </tr>
-    [h: class = if(class=="oddRow", "evenRow", "oddRow")]
   }]
+<tbody>
 </table>
-<table style="cellspacing:0px" cellpadding="2">
-  <tr>  
-    <!-- Manage Ca change -->
-    [h: link = macroLinkText("updateCcCA@Lib:RQII", "all")]
-    <form action="[r:link]" method="json">
-      <td style="text-align:left">Active weapon(s) :</td>
-      <td> 
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="srcWindow" value="openSheetMgt">
-        <input type="hidden" name="action" value="weaponca">
-        <input type="text" name="newWeaponNb" value="[r:currWeaponNb]" size="2" align="right">
-      </td>
-      <td>
-        <input type="submit" name="edit_btn" value="change">
-      </td> 
-    </form>
-    <td class="leftBorder">
-      [h: macroParam = json.set("{}", "tokenId", tokenId)]
-      &nbsp;[r: macroLink("Add a new weapon", "openAddMeleeWeapon@Lib:RQII", "all",macroParam)]
-    </td>
-  </tr>
-</table>
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[h: lnkTxt = macroLinktext("openAddMeleeWeapon@Lib:RQII", "all",macroParam)]
+<a class="button-primary pure-button pure-button-primary" href="[r: lnkTxt]">Add a new weapon</a>

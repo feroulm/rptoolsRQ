@@ -1,0 +1,41 @@
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponId = json.get(arguments, "weaponId")]
+
+[h: Missiles = getProperty("Missiles",tokenId)]
+
+[h: name = json.get(arguments, "Name")]
+[h: type = json.get(arguments, "Type")]
+[h: size = json.get(arguments, "Size")]
+[h: load = json.get(arguments, "Load")]
+[h: reach = json.get(arguments, "Reach")]
+[h: damage = json.get(arguments, "Damage")]
+[h: modif = json.get(arguments, "Modif")]
+[h: aphp = json.get(arguments, "ApHp")]
+[h: manoeuvre = json.get(arguments, "Manoeuvre")]
+[h: special = json.get(arguments, "Special")]
+[h: hold = json.get(arguments, "Hold")]
+
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Name"), name)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Type"), type)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Size"), size)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Load"), load)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Reach"), reach)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Damage"), damage)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Modif"), modif)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}ApHp"), aphp)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Manoeuvre"), manoeuvre)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Special"), special)]
+[h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Hold"), hold)]
+
+[h: setProperty("Missiles",Missiles,tokenId)]
+
+[h: "<!-- Recompute currWeaponNb & ccCA based on Hold new value -->"]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"action","weaponca","srcWindow","openSheetMgt","newWeaponNb",computeHoldWeaponNb(tokenId))]
+[r, macro("updateCcCA@Lib:RQII"): macroParam]
+
+<!-- Refresh edit Window for the new token -->
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openSheetMgt@Lib:RQII"): macroParam]

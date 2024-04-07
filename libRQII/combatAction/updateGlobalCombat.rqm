@@ -189,4 +189,6 @@
 <!-- Refresh Combat Window -->
 [h: macroParam = ""]
 [h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")][h: macroParam = json.set("{}", "tab", "main")]
+[h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

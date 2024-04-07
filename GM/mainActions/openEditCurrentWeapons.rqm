@@ -1,0 +1,3 @@
+[h: tokenId = currentToken()]
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[r, macro("openEditCurrentWeapons@Lib:RQII"): macroParam]
