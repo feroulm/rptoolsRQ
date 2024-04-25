@@ -263,7 +263,7 @@
 <!-- init sorcerySpells value -->
 <!-- init wiki value -->
 <!-- init combatStatus value -->
-[h: newCombatStatus ='{"turnStatus":"on","activeTurn":0,"chargeStatus":"none","situationMod":"none","activeCA":0,"ccCA":0,"proactiveCA":0,"reactiveCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1,"spellReady": 0}']
+[h: newCombatStatus ='{"turnStatus":"on","activeTurn":0,"chargeStatus":"none","situationMod":"none","activeCA":0,"ccCA":0,"proactiveCA":0,"reactiveCA":0,"baseCA":0,"bonusCA":0,"weaponCA":0,"magicCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"firstEvade":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1,"spellReady": 0,"cLogTokenId":"none","versionTag":"v3.0.0"}']
  [h: setProperty("combatStatus",newCombatStatus,tokenId)]
 <!-- init combatLog value -->
 [h: newCombatLog ='{"lastProactiveAction":"","lastReactiveAction":"","lastTokenChange":"","turnDeclaration":""}']

@@ -2,6 +2,10 @@
 [h: action = json.get(macro.args, "action")]
 [h: actionLabel = json.get(macro.args, "edit_btn")]
 
+[h: cLogTokenId = "none"]
+[h: cLogTokenId = json.get(macro.args,"cLogTokenId")]
+[h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
+
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: activeCA = json.get(currentCombatStatus,"activeCA")]
 [h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
@@ -69,18 +73,19 @@
 
 <!-- log the action -->
 [h: logCombatAction(tokenId,"reactive",logMsg)]
+[h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,"")]
     
 [r: getName(tokenId)] has done : [r: logMsg]
 
 <!-- Refresh Combat Action Window for current Active Token-->
-[h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg)]
+[h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg,"cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
     
 <!-- Refresh Global Combat Window -->
-[h: macroParam = ""]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
-[h: macroParam = json.set("{}", "tab", "main")]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

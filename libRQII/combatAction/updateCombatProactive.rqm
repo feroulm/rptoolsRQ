@@ -7,6 +7,10 @@
 [h: actionLabel = json.get(macro.args, "edit_btn")]
 [h: logMsg = ""]
 
+[h: cLogTokenId = "none"]
+[h: cLogTokenId = json.get(macro.args,"cLogTokenId")]
+[h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
+	
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: activeCA = json.get(currentCombatStatus,"activeCA")]
 [h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
@@ -338,14 +342,19 @@
   [h: logCombatAction(tokenId,"proactive",logMsg)]
   [h: logCombatAction(tokenId,"turnreset","")]
   [r: getName(tokenId)] has done : [r: logMsg]
+	
+	[h: caStatus = json.get(currentCombatStatus,"activeCA")+"/"+json.get(currentCombatStatus,"ccCA")]
+	[h: logMsg = logMsg+" has been done. Remaining CA :"+caStatus]
+	[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"")]
 };{
   [r: getName(tokenId)] is playing is turn and has declared : [r: logMsg]	
+	[h: addCombatLogEntry(tokenId,"declareAction",logMsg,"")]
 }]
 
 <!-- Refresh Combat Window -->
-[h: macroParam = ""]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
-[h: macroParam = json.set("{}", "tab", "main")]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

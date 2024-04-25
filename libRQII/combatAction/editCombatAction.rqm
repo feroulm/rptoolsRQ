@@ -35,6 +35,9 @@
 [h: currWeaponNb = json.get(tCombatStatus,"currWeaponNb")]
 [h: defWeaponNb = json.get(tCombatStatus,"defWeaponNb")]
 
+[h: clogTokenId = json.get(tCombatStatus,"cLogTokenId")]
+[h: versionTag = json.get(tCombatStatus,"versionTag")]
+
 <!-- Combat Log -->
 [h: currentCombatLog = getProperty("combatLog",tokenId)]
 [h: turnDeclaration = json.get(currentCombatLog,"turnDeclaration")]
@@ -622,10 +625,22 @@ Combat status - Data
   </tr>
   <tr>
     <td>spellReady</td><td>[r: spellReady]</td>
+		<td></td><td></td>
+		<td></td><td></td>
     <td></td><td></td>
     <td></td><td></td>
-    <td></td><td></td>
-    <td></td><td></td>
+  </tr>
+	  <tr>
+		<td>versionTag</td><td>[r: versionTag]</td>
+		[h: cLogTokenExist = findToken(clogTokenId)]
+		[r, if(cLogTokenExist == ""), code: {
+			<td>cLogTokenId</td><td colspan="7">
+				<span style="font-weight: bold;color:red">WARNING. Linked combatToken not found on this map.</span>
+			</td>
+		};{
+			[h: combatProp = getProperty("combat",clogTokenId)]
+			<td>cLogTokenId</td><td colspan="7">[r: cLogTokenId] ([r: json.get(combatProp,"desc")])</td>
+		}]
   </tr>
   <tr>
     <td colspan="5">

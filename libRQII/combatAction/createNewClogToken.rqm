@@ -1,0 +1,43 @@
+[h: "<!-- Function to create a new combatLog token on current map -->"]
+[h: "<!-- Called by : updateGlobalCombat@Lib:RQII (combatAction Group) -->"]
+[h: "<!-- return the token id -->"]
+
+[h: combatDesc = arg(0)] 
+
+
+[h: "<!-- Archive existing token if needed -->"]
+
+[h: cond = json.set("{}","propertyType" ,"RQ_Log")]
+[h: cLogTokens = getTokens("json", cond)]
+
+[h, foreach(cLogTokenId, cLogTokens, ""), code:{
+	[h: combatProp = getProperty("combat",cLogTokenId)]
+	[h, if(json.get(combatProp,"status") == "current"), code:{
+		[h: combatProp = json.set(combatProp,"status","old")]
+		[h: newCombatDesc =  "(OLD)"+json.get(combatProp,"desc")]
+		[r: combatProp = json.set(combatProp,"desc",newCombatDesc)]
+		[h: setProperty("combat",combatProp,cLogTokenId)]
+		[h: setState("Hidden", 1, cLogTokenId)]
+	};{}]	
+}]
+
+[h: "<!-- Create new combatToken based on _Main_AE template -->"]
+[h: updates = json.set("{}",
+	"name" ,"CombatLog_Current",
+	"x","1",
+    "relativeto", "source")]
+    
+[h: cLogTokenId = copyToken("CombatLog_TPL",1,"_Main_AE", updates)]
+[h: newName = strformat("cLog_%{cLogTokenId}")]
+[h: setName(newName,cLogTokenId)]
+
+[h: "<!-- reset everything and return cLogTokenId -->"]
+[h: combatProp = getProperty("combat",cLogTokenId)]
+[h: combatProp = json.set(combatProp,"status","current")]
+[h: combatProp = json.set(combatProp,"desc",combatDesc)]
+[h: combatProp = json.set(combatProp,"cycle",1)]
+[h: combatProp = json.set(combatProp,"mr",1)]
+[h: combatProp = json.set(combatProp,"initRoll",1)]
+[h: setProperty("combat",combatProp,cLogTokenId)]	
+
+[r: cLogTokenId]

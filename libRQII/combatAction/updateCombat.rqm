@@ -2,6 +2,11 @@
 [h: action = json.get(macro.args, "action")]
 [h: nextTokenId = json.get(macro.args, "nextTokenId")]
 [h: nextTokenOffset = json.get(macro.args, "nextTokenOffset")]
+
+[h: cLogTokenId = "none"]
+[h: cLogTokenId = json.get(macro.args,"cLogTokenId")]
+[h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
+
 <!-- for log management -->
 [h: actionLabel = json.get(macro.args, "edit_btn")]
 [h: logMsg = ""]
@@ -174,17 +179,19 @@
   }
 ]
 
+[h: addCombatLogEntry(tokenId,"changeAfterAction",logMsg,"")]
+
 [r: getName(tokenId)] has done : [r: actionLabel]
 
 <!-- Refresh Action Window for the new token -->
-[h: macroParam = json.set("{}", "tokenId", refreshTokenId,"msg",msg)]
+[h: macroParam = json.set("{}", "tokenId", refreshTokenId,"msg",msg,"cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
 
 <!-- Refresh Combat Window -->
-[h: macroParam = ""]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
-[h: macroParam = json.set("{}", "tab", "main")]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

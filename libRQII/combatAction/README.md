@@ -9,9 +9,47 @@ CA is modified
 - When a PNJ is created / updated (i.e following an improvement session)
 - During a combat
 
+## combatLog Token
+
+Principles :
+- we can have multiple combatLog token on a map in order to keep combat history.
+- However there can be only one currentCombat at a time for a token on a map.
+ - this means that the currentCombatStatus on a token is linked to combatLog token
+ - in the initiative list we should NOT have token with different combatLog ID -> if it happens we should display a waring and ask the GM to :
+ - start / reset a new combat for all token
+ - reset the combat status of the token that are not in the currentCombat
+
+ Data Structures :
+
+combat : property of a combatLog Token
+ ```
+ {"status":"current","desc":"Farm Attack PJ1","cycle":1,"mr":1,"initRoll":1}
+ ```
+
+ Combat logEntry (sub json of combatLog property)
+  ```
+ {"tokenId":"-","logType":"proactiveAction","mr":1,"cycle":1,"logMsg":"Attack","logComment":"test comment after log entry creation","serverTime":""}
+ ```
+-  *logType* : proactiveAction, reactiveAction, changeAfterAction, declareAction, globalEvent 
+- *logComment* : used to add some more information after the log has been added
+
+### Start / Reset a combat
+- this action :
+	- look for any existing combatLog token on the current map with status = "current" in *combat* Property. And update their status to "old".
+	- create a new combatToken on the currentMap based on the token *CombatLog_TPL* defined on map *_Main_AE*.
+	- reset all CA, MR and Cycle values for the token that are in the initiative list.
+	
+```
+[h: <!-- Archive previous combat Token-->]
+[h: globalCombat = getProperty("combat",clogTokenId)]
+[h: globalCombat = json.set(globalCombat,"status","old")]
+[h: archiveDesc =  "(OLD)"+json.get(globalCombat,"desc")]
+[h: globalCombat = json.set(globalCombat,"desc","Farm Attack PJ1")]
+```
+ 
 ## Combat Status
 When this structure evolves it must be patched on all token, to do this use the macro :
-- cf [resetPropCombatJson](../tokenPropertyManagement/resetPropCombatJson.rqm)
+- cf [patchPropCombatStatus](../tokenPropertyManagement/patchPropCombatStatus.rqm)
 Process is described inside the macro.
 
 Don't forget also to change the macro [updateGlobalCombat](./updateGlobalCombat.rqm) that reset the Combat Status.

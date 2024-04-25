@@ -1,0 +1,18 @@
+[h: "<!-- findCurrentCombatToken - Function to get current combatLog token on current map -->"]
+[h: "<!-- Called by : openCombat@Lib:RQII (GM Group) -->"]
+[h: "<!-- return the token id or none if none exists -->"]
+
+
+[h: cond = json.set("{}","propertyType" ,"RQ_Log")]
+[h: cLogTokens = getTokens("json", cond)]
+
+[h: CurrcLogTokenId = "none"]
+
+[h, foreach(cLogTokenId, cLogTokens, ""), code:{
+	[h: combatProp = getProperty("combat",cLogTokenId)]
+	[h, if(json.get(combatProp,"status") == "current"), code:{
+		[h: CurrcLogTokenId = cLogTokenId]
+	};{}]	
+}]
+
+[r: CurrcLogTokenId]

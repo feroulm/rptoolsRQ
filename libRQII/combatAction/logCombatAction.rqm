@@ -4,9 +4,23 @@
 [h: logType = arg(1)]
 [h: logMsg = arg(2)]
 [h: "<!-- grab MR number and Cycle number -->"]
-[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
-[h: cycleNB = json.get(globalCombat, "cycle")]
-[h: mrNB = json.get(globalCombat, "mr")]
+
+[h:"<!-- get current combat token -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
+[h: logMsgDbg = strformat("<i>combatAction::logCombatAction</i> : current Combat Token - cLogTokenId=%{cLogTokenId})")]
+[h: log.debug(logMsgDbg)]
+
+[h, if(cLogTokenId == "none"), code :{
+	[h: "<!-- No combat token found - this an anomaly -->"]
+	[h: logMsgDbg = strformat("<i>combatAction::logCombatAction</i> : there is no current combat token (cLogTokenId=%{cLogTokenId}). Create a combat first")]
+  [h: log.debug(logMsgDbg)]
+	[assert(0,logMsgDbg,0)]
+};{
+  [h: combatProp = getProperty("combat",cLogTokenId)]
+  [h: cycleNB = json.get(combatProp, "cycle")]
+	[h: mrNB = json.get(combatProp, "mr")]
+}]
+
 [h: logEntry = logMsg+" (MR"+mrNB+"-C"+cycleNB+")"]
 
 [h: "<!-- update the entry -->"]

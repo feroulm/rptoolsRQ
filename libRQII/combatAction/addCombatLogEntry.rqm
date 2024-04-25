@@ -1,0 +1,41 @@
+[h: "<!-- addCombatLogEntry - Function to add a log entry to the current combatLog token on current map -->"]
+[h: "<!-- Called by several combatAction/update* method  -->"]
+[h: "<!-- return nothing -->"]
+
+[h: tokenId = arg(0)]
+[h: logType = arg(1)]
+[h: logMsg = arg(2)]
+[h: logComment = arg(3)]
+
+[h:"<!-- get current combat token -->"]
+[r: cLogTokenId = findCurrentCombatToken()]
+
+[h, if(cLogTokenId == "none"), code :{
+	[h: logDbgMsg = strformat("<i>combatAction::addCombatLogEntry</i> : there is no current combat token (cLogTokenId=%{cLogTokenId})")]
+  [h: log.debug(logDbgMsg)]
+	[assert(0,logDbgMsg,0)]
+};{
+	[h: combatProp = getProperty("combat",cLogTokenId)]
+	[h: currMr = json.get(combatProp,"mr"))]
+	[h: currCycle = json.get(combatProp,"cycle"))]
+}]
+
+[h: timestamp = json.get(getInfo("server"),"timeDate")]
+[h: logs = getProperty("combatLog", cLogTokenId)]
+
+[h: len = json.length(logs)]
+[h: nextId = len + 1]
+[h: logKey = strformat('clog%{nextId}')]
+	
+[h: newLogValues = json.set("{}","tokenId",tokenId)]
+[h: newLogValues = json.set(newLogValues,"logType",logType)]
+[h: newLogValues = json.set(newLogValues,"currMr",currMr)]
+[h: newLogValues = json.set(newLogValues,"currCycle",currCycle)]
+[h: newLogValues = json.set(newLogValues,"logMsg",logMsg)]
+[h: newLogValues = json.set(newLogValues,"logComment",logComment)]
+[h: newLogValues = json.set(newLogValues,"serverTime",timestamp)]
+
+[h: logs = json.set(logs,logKey,newLogValues)]
+	
+[h: setProperty("combatLog", logs, cLogTokenId)]
+	

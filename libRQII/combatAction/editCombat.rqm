@@ -2,57 +2,75 @@
 [h: tokens = json.get(arguments, "tokens")]
 [h: linkCA = macroLinkText("openCombatAction@Lib:RQII", "all")]
 
-[h: globalCombat = getLibProperty("combat", "Lib:RQII")]
+[h:"<!-- get current combat token -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
+
+[h, if(cLogTokenId == "none"), code :{
+  [h: combatProp = json.set("{}", "status","none","desc","! NO CURRENT COMBAT FOUND, you need to create one first")]
+  [h: noClogToken = 1]
+};{
+  [h: combatProp = getProperty("combat",cLogTokenId)]
+  [h: noClogToken = 0]
+}]
+
 [h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
-[h: initRoll = json.get(globalCombat, "initRoll")]
+[h: initRoll = json.get(combatProp, "initRoll")]
 
 <div class="contentFrame">
-<table>
-  <tr>
-    <td>Initiative</td>
-    <td>Cycle</td>
-    <td>Melee Round</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>
-      [r, if(initRoll > 0): "Rolled "+initRoll+" time(s)";"Not rolled !"]
-    </td>
-    <td><b>[r: json.get(globalCombat, "cycle")]</b></td>
-    <td><b>[r: json.get(globalCombat, "mr")]</b></td>
-    <td rowspan="2">
-      <form action="[r:linkUpdateGlobalCombat]" method="json">
-        <input type="hidden" name="tokens" value=[r: tokens]>
-        <input type="hidden" name="action" value="reset">
-        <input type="submit" name="edit_btn" value="Start / Reset">
-      </form>
-      [r: macroLink("Refresh", "openCombat@Lib:RQII", "all")]
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <form action="[r:linkUpdateGlobalCombat]" method="json">
-        <input type="hidden" name="tokens" value=[r: tokens]>
-        <input type="hidden" name="action" value="rollinit">
-        <input type="submit" name="edit_btn" value="Roll Initiative">
-      </form>
-    </td>    
-    <td>
-      <form action="[r:linkUpdateGlobalCombat]" method="json">
-        <input type="hidden" name="tokens" value=[r: tokens]>
-        <input type="hidden" name="action" value="nxtcycle">
-        <input type="submit" name="edit_btn" value="Next Cycle">
-      </form>
-    </td>
-    <td>
-      <form action="[r:linkUpdateGlobalCombat]" method="json">
-        <input type="hidden" name="tokens" value=[r: tokens]>
-        <input type="hidden" name="action" value="nxtmr">
-        <input type="submit" name="edit_btn" value="Next MR">
-      </form>
-    </td>
-  </tr>
-</table>
+[r, if(cLogTokenId != "none"), code:{
+	<table>
+		<tr>
+			<td>Initiative</td>
+			<td>Cycle</td>
+			<td>Melee Round</td>
+			<td><i>Combat Name</i> : [r: json.get(combatProp,"desc")]</td>
+		</tr>
+		<tr>
+			<td>
+				[r, if(initRoll > 0): "Rolled "+initRoll+" time(s)";"Not rolled !"]
+			</td>
+			<td><b>[r: json.get(combatProp, "cycle")]</b></td>
+			<td><b>[r: json.get(combatProp, "mr")]</b></td>
+			<td rowspan="2">
+				<form action="[r:linkUpdateGlobalCombat]" method="json">
+					<input type="hidden" name="tokens" value=[r: tokens]>
+					<input type="hidden" name="action" value="reset">
+					<input type="hidden" name="cLogTokenId" value=[r: cLogTokenId]>
+					<input type="submit" name="edit_btn" value="Start / Reset">
+				</form>
+				[r: macroLink("Refresh", "openCombat@Lib:RQII", "all")]
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<form action="[r:linkUpdateGlobalCombat]" method="json">
+					<input type="hidden" name="tokens" value=[r: tokens]>
+					<input type="hidden" name="action" value="rollinit">
+					<input type="submit" name="edit_btn" value="Roll Initiative">
+				</form>
+			</td>    
+			<td>
+				<form action="[r:linkUpdateGlobalCombat]" method="json">
+					<input type="hidden" name="tokens" value=[r: tokens]>
+					<input type="hidden" name="action" value="nxtcycle">
+					<input type="submit" name="edit_btn" value="Next Cycle">
+				</form>
+			</td>
+			<td>
+				<form action="[r:linkUpdateGlobalCombat]" method="json">
+					<input type="hidden" name="tokens" value=[r: tokens]>
+					<input type="hidden" name="action" value="nxtmr">
+					<input type="submit" name="edit_btn" value="Next MR">
+				</form>
+			</td>
+		</tr>
+	</table>
+};{
+	 No current Combat on this map - Create a combat first
+	  [h: macroParam = json.set("{}", "tokens", tokens, "action", "reset","cLogTokenId",cLogTokenId)]
+		[h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
+		<a class="button-warning pure-button" href="[r: link]">Create new combat</a>
+}]
 <hr>
 <table style="cellspacing:0px;">
   <tr>

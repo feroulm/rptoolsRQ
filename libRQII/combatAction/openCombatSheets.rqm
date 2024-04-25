@@ -1,27 +1,54 @@
 [h: arguments = macro.args]
-[r, if(json.isEmpty(arguments)), code: {
+[h: cLogTokenId = "none"]
+[h, if(json.isEmpty(arguments)), code: {
   [assert(0,"<i>combatAction::openCombatSheets</i> : no arguments, this macro can't be called without mandatory parameters",0)]
  };{
   [h: tab = json.get(arguments,"tab")]
   [h, if(tab == "") : tab = "main"]
+  [h: cLogTokenId = json.get(arguments,"cLogTokenId")]
+  [h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
+}]
+
+[h: tokenNameFilter = json.get(arguments, "tokenNameFilter")]
+[h, if(json.isEmpty(tokenNameFilter)), code:{
+	[h: tokenNameFilter = ".*"]
+};{
+  [h, if(tokenNameFilter == "") : tokenNameFilter = ".*"]
+}]
+
+[h: logTypeFilter = json.get(arguments, "logTypeFilter")]
+[h, if(json.isEmpty(logTypeFilter)), code:{
+	[h: logTypeFilter = ".*"]
+};{
+  [h, if(logTypeFilter == "") : logTypeFilter = ".*"]
+}]
+
+[h: logMrFilter = json.get(arguments, "logMrFilter")]
+[h, if(json.isEmpty(logMrFilter)), code:{
+	[h: logMrFilter = ".*"]
+};{
+  [h, if(logMrFilter == "") : logMrFilter = ".*"]
 }]
 
 [h: dialogName = "Combat Sheet"]
 
-[dialog5(dialogName,"width=888; height=830; temporary=1"): {
+[dialog5(dialogName,"width=1550; height=1100; temporary=1"): {
   <html>
     <head>
       <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+			<link rel="stylesheet" type="text/css" href="pureGridsResponsiveCss@Lib:RQII">
       <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
       <title>Combat Sheets</title>
     </head>
     <body class="body-custom">
-	  [h: macroParam = getInitiativeList()]
+	  [h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId)]
+	  [h: macroParam = json.merge(macroParam,getInitiativeList())]
 	  [r, switch(tab), code:
         case "main" :{
   	      [r, macro("viewCombatSheets@Lib:RQII"): macroParam]
         };
 		case "log" :{
+					[h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter)]
   	      [r, macro("viewCombatLog@Lib:RQII"): macroParam]
         };
         default: {

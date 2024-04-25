@@ -1,16 +1,40 @@
 [h: arguments = macro.args]
 
+[h: CurrCLogTokenId = json.get(arguments, "cLogTokenId")]
+[h: tokenMap = getCurrentMapName()]
+
+[h: tokenNameFilter = json.get(arguments, "tokenNameFilter")]
+[h, if(json.isEmpty(tokenNameFilter)), code:{
+	[h: tokenNameFilter = ".*"]
+};{
+  [h, if(tokenNameFilter == "") : tokenNameFilter = ".*"]
+}]
+
+[h: logTypeFilter = json.get(arguments, "logTypeFilter")]
+[h, if(json.isEmpty(logTypeFilter)), code:{
+	[h: logTypeFilter = ".*"]
+};{
+  [h, if(logTypeFilter == "") : logTypeFilter = ".*"]
+}]
+
+[h: logMrFilter = json.get(arguments, "logMrFilter")]
+[h, if(json.isEmpty(logMrFilter)), code:{
+	[h: logMrFilter = ".*"]
+};{
+  [h, if(logMrFilter == "") : logMrFilter = ".*"]
+}]
+
 <div class="pure-g">
   <div class="header pure-u-1">
 	<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
         <ul class="pure-menu-list">
             <li class="pure-menu-item pure-menu-selected">
-			  [h: macroParam = json.set("{}", "tab", "main")]
+						[h: macroParam = json.set("{}", "tab", "main","cLogTokenId",CurrCLogTokenId)]
               [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 	          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
 			</li>
 			<li class="pure-menu-item">
-			  [h: macroParam = json.set("{}", "tab","log")]
+			  [h: macroParam = json.set("{}", "tab","log","cLogTokenId",CurrCLogTokenId,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter)]
               [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 	          <a class="pure-menu-link" href="[r: lnkTxt]">Combat Log</a>
 			</li>
@@ -19,22 +43,92 @@
   </div>     
 </div> 
 <div class="container pure-g">
-  <div class="pure-u-1-24">
-  <table class="content pure-table pure-table-striped">
-  <thead>
-    <tr>
-		<th>MR/Cycle</th>
-        <th>Token</th>
-		<th>Event(s)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-		<td>MR1,C1</td>
-		<td>Token 1</td>
-		<td>Attacks</td>
-    </tr>
-  </tbody>
-  </table>
-  </div>
+	<div class="pure-u-md-4-24">
+		[h: linkUdpateCurrentCombat = macroLinkText("openCombatSheets@Lib:RQII", "all")]
+		<form class="pure-form" action="[r:linkUdpateCurrentCombat]" method="json">
+		<input type="hidden" name="tab" value="log">
+		<table class="content pure-table pure-table-striped table-striped-custom">
+		<tbody>
+		[h: cond = json.set("{}","propertyType" ,"RQ_Log")]
+		[h: cLogTokens = getTokens("json", cond)]
+		[r, foreach(cLogTokenId, cLogTokens, ""), code:{
+			[h: combatProp = getProperty("combat",clogTokenId)]
+			<tr>
+				<td>
+					[h: isSelected = ""]
+					[h, if(CurrCLogTokenId == cLogTokenId): isSelected = "checked"]
+					<input type="radio" name="cLogTokenId" value="[r:cLogTokenId]" [r:isSelected]/>
+				</td>
+				<td>
+					[r: json.get(combatProp,"desc")]
+				</td>
+			</tr>
+		}]
+			<tr>
+				<td colspan="2">
+					<button type="submit" class="pure-button pure-button-primary">Select a combat</button>
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	<div class="pure-u-md-4-24">
+	<div class="section">
+		[h: linkOpenCombatSheet = macroLinkText("openCombatSheets@Lib:RQII", "all")]
+		<form class="pure-form pure-form-stacked" action="[r:linkOpenCombatSheet]" method="json">
+			<input type="hidden" name="tab" value="log">
+			<input type="hidden" name="cLogTokenId" value="[r: CurrCLogTokenId]">
+			<fieldset>
+        <legend>Select filter</legend>
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-3">
+                <label for="tokenNameFilter">Token Name</label>
+                <input type="text" id="tokenNameFilter" name="tokenNameFilter" value="[r:tokenNameFilter]" class="pure-u-16-24" />
+            </div>
+            <div class="pure-u-1 pure-u-md-1-3">
+                <label for="logTypeFilter">log Type</label>
+                <input type="text" id="logTypeFilter" name="logTypeFilter" value="[r:logTypeFilter]" class="pure-u-16-24" />
+            </div>
+						<div class="pure-u-1 pure-u-md-1-3">
+                <label for="logMrFilter">MR</label>
+                <input type="text" id="logMrFilter" name="logMrFilter" value="[r:logMrFilter]" class="pure-u-8-24" />
+            </div>
+        </div>
+        <button type="submit" class="pure-button pure-button-primary">Filter</button>
+    </fieldset>
+		</form>
+		</div>
+	</div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+		<table class="content pure-table pure-table-striped">
+		<thead>
+			<tr>
+			<th>logId</th>
+			<th>MR/Cycle</th>
+			<th>Token</th>
+			<th>log Type</th>
+			<th>Event(s)</th>
+			<th>Comment</th>
+			<th>Server Time</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		[r, if(CurrCLogTokenId != "none"), code:{
+			[h: logs = getProperty("combatLog", CurrCLogTokenId)]
+			[r, foreach(logEntryKey, logs, ""), code: {
+				[h: logEntry = json.get(logs,logEntryKey)]
+				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter)]
+				[r, macro("showFilteredLogEntry@Lib:RQII"): macroParam]
+			}]
+		};{
+			<tr>
+				<td colspan="7">! No combatLog found</td>
+			</tr>
+		}]
+		</tbody>
+		</table>
+		</div>
 </div>

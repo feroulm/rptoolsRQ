@@ -15,16 +15,24 @@
 - ce qui est du param "spécifique" c'est uniquement defWeaponNb , bonusCA magicCA
 -->
 
+<!-- version history 
+- v1.0.0 : initial version
+- v2.0.0 : add spellReady prop
+- v3.0.0 : add versionTag, cLogTokenId props
+-->
+
+<!-- launch on selected token from panel GM/patchPropCombatStatus -->
+
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
-[h: res = input("junk|This will reset all token combatStatus properties value. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
+[h: res = input("junk|This will reset all token combatStatus properties value for "+getName(tokenId)+ ". Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
 [h: abort(res)]	
 
 [h: newCombatStatusModel = '{
     "turnStatus": "on",
     "activeTurn": 0,
     "chargeStatus": "none",
-	"spellReady": 0,
+		"spellReady": 0,
     "situationMod": "none",
     "activeCA": 0,
     "ccCA": 0,
@@ -42,7 +50,9 @@
     "weaponReach": "ok",
     "currWeaponNb": 1,
     "defWeaponNb": 1,
-	"spellReady": 0
+		"spellReady": 0,
+		"cLogTokenId": "none",
+		"versionTag" : "v3.0.0"
 }']
 
 [h: oldCombatStatus = getProperty("combatStatus",tokenId)]

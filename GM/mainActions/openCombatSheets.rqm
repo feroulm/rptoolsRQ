@@ -2,4 +2,4 @@
 [r: cLogTokenId = findCurrentCombatToken()]
 
 [h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
-[r, macro("openCombat@Lib:RQII"): macroParam]
+[r, macro("openCombatSheets@Lib:RQII"): macroParam]

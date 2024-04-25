@@ -17,7 +17,8 @@ ex: <form class="form-custom pure-form"></form>
 }
 
 .section {
-    padding: 5px 0px 10px 0px;
+	margin-left: 5px;
+    padding: 5px 0px 5px 5px;
     font-size: 90%;
 }
 

@@ -1,5 +1,41 @@
 [h: arguments = macro.args]
-[h: tokens = json.get(arguments, "tokens")]
+[h: tokenId = json.get(arguments, "tokenId")]
 
-[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-[h: currWeapons = json.get(currentCombatStatus,"currWeapons")]
+
+<table id="inner" class="content pure-table pure-table-striped table-striped-custom">
+  <tbody>
+		[h: wpList = getWeaponNbLst(tokenId)]
+    [foreach(weapon, wpList, ""), code: {
+      [h,macro("getWeapon@Lib:RQII"): "weaponNb="+weapon+"; tokId="+tokenId]
+      [h: wProp = macro.return]
+			[h: isHold = getStrProp(wProp, "Hold", 0)]
+      [r,if(isHold), code: {
+      <tr>
+        <td>
+          <b>[r: getStrProp(wProp, "Name")]</b>([r: getStrProp(wProp, "Damage")]) 
+        </td>
+        <td><i>Size</i>: [r: getStrProp(wProp, "Size")], <i>Reach</i>: [r: getStrProp(wProp, "Reach")]<br>
+				  [r: getStrProp(wProp, "Manoeuvre","")]
+					[r: getStrProp(wProp, "Special","")]
+				</td>
+      </tr>
+			}]
+    }]
+		[h: wpList = getMissileNbLst(tokenId)]
+		[foreach(missile, wpList, ""), code: {
+      [h,macro("getMissile@Lib:RQII"): "weaponNb="+missile+"; tokId="+tokenId]
+      [h: wProp = macro.return]
+      [h: isHold = getStrProp(wProp, "Hold", 0)]
+      [r,if(isHold), code: {
+      <tr>
+        <td>
+          <b>[r: getStrProp(wProp, "Name")]</b>([r: getStrProp(wProp, "Damage")])
+        </td>
+        <td><i>Size</i>:[r: getStrProp(wProp, "Size")], <i>Load</i>: [r: getStrProp(wProp, "Load")], <i>DMG mod</i>: [r: getStrProp(wProp, "Modif")]<br>
+				[r: getStrProp(wProp, "Manoeuvre", "")].[r: getStrProp(wProp, "Special","")]
+				</td>
+      </tr>
+			}]
+    }]
+  </tbody>
+</table>
