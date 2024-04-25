@@ -3,13 +3,18 @@
 [h: logEntryKey = json.get(macro.args, "logEntryKey")]
 [h: logTypeFilter = json.get(macro.args, "logTypeFilter")]
 [h: logMrFilter = json.get(macro.args, "logMrFilter")]
+[h: logCycleFilter = json.get(macro.args, "logCycleFilter")]
+[h: tokenNameFilter = json.get(macro.args, "tokenNameFilter")]
+
+
+[h: tokenId = json.get(logEntry,"tokenId")]
+[h: tokenName = getName(tokenId)]
 
 [h: logType = json.get(logEntry,"logType")]
 [h: logCurrMr = json.get(logEntry,"currMr")]
+[h: logCurrCycle = json.get(logEntry,"currCycle")]
 
-[r, if(matches(logType,logTypeFilter) && matches(logCurrMr,logMrFilter)), code:{
-			  [h: tokenId = json.get(logEntry,"tokenId")]
-			  [h: tokenName = getName(tokenId)]
+[r, if(matches(logType,logTypeFilter) && matches(logCurrCycle,logCycleFilter) && matches(logCurrMr,logMrFilter) && matches(tokenName,tokenNameFilter)), code:{
 				<tr>
 					<td>[r: logEntryKey]</td>
 					<td>MR [r: json.get(logEntry,"currMr")] / C[r: json.get(logEntry,"currCycle")]</td>

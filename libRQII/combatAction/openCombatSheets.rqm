@@ -30,6 +30,13 @@
   [h, if(logMrFilter == "") : logMrFilter = ".*"]
 }]
 
+[h: logCycleFilter = json.get(arguments, "logCycleFilter")]
+[h, if(json.isEmpty(logCycleFilter)), code:{
+	[h: logCycleFilter = ".*"]
+};{
+  [h, if(logCycleFilter == "") : logCycleFilter = ".*"]
+}]
+
 [h: dialogName = "Combat Sheet"]
 
 [dialog5(dialogName,"width=1550; height=1100; temporary=1"): {
@@ -48,7 +55,7 @@
   	      [r, macro("viewCombatSheets@Lib:RQII"): macroParam]
         };
 		case "log" :{
-					[h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter)]
+					[h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter,"logCycleFilter",logCycleFilter)]
   	      [r, macro("viewCombatLog@Lib:RQII"): macroParam]
         };
         default: {
