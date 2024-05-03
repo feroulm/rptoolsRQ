@@ -12,80 +12,108 @@
 [h: lostProCA = json.get(currentCombatStatus,"lostProCA")]
 [h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 
+[h: logMsg = ""]
+[h: logComment = ""]
+
 [r, switch(action), code:
   case "parry" : {
+	  [h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
   
-  	[h: msg = actionLabel+" is done, one reactive CA lost."]
-    [h: logMsg = actionLabel]
+  	[h: msg = strformat("%{logMsg} One reactive CA lost.")]
   	
     [h: currentCombatStatus = processReactiveCA(currentCombatStatus,tokenId)]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
   };
   case "evade" : {
-    <!-- toggle evade one time on two -->
+		[h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+	
+    [h: "<!-- toggle evade one time on two -->"]
     [h, if (firstEvade == 0),code:{
     	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",1)]
-    	[h: msg = "First "+actionLabel+" is done, next proactive CA lost."]
-    	[h: logMsg = "First "+actionLabel]
+    	[h: msg = strformat("First %{logMsg} Next proactive CA lost.")]
+    	[h: logMsg = msg]
     }]
     [h, if (firstEvade > 0),code:{
     	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
-    	[h: msg = "Second "+actionLabel+" is done, proactive action possible next turn."]
-    	[h: logMsg = "Second "+actionLabel]
+    	[h: msg = strformat("Second %{logMsg} Proactive action possible next turn.")]
+    	[h: logMsg = msg]
     }]
 
     [h: currentCombatStatus = processReactiveCA(currentCombatStatus,tokenId)]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
   };
   case "evadeProne" : {
+		[h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+		
     [h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","prone")]
     [h: setState("Prone", 1, tokenId)]
 
-    [h: msg = "Evade is done, token is prone !"]
-    [h: logMsg = actionLabel]
+    [h: msg = strformat("%{logMsg} Token is prone !")]
+		[h: logMsg = strformat("%{logMsg} Token is prone.")]
 	
-	[h: currentCombatStatus = processReactiveCA(currentCombatStatus,tokenId)]
-	[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+		[h: currentCombatStatus = processReactiveCA(currentCombatStatus,tokenId)]
+		[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
   };
   case "interrupt" : {
-  	<!-- remove current initiative to current token -->
+  	[h: "<!-- remove current initiative to current token -->"]
   	[h: oldTokenId = getInitiativeToken()]
   	[h: setState("CurrentTurn", 0, oldTokenId)]
   	[h: oldTokenCombatStatus = getProperty("combatStatus",oldTokenId)]
   	[h: oldTokenCombatStatus = json.set(oldTokenCombatStatus,"activeTurn",0)]
   	[h: setProperty("combatStatus",oldTokenCombatStatus,oldTokenId)]
-  	<!-- get current token offset in order to set Current Initiative (which is using only offset ...)-->
+  	
+		[h: "<!-- get current token offset in order to set Current Initiative (which is using only offset ...)-->"]
   	[h: newTokenOffset = getInitiativeTokenOffset(tokenId)]
    	[h: setCurrentInitiative(newTokenOffset)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
    	[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",1)]
    	[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
    	[h: setState("CurrentTurn", 1, tokenId)]
-   	<!-- Refresh / Open Combat Action Window for current Active Token-->
+
    	[h: msg = "Interrupt is done, take your turn"]
    	[h: logMsg = actionLabel]
   };
   default: {
- 	<!-- do nothing -->
  	<br><b>[r: action]</b> is not implemented in <i>updateCombatReactive</i> !<br>
  }
 ]
 
-<!-- log the action -->
-[h: logCombatAction(tokenId,"reactive",logMsg)]
-[h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,"")]
-    
-[r: getName(tokenId)] has done : [r: logMsg]
+[h: "<!-- log the action -->"]
 
-<!-- Refresh Combat Action Window for current Active Token-->
+[h: caStatus = json.get(currentCombatStatus,"activeCA")+"/"+json.get(currentCombatStatus,"ccCA")]
+[h: commentMsg = "Remaining CA :"+caStatus]
+[h: logComment = strformat("%{commentMsg}<br>%{logComment}")]
+	
+[h: logCombatAction(tokenId,"reactive",logMsg)]
+[h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,logComment)]
+    
+[h: "<!-- Refresh Combat Action Window for current Active Token-->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg,"cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
     
-<!-- Refresh Global Combat Window -->
-[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
-[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")]
+[h: "<!-- Refresh Global Combat Window -->"]
 [h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

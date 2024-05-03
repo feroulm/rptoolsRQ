@@ -1,11 +1,14 @@
-<!-- Handle proactive action -->
+[h: "<!-- Handle proactive action -->"]
 [h: tokenId = json.get(macro.args, "tokenId")]
 [h: action = json.get(macro.args, "action")]
 [h: nextTokenId = json.get(macro.args, "nextTokenId")]
 [h: nextTokenOffset = json.get(macro.args, "nextTokenOffset")]
-<!-- for log management -->
+
+[h: "<!-- for log management -->"]
 [h: actionLabel = json.get(macro.args, "edit_btn")]
 [h: logMsg = ""]
+[h: logComment = ""]
+[h: logTokenStatus = ""]
 
 [h: cLogTokenId = "none"]
 [h: cLogTokenId = json.get(macro.args,"cLogTokenId")]
@@ -18,23 +21,32 @@
 [h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
 
-[r, switch(action), code:
+[h: switchToNextToken = 1]
+
+[h, switch(action), code:
   case "parrydelayed" : {
  	[h: action = "attack"]
   };
   case "evadedelayed" : {
-  	<!-- toggle evade one time on two -->
+  	[h: "<!-- toggle evade one time on two -->"]
     [h, if (firstEvade == 0),code:{
     	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",1)]
     	[h: msg = "First "+actionLabel+" is done, next proactive CA lost."]
-    	[h: logMsg = "First "+actionLabel]
+    	[h: logMsg = "First "]
     }]
     [h, if (firstEvade > 0),code:{
     	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
     	[h: msg = "Second "+actionLabel+" is done, proactive action possible next turn."]
-    	[h: logMsg = "Second "+actionLabel]
+    	[h: logMsg = "Second "]
     }]
  	[h: action = "attack"]
+  };
+	case "evadeProneDelayed" : {
+ 	[h: action = "attack"]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","prone")]
+  [h: setState("Prone", 1, tokenId)]
+
+	[h: logTokenStatus = "Token is prone."]
   };
   case "Outmanoeuvre" : {
   	[h: res = input("junk|Outmanoeuvre - Group opposed test of Evade skills are done ?|ignored|LABEL|SPAN=true")]
@@ -59,32 +71,33 @@
   case "chargePrepare": {
   	[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","prepareCharge")]
   	[h: setState("Charging", 1, tokenId)]
-  	[h: action = "attack"]
+  	[h: action = "proactiveNodice"]
   };
   case "regainFooting": {
   	[h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
   	[h: setState("Prone", 0, tokenId)]
-  	[h: action = "attack"]
+  	[h: action = "proactiveNodice"]
+		[h: logMsg = strformat("%{logMsg} Regain footing has been done.<br>Prone status is removed.")]
   };  
   default: {
- 	<!-- do nothing -->
+ 	  [h: "<!-- do nothing -->"]
   }
 ]
 
-[r, switch(action), code:
+[h, switch(action), code:
   case "declareProactive" : {
   	[h: declaredAction = json.get(macro.args, "declaredAction")]
   	[h: actionTarget = json.get(macro.args, "actionTarget")]
   	[h: actionDesc = json.get(macro.args, "actionDesc")]
+		[h, if(actionTarget == "no target") : actionTarget = ""]
   	[h: logMsg = declaredAction+" "+actionTarget+" "+actionDesc]
 
   	[h: logCombatAction(tokenId,"turndeclare",logMsg)] 	
-  	<!-- Refresh Action Window for the current token -->
-    [h: macroParam = json.set("{}", "tokenId", tokenId)]
-	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+  	
+		[h: switchToNextToken = 0]
   };
-  case "attack" : {
+	case "proactiveNodice" : {
+	  [h: "<!-- active action with no dice to result -->"]
     [h: remainingCA = activeCA - 1]
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
     [h: proactiveCA = proactiveCA + 1]
@@ -92,21 +105,48 @@
     
     [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
     [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    
+		[h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+  };
+  case "attack" : {
+	  [h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+		
+		[h: logMsg = strformat("%{logMsg} %{logTokenStatus}")]
+		
+    [h: remainingCA = activeCA - 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+    [h: proactiveCA = proactiveCA + 1]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+    
+    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+    
+		[h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
     
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
   
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
   };
   case "chargeRiposte" : {
-  	<!-- no done during active Turn -->
+		[h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+
   	[h: remainingCA = activeCA - 1]
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
     [h: proactiveCA = proactiveCA + 1]
@@ -116,110 +156,145 @@
     [h, if (remainingCA == 0): setState("Out", 1, tokenId)]   
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
 
-    <!-- Refresh Action Window for the current token -->
-    [h: macroParam = json.set("{}", "tokenId", tokenId)]
-	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+		[h: switchToNextToken = 0]
   };
   case "delay" : {
     [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","delay")]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
     
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
   };
   case "firstCast" : {
     [h: res = input(
 		"spellMP|1|Nb of Magic Point (MP) to cast the spell|TEXT",
 		"spellType|Common,Sorcery,Divine,Draconic,Spirit|Spell Magic Type|LIST|SELECT=0 VALUE=STRING"
-	)]
+		)]
+		[h: abort(res)]
     
-	<!-- Test remaining MP -->
-	[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
-    [h: baseMP = json.path.read(propMagicPoint,"MP.base")]
-    [h: currMP = json.path.read(propMagicPoint,"MP.current")]
-	[h: newCurrMP = currMP - spellMP]
+		[h: logMsg = strformat("Try casting %{spellType} Spell (%{spellMP} MP).")]
+		
+		[h: "<!-- Test remaining MP -->"]
+		[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+		[h: baseMP = json.path.read(propMagicPoint,"MP.base")]
+		[h: currMP = json.path.read(propMagicPoint,"MP.current")]
+		[h: newCurrMP = currMP - spellMP]
 
-    [h: mpMsg = strformat("You have only %{currMP} left, you can't spent %{spellMP}. Reduce the magnitude of your speel or choose another action.")]
-    [r: assert((newCurrMP >= 0),"<b>"+getName(tokenId)+"</b>: First Cast action failed ! <br>"+mpMsg,0)]
+  
+		[h, if (newCurrMP<0), code:{
+			[h: mpMsg = strformat("%{logMsg} You have only %{currMP} mp left, you can't spent %{spellMP}.<br> Reduce the magnitude of your spell or choose another action.")]
+			[h: input("junkVar|<html>"+mpMsg+"</html>|ignored|LABEL|SPAN=true")]
+			[h: addCombatLogEntry(tokenId,"proactiveAction",mpMsg,"First cast has been cancelled. No CA lost")]
+			[h: abort(0)]
+		};{}]
 
-	[h: computedCastCA = 1]
-	[h: spellMsg = "Cast "+spellType+" spell [CA = 1]"]
-	[h, if (spellType == "Common"),code:{
-		[h: computedCastCA = round(spellMP/2)]
-		[h: spellMsg = "Cast "+spellType+" spell [CA = round up (MP/2)]"]
-	}]
-	[h, if (spellType == "Sorcery"),code:{
-		[h: computedCastCA = spellMP]
-		[h: spellMsg = "Cast "+spellType+" spell [CA = MP]"]
-	}]
-	[h, if (spellType == "Divine"): computedCastCA = 1 ]
-	[h, if (spellType == "Draconic"),code:{
-		[h: computedCastCA = "Change Me"]
-		[h: spellMsg = "Cast "+spellType+" spell [CA = defined on the spell]"]
-	}]
-	[h, if (spellType == "Spirit"): computedCastCA = 1 ]
-  	[h: input(
-  		"junkVar|"+spellMP+"|MP spent |LABEL",
-  		"junkVar|"+computedCastCA+"|"+spellMsg+"|LABEL",
-  		"castCA|"+computedCastCA+"|Nb of CA to cast the spell|TEXT"
-  	)]
-  	[r, if(isNumber(castCA) != 1), code: {
- 		 <b>Invalid input for cast CA : [r: castCA]</b>, castCA is set to 1<br>
- 		 [h: castCA = 1]
-	}]
-    [h: remainingCastCA = castCA - 1]
-  	[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",remainingCastCA)]
-  	[h: remainingCA = activeCA - 1]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
-    [h: proactiveCA = proactiveCA + 1]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
-    
-    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
-    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
-    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+		[h: computedCastCA = 1]
+		[h: spellMsg = "Cast "+spellType+" spell [CA = 1]"]
+		[h, if (spellType == "Common"),code:{
+			[h: computedCastCA = round(spellMP/2)]
+			[h: spellMsg = "Cast "+spellType+" spell [CA = round up (MP/2)]"]
+		}]
+		[h, if (spellType == "Sorcery"),code:{
+			[h: computedCastCA = spellMP]
+			[h, if(spellMp == 0): computedCastCA = 1] 
+			[h: spellMsg = "Cast "+spellType+" spell [CA = MP]"]
+		}]
+		[h, if (spellType == "Divine"): computedCastCA = 1 ]
+		[h, if (spellType == "Draconic"),code:{
+			[h: computedCastCA = "Change Me"]
+			[h: spellMsg = "Cast "+spellType+" spell [CA = defined on the spell]"]
+		}]
+		[h, if (spellType == "Spirit"),code:{
+			[h: computedCastCA = 1]
+			[h: spellMP = 1]
+		}]
+		[h: res=input(
+			"junkVar|"+spellMP+"|MP spent |LABEL",
+			"junkVar|"+computedCastCA+"|"+spellMsg+"|LABEL",
+			"castCA|"+computedCastCA+"|Nb of CA to cast the spell|TEXT"
+		)]
+		[h: abort(res)]
+		
+		[h, if(isNumber(castCA) != 1), code: {
+			[h: logMsg = strformat("%{logMsg} Invalid input for cast CA : %{castCA}<br>")]
+			[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"First cast has been cancelled. No CA lost")]
+			[h: abort(0)]
+		}]
+ 
+		[h: "<!-- ask for result in order to compute lost MP -->"]
+		[h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: actionResultType = json.get(actionResult,"actionResultType")]
+		
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"proactiveAction","First Cast.",logMsg)]
+			[h: abort(0)]
+		}]
+		
+		[h: "<!-- Adjust spent MP depending on the roll result -->"]
 
-    [h: isHolding = false]
-	[h: logMsg = "First cast, spell has been released"]
-    [h, if (remainingCastCA == 0): isHolding = input("junk|<html>Do you hold the spell ? <br>if yes, you must use <i>holdmagic</i> next turn.Click OK to hold.<br> Otherwise, click Cancel to release the spell now</html>|ignored|LABEL|SPAN=true")]
-    [h, if (isHolding),code:{
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",1)]
-	  [h: logMsg = "First cast, spell has been hold"]
-	}]
-	
-	[h, if (remainingCastCA > 0),code:{
-    	[h: setState("Casting", 1, tokenId)]
-    	[h: logMsg = "First cast, spell will be ready in "+remainingCastCA+ "CA"]
-    }]
-    
-	[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-	
-	<!-- update Current Magic Point -->
-	[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
-    [h: baseMP = json.path.read(propMagicPoint,"MP.base")]
-    [h: currMP = json.path.read(propMagicPoint,"MP.current")]
-	[h: newCurrMP = currMP - spellMP]
+		[h, if ((spellType == "Common") && (actionResultType == "Failure")) : spellMP = 0 ]
+		[h, if ((spellType == "Common") && (actionResultType == "Critical")) : spellMP = spellMP - 1 ]
+		[h, if ((spellType == "Sorcery") && (actionResultType == "Failure")) : spellMP = 1 ]
+		[h, if ((spellType == "Sorcery") && (actionResultType == "Critical")) : spellMP = 0 ]
+		[h, if ((spellType == "Draconic") && (actionResultType == "Critical")) : spellMP = 0 ]
+		[h, if ((spellType == "Draconic") && (actionResultType == "Failure")) : spellMP = 1 ]
+		[h, if ((spellType == "Draconic") && (actionResultType == "Fumble")) : spellMP = 1 ]
+		[h, if ((spellType == "Spirit") && (actionResultType == "Critical")) : spellMP = 0 ]
+		[h, if ((spellType == "Spirit") && (actionResultType == "Failure")) : spellMP = 1 ]
+		[h, if (spellType == "Divine") : spellMP = 0 ]
+		
+		[h: "<!-- update Current Magic Point -->"]
+		
+		[h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+		[h: baseMP = json.path.read(propMagicPoint,"MP.base")]
+		[h: currMP = json.path.read(propMagicPoint,"MP.current")]
+		[h: newCurrMP = currMP - spellMP]
 
-	[r: getName(tokenId)] loose [r: currMP - newCurrMP] magic points.<br>
-	
+    [h: logMsg = strformat("%{logMsg}<br>loose %{spellMP} magic points.")]
+
     [h: newPropMagicPoint = json.path.set(propMagicPoint,"MP.current",newCurrMP)]
     [h: setProperty("MagicPoint",newPropMagicPoint,tokenId)]
-   
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+		
+		[h, if ((actionResultType == "Failure") || (actionResultType == "Fumble")) : castCA = 1 ]
+		[h: remainingCastCA = castCA - 1]
+		[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",remainingCastCA)]
+		[h: remainingCA = activeCA - 1]
+		[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
+		[h: proactiveCA = proactiveCA + 1]
+		[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
+		
+		[h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
+		[h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+		
+		[h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
+		[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+
+    [h: spellReleaseStatus = "")]
+		[h: isHolding = false]
+		
+		[h, if ((remainingCastCA == 0) && (actionResultType != "Failure") && (actionResultType != "Fumble")), code:{
+		  [h: isHolding = input("junk|<html>Do you hold the spell ? <br>if yes, you must use <i>holdmagic</i> next turn.Click OK to hold.<br> Otherwise, click Cancel to release the spell now</html>|ignored|LABEL|SPAN=true")]
+			[h: spellReleaseStatus = strformat("%{spellType} Spell has been released.")]
+		 }]
+		 
+		[h, if (isHolding),code:{
+			[h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",1)]
+			[h: spellReleaseStatus = strformat("%{spellType} Spell has been hold.")]
+		}]
+	
+		[h, if ((remainingCastCA > 0) && (actionResultType != "Failure") && (actionResultType != "Fumble")),code:{
+			[h: setState("Casting", 1, tokenId)]
+			[h: spellReleaseStatus = strformat("Casting is started. %{spellType} Spell will be ready in %{remainingCastCA} CA.")]
+			[h: logComment = strformat("Remaining Cast CA : %{remainingCastCA}")]
+		}]
+    
+		[h: logMsg = strformat("%{logMsg}<br>%{spellReleaseStatus}")]
+		[h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+	
   };
   case "pursueCast" : {
   	[h: castCA = json.get(currentCombatStatus,"castCA")]
@@ -236,28 +311,23 @@
 
 
     [h: isHolding = false]
-	[h: logMsg = "Pursue cast, spell has been released"]
+		[h: logMsg = "Pursue cast, spell has been released"]
     [h, if (remainingCastCA == 0): isHolding = input("junk|<html>Do you hold the spell ? <br>if yes, you must use <i>holdmagic</i> next turn.Click OK to hold.<br> Otherwise, click Cancel to release the spell now</html>|ignored|LABEL|SPAN=true")]
 	[h, if (isHolding),code:{
 	  [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",1)]
 	  [h: logMsg = "Pursue cast, spell has been hold"]
 	}]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
 	
 	[h, if (remainingCastCA > 0),code:{
     	[h: setState("Casting", 1, tokenId)]
     	[h: logMsg = "Pursue Cast, spell will be ready in "+remainingCastCA+ "CA"]
+			[h: logComment = strformat("Remaining Cast CA : %{remainingCastCA}")]
     }]
     
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-	[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+
   };
   case "holdMagic" : {
   	[h: remainingCA = activeCA - 1]
@@ -269,20 +339,36 @@
     [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
 	
     [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",1)]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
     
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+
   };
   case "Shoot" : {
-  	[h: input("reloadCA|1|Nb of CA to reload the weapon|TEXT")]
+		[h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
+		[h: logMsg = json.get(actionResult,"logMsg")]
+		[h: isNotAborted = json.get(actionResult,"isNotAborted")]
+		[h, if (isNotAborted), code:{
+		};{
+			[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+  	[h: res=input("reloadCA|1|Nb of CA to reload the weapon|TEXT")]
+		
+		[h, if (res == 0), code:{
+		  [h: logMsg = strformat("%{logMsg} Shoot has been cancelled.")]
+			[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+		
+		[h, if(isNumber(reloadCA) != 1), code: {
+			[h: logMsg = strformat("%{logMsg} Invalid input for reloadCA : %{reloadCA}<br>Shoot has been cancelled.")]
+			[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"No CA lost")]
+			[h: abort(0)]
+		}]
+		
+		
     [h: remainingReloadCA = reloadCA]
   	[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",remainingReloadCA)]
   	[h: remainingCA = activeCA - 1]
@@ -292,18 +378,14 @@
     
     [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
     [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
-    [h: setState("Reloading", 1, tokenId)]
-    
+		[h, if (reloadCA >0), code:{
+      [h: setState("Reloading", 1, tokenId)]
+			[h: logComment = strformat("%{logComment} Remaining reload CA : %{reloadCA}.")]
+		}]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+
   };
   case "Reload" : {
   	[h: reloadCA = json.get(currentCombatStatus,"reloadCA")]
@@ -316,45 +398,56 @@
     
     [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
     [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
-    [h, if (remainingReloadCA == 0): setState("Reloading", 0, tokenId)]
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h, if (remainingReloadCA == 0),code:{
+		  [h: setState("Reloading", 0, tokenId)]
+			[h: logMsg = strformat("%{logMsg} Reload has been done. Ready to shoot for next CA.")]
+		};{
+		  [h: logMsg = strformat("%{logMsg} Reloading.")]
+		  [h: logComment = strformat("%{logComment} Remaining reload CA : %{remainingReloadCA}.")]
+		}]
+
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
     
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- switch to next token -->
-    [h: nextInitiative()]
-    [h: newToken = getInitiativeToken()]
-	
-    <!-- Refresh Action Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", newToken)]
-    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-    [h: execLink(lnkTxt,0,"all")]
+
   };
   default: {
- 	<!-- do nothing -->
- 	<br><b>[r: action]</b> is not implemented in <i>updateCombatProactive</i> !<br>
+ 	  [h: "<!-- do nothing -->"]
+ 	  <br><b>[r: action]</b> is not implemented in <i>updateCombatProactive</i> !<br>
  }
 ]
 
-<!-- log the action if it is not just a declaration -->
-[r, if (action != "declareProactive"), code:{
+[h: "<!-- log the action if it is not just a declaration -->"]
+[h, if (action != "declareProactive"), code:{
   [h, if (logMsg == ""): logMsg = actionLabel]
   [h: logCombatAction(tokenId,"proactive",logMsg)]
   [h: logCombatAction(tokenId,"turnreset","")]
-  [r: getName(tokenId)] has done : [r: logMsg]
 	
 	[h: caStatus = json.get(currentCombatStatus,"activeCA")+"/"+json.get(currentCombatStatus,"ccCA")]
-	[h: logMsg = logMsg+" has been done. Remaining CA :"+caStatus]
-	[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,"")]
+	[h: commentMsg = "Remaining CA :"+caStatus]
+	[h: logComment = strformat("%{commentMsg}<br>%{logComment}")]
+	[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment)]
 };{
-  [r: getName(tokenId)] is playing is turn and has declared : [r: logMsg]	
+  [h: getName(tokenId)] is playing is turn and has declared : [h: logMsg]	
 	[h: addCombatLogEntry(tokenId,"declareAction",logMsg,"")]
 }]
 
-<!-- Refresh Combat Window -->
-[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
-[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")]
+[h, if(switchToNextToken), code:{
+  [h: nextInitiative()]
+  [h: newToken = getInitiativeToken()]
+	
+  [h: "<!-- Refresh Action Window for the new token -->"]
+  [h: macroParam = json.set("{}", "tokenId", newToken)]
+  [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+  [h: execLink(lnkTxt,0,"all")]
+};{
+  [h: "<!-- Refresh Action Window for the current token -->"]
+  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+  [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+  [h: execLink(lnkTxt,0,"all")]
+}]
+
+[h: "<!-- Refresh Combat Window -->"]
 [h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

@@ -1,5 +1,5 @@
-<!-- find current combat token if it exists -->
-[r: cLogTokenId = findCurrentCombatToken()]
+[h: "<!-- find current combat token if it exists -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
 
 [h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [r, macro("openCombatSheets@Lib:RQII"): macroParam]

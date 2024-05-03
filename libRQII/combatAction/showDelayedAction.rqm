@@ -1,9 +1,11 @@
 [h: "<!-- Function to Display specific actions when turn has been delayed -->"]
-[h: "<!-- return nothing, just the html form -->"]
+[h: "<!-- return nothing, but the html form -->"]
 [h: tokenId = arg(0)] 
 [h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]
 [h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
-Turn has been delayed, you can use it to either parry / evade or to take you turn just before the current player (interrupt) :<br>
+<span style="color:red"><b>Turn has been delayed.</b> You can use your proactive CA to take a reactive action (parry, evade, ...).
+<br>Or you can play you turn just before the current player (use <b>interrupt</b>)<br></span>
+- <i>Reminder</i> : if your proactive CA is not used before the next cycle you will loose it ;) !<br><br>
 <table>
   <tr>
     <td>
@@ -21,10 +23,10 @@ Turn has been delayed, you can use it to either parry / evade or to take you tur
       </form>
     </td>
     <td>
-      <form action="[r:linkUpdateCombatReactive]" method="json">
+      <form action="[r:linkUpdateCombatProactive]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="interrupt">
-        <input type="submit" name="edit_btn" value="Interrupt">
+        <input type="hidden" name="action" value="evadeProneDelayed">
+        <input type="submit" name="edit_btn" value="Evade Prone(delayed)">
       </form>
     </td>
   </tr>
@@ -66,7 +68,13 @@ Turn has been delayed, you can use it to either parry / evade or to take you tur
           <input type="submit" name="edit_btn" value="Change Range: Riposte(delayed)">
         </form>
       </td>
-      <td></td>
+      <td>
+				<form action="[r:linkUpdateCombatReactive]" method="json">
+					<input type="hidden" name="tokenId" value="[r:tokenId]">
+					<input type="hidden" name="action" value="interrupt">
+					<input type="submit" name="edit_btn" value="Interrupt">
+				</form>
+			</td>
       <td></td>
     </tr>
 </table>

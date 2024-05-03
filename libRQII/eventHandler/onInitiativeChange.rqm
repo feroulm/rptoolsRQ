@@ -8,4 +8,4 @@
 <!-- Set activeTurn to newToken -->
 [h: currentCombatStatus = getProperty("combatStatus",newToken)]
 [h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",1),newToken)]
-[r: "<b>START_TURN</b> : "+getName(newToken)]
+[h: addCombatLogEntry(newToken,"onInitiativeChange","Starting its turn.","")]

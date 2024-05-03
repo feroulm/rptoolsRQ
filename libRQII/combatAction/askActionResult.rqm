@@ -1,0 +1,21 @@
+[h: "<!-- askActionResult - Function to ask the player if its combat action was a failure or not -->"]
+[h: "<!-- Called by several combatAction/update* method  -->"]
+[h: "<!-- return an jsonStructure with an abortStatus (0 if the player cancel the action) and an updated logMsg string -->"]
+
+[h: tokenId = arg(0)]
+[h: logMsg = arg(1)]
+[h: combatAction = arg(2)]
+[h: actionResult = "cancel"]
+
+[h: tokenName = getName(tokenId)]
+[h: boxMsg = strformat("Hey <b>%{tokenName}</b>, you have done the action <b>%{combatAction}</b><br>--> Clic <i>Cancel</i> if you have not achieved your action yet !<br>")]
+[h: isNotAborted = input("junk|<html>"+boxMsg+"</html>|ignored|LABEL|SPAN=true",
+	"actionResult|Critical,Success,Failure,Fumble|<html><br><br>What do you achieve ?&nbsp;</html>|RADIO|VALUE=STRING ORIENT=V SELECT=0")]
+
+[h, if (isNotAborted), code:{
+ [h: logMsg = strformat("%{logMsg}%{combatAction} has been done. Result was a %{actionResult}.<br>")]
+};{
+ [h: logMsg = strformat("%{logMsg}%{combatAction} has been cancelled. No CA lost.<br>")]
+}]
+
+[r: resJson = json.set("{}","isNotAborted",isNotAborted,"logMsg",logMsg,"actionResultType",actionResult)]

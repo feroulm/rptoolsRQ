@@ -12,6 +12,8 @@
 [h: defineFunction("createNewClogToken","createNewClogToken@Lib:RQII")]
 [h: defineFunction("findCurrentCombatToken","findCurrentCombatToken@Lib:RQII")]
 [h: defineFunction("addCombatLogEntry","addCombatLogEntry@Lib:RQII")]
+[h: defineFunction("askActionResult","askActionResult@Lib:RQII")]
+
 
 [h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]

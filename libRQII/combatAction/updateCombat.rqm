@@ -7,35 +7,39 @@
 [h: cLogTokenId = json.get(macro.args,"cLogTokenId")]
 [h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
 
-<!-- for log management -->
 [h: actionLabel = json.get(macro.args, "edit_btn")]
+
 [h: logMsg = ""]
-<!-- some action can refresh another token and will change this value -->
-[h: refreshTokenId = tokenId]
+[h: logComment = ""]
 [h: msg = ""]
+
+[h: "<!-- some action can refresh another token and will change this value -->"]
+[h: refreshTokenId = tokenId]
+
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 
 [r, switch(action), code:
   case "disable" : {
     [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","disabled")] 
-    <!-- reset all CA -->
+
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",0)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
-    <!-- TO-DO - check if we need to reset other used CA -->
+
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
     [h: setState("Out", 0, tokenId)]
     [h: setState("Disabled", 1, tokenId)]
-    <!-- put hold with same initiative -->
+
     [h: initiative = getInitiative(tokenId)]
     [h: setInitiativeHold(initiative, tokenId)]
-    <!-- Refresh Action Window for the new token -->
-    [h: msg = "Token is disabled"]
+
+    [h: msg = "Token is disabled."]
+		[h: logMsg = msg]
   };
   case "enable" : {
-  	<!-- when disabled, token always came back into fight as out and can act only after next mr event-->
+  	[h: "<!-- when disabled, token always came back into fight as out and can act only after next mr event-->"]
     [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
     [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
@@ -43,68 +47,66 @@
     [h: setState("Disabled", 0, tokenId)]
     [h: setState("Out", 1, tokenId)]
     [h: setInitiativeHold(0,tokenId)]
-    <!-- Refresh Action Window for the new token -->
-    [h: msg = "Token is re-enable"]
+
+    [h: msg = "Token is re-enabled."]
+		[h: logMsg = msg]
   };
   case "nxtturn" : {
-    <!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->
+    [h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
     [h: setState("CurrentTurn", 0, tokenId)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- switch to next token with turnStatus == on (so it is not necessarly the consecutive token) -->
+    
+		[h: "<!-- switch to next token with turnStatus == on (so it is not necessarly the consecutive token) -->"]
     [h: setState("CurrentTurn", 1, nextTokenId)]
     [h: nextCombatStatus = getProperty("combatStatus",nextTokenId)]
     [h: nextCombatStatus = json.set(nextCombatStatus,"activeTurn",1)]
     [h: setProperty("combatStatus",nextCombatStatus,nextTokenId)]
     [h: setCurrentInitiative(nextTokenOffset)]
-    <!-- Param to refresh / Open Combat Action Window for new Active Token-->
+
     [h: msg = "Direct switch from"+getName(tokenId)]
+		
     [h: refreshTokenId = nextTokenId]
+		[h: logMsg = "no CA left. Switch to "+getName(nextTokenId)+"."]
   };
   case "outmanoeuvred" : {
-  	<!-- when outmanoeuvred, token cannot attack nor take proactive action for this MR -->
+  	[h: "<!-- when outmanoeuvred, token cannot attack nor take proactive action for this MR -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","outmanoeuvred")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
     
     [h: setState("Outmanoeuvred", 1, tokenId)]
     
-    <!-- log the change -->
-    [h: logMsg = actionLabel]
+    [h: logMsg = "Token is outmanoeuvred."]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
-    [h: msg = "Token is outmanoeuvred"]
+    [h: msg = logMsg]
   };
   case "outranged" : {
-  	<!-- when outranged, token cannot only attack the weapon or limb -->
+  	[h: "<!-- when outranged, token cannot only attack the weapon or limb -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","outranged")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
     
     [h: setState("Outranged", 1, tokenId)]
     
-    <!-- log the change -->
-    [h: logMsg = actionLabel]
+    [h: logMsg = "Token is outranged"]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
-    [h: msg = "Token is out ranged and can only attack the opponent weapon or limb"]
+    [h: msg = "Token is out ranged and can only attack the opponent weapon or limb.<br>"]
   };
   case "closed" : {
-  	<!-- when closed, token cannot parry and only attack with 1d3 dmg -->
+  	[h: "<!-- when closed, token cannot parry and only attack with 1d3 dmg -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","closed")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
     
     [h: setState("Closed", 1, tokenId)]
     
-    <!-- log the change -->
-    [h: logMsg = actionLabel]
+    [h: logMsg = "Token is closed"]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
-    [h: msg = "Token is closed, attack is limited to 1d3 dmg and parry is not possible"]
+    [h: msg = "Token is closed, attack is limited to 1d3 dmg and parry is not possible.<br>"]
   };
   case "delreachmalus" : {
-  	<!-- remove outmanoueverd. closed or outranged status -->
+  	[h: "<!-- remove outmanoeuvred, closed or outranged status -->"]
   	[h: previousMalus = json.get(currentCombatStatus,"weaponReach")]
     [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
@@ -115,11 +117,9 @@
       case "closed": setState("Closed", 0, tokenId);
     ]
     
-    <!-- log the change -->
     [h: logMsg = "Remove "+previousMalus]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
     [h: msg = "Token is no more "+previousMalus]
     [h: actionLabel = logMsg]
   };
@@ -129,69 +129,55 @@
     
     [h: setState("Prone", 0, tokenId)]
     
-    <!-- log the change -->
-    [h: logMsg = actionLabel]
+    [h: logMsg = "Token prone status is removed."]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
     [h: msg = "Token is no more prone !"]
   };
   case "prone" : {
-  	<!-- when prone, token is a -20% malus on attack and Parry -->
     [h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","prone")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
     
     [h: setState("Prone", 1, tokenId)]
     
-    <!-- log the change -->
-    [h: logMsg = actionLabel]
+    [h: logMsg = "Token is prone."]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
     [h: msg = "Token just get prone !"]
   };
   case "releaseSpell" : {
-  	<!-- when holdmagic was used,  spell can be released at no cost -->
+  	[h: "<!-- when holdmagic was used,  spell can be released at no cost -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
    
-    <!-- log the change -->
     [h: logMsg = actionLabel]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
     [h: msg = "Spell has been released !"]
   };
   case "dismissMagic" : {
-  	<!-- remove any remainingCastCA. -->
+  	[h: "<!-- remove any remainingCastCA. -->"]
     [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- log the change -->
+
     [h: logMsg = actionLabel]
     [h: logCombatAction(tokenId,"change",logMsg)]
 
-    <!-- Param to refresh Action Window for the new token -->
     [h: msg = "Spell has been dismissed !"]
   };
   default: {
- 	<!-- do nothing -->
  	<br><b>[r: action]</b> is not implemented in <i>updateCombat</i> !<br>
   }
 ]
 
-[h: addCombatLogEntry(tokenId,"changeAfterAction",logMsg,"")]
+[h: addCombatLogEntry(tokenId,"changeAfterAction",logMsg,logComment)]
 
-[r: getName(tokenId)] has done : [r: actionLabel]
-
-<!-- Refresh Action Window for the new token -->
+[h: "<!-- Refresh Action Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", refreshTokenId,"msg",msg,"cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
 
-<!-- Refresh Combat Window -->
-[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
-[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")]
+[h: "<!-- Refresh Combat Window -->"]
 [h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

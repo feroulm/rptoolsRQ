@@ -1,5 +1,5 @@
-<!-- Function to get next token which can play in the current cycle -->
-<!-- return a TokenId or 0 if no token is available -->
+[h: "<!-- Function to get next token which can play in the current cycle -->"]
+[h: "<!-- return a TokenId or 0 if no token is available -->"]
 [h: tokenId = arg(0)] 
 [h: initList = getInitiativeList()]
 [h: tokenOffset = getCurrentInitiative()]
@@ -10,11 +10,11 @@
 [h: tokenNotFound = 1]
 [h: tokenOut = 1]
 [h: loopEnd = 0]
-<!-- start loop after current token unless it is the last -->
+[h: "<!-- start looping after current token unless it is the last -->"]
 [h: nextOffset = tokenOffset + 1]
 [h, if(nextOffset == maxOffset): loopEnd = 1]
 
-<!-- search token after him -->
+[h: "<!-- search token after him -->"]
 [h, while (loopEnd == 0), code:
 {
 	[h: jsonPath = "tokens.["+nextOffset+"].tokenId"]
@@ -52,12 +52,14 @@
   [h: activeCA = json.get(currentCombatStatus,"activeCA")]
   [r, if((turnStatus == "off")&&(activeCA>0)), code:{
     <form action="[r:linkUpdateGlobalCombat]" method="json">
+		  <input type="hidden" name="tokenId" value="[r:tokenId]">
       <input type="hidden" name="tokens" value=[r: tokens]>
       <input type="hidden" name="action" value="nxtcycle">
       <input type="submit" name="edit_btn" value="Next Cycle">
     </form>
   };{
   	<form action="[r:linkUpdateGlobalCombat]" method="json">
+		  <input type="hidden" name="tokenId" value="[r:tokenId]">
       <input type="hidden" name="tokens" value=[r: tokens]>
       <input type="hidden" name="action" value="nxtmr">
       <input type="submit" name="edit_btn" value="Next MR">
@@ -68,6 +70,7 @@
   [h: tokens = json.get(initList,"tokens")]
   [h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
   <form action="[r:linkUpdateGlobalCombat]" method="json">
+	  <input type="hidden" name="tokenId" value="[r:tokenId]">
     <input type="hidden" name="tokens" value=[r: tokens]>
     <input type="hidden" name="action" value="nxtcycle">
     <input type="submit" name="edit_btn" value="Next Cycle">

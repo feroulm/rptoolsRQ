@@ -61,16 +61,8 @@
 					[h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
 					<a class="pure-button pure-button-primary" href="[r: link]">Roll Initiative</a>
 				</td>    
-				<td>
-					[h: macroParam = json.set("{}", "tokens", tokens, "action", "nxtcycle","cLogTokenId",CurrCLogTokenId)]
-					[h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
-					<a class="pure-button pure-button-primary" href="[r: link]">Next Cycle</a>
-				</td>
-				<td>
-					[h: macroParam = json.set("{}", "tokens", tokens, "action", "nxtmr","cLogTokenId",CurrCLogTokenId)]
-					[h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
-					<a class="pure-button pure-button-primary" href="[r: link]">Next MR</a>
-				</td>
+				<td></td>
+				<td></td>
 			</tr>
 		</tbody>
 	</table>

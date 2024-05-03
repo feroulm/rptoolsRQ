@@ -187,7 +187,7 @@
   <br>
   <b>STEP2</b> - Select the proactive action <b>that has been done</b>, this will end the active turn<hr>
   [r, if(castCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br></span>"]
-  [r, if(reloadCA > 0): "<b>!!</b> You have "+reloadCA+" remaining reloadCA, you should reload before shooting.<br>"]
+  [r, if(reloadCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+reloadCA+" remaining reloadCA, you should reload before shooting.<br></span>"]
   <table>
     <tr>
       <td>
@@ -252,14 +252,14 @@
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
+          <input type="hidden" name="action" value="proactiveNodice">
           <input type="submit" name="edit_btn" value="Dither">
         </form>
       </td>
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
+          <input type="hidden" name="action" value="proactiveNodice">
           <input type="submit" name="edit_btn" value="Brace">
         </form>
       </td>     
@@ -273,7 +273,7 @@
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
+          <input type="hidden" name="action" value="proactiveNodice">
           <input type="submit" name="edit_btn" value="Move">
         </form>
       </td> 
@@ -287,7 +287,7 @@
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
+          <input type="hidden" name="action" value="proactiveNodice">
           <input type="submit" name="edit_btn" value="Ready Weapon">
         </form>
       </td>
@@ -297,7 +297,14 @@
 <!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
 [r, if (showReactiveAction), code :{
   [r, if(chargeStatus=="prepareCharge"): "<b>!!Token is charging</b>. Doing an Evade will break the charge.<br>"]	
-  Turn is no active, token can only take reactive actions<br>
+
+  [r, if(turnStatus == "delay"), code:{ 
+		[r: showDelayedAction(tokenId)]
+		<br>If you still want to delay you turn use the <i>non-delayed</i> reactive action below. They will not use your proactive CA.<br><br>
+	};{
+		Turn is no active, token can only take reactive actions.<br>
+	}]
+	
   <table style="padding: 0px; cellspacing:0px; border-spacing:0 0px;">
     <tr>
       <td>
@@ -372,8 +379,6 @@
       <td></td>
     </tr>
   </table>
-  <!-- Check is any token can still play -->
-  [r, if(turnStatus == "delay"): showDelayedAction(tokenId)]
   
 }]
 
@@ -449,7 +454,7 @@
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
+          <input type="hidden" name="action" value="proactiveNodice">
           <input type="submit" name="edit_btn" value="[r:chargeAction]">
         </form>
       </td>

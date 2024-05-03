@@ -1,14 +1,19 @@
 [h: arguments = macro.args]
 [h: tokens = json.get(arguments, "tokens")]
 [h: action = json.get(arguments, "action")]
+[h: tokenIdCaller = json.get(arguments, "tokenId")]
+[h, if(json.isEmpty(tokenIdCaller)) : tokenIdCaller = "none"]
+
+[h: logMsg = ""]
+[h: logComment = ""]
 
 [h:"<!-- get current combat token -->"]
-[r: cLogTokenId = findCurrentCombatToken()]
+[h: cLogTokenId = findCurrentCombatToken()]
 
 [h, if(cLogTokenId == "none" && action != "reset"), code:{
-	[h: logMsg = strformat("<i>combatAction::updateGlobalCombat</i> : there is no current combat token (cLogTokenId=%{cLogTokenId}). Create a combat first")]
-  [h: log.debug(logMsg)]
-	[assert(0,logMsg,0)]
+	[h: logDbgMsg = strformat("<i>combatAction::updateGlobalCombat</i> : there is no current combat token (cLogTokenId=%{cLogTokenId}). Create a combat first")]
+  [h: log.debug(logDbgMsg)]
+	[assert(0,logDbgMsg,0)]
 };{	
 	[h, if(action == "reset"),code:{
 		[h: "<!-- we do not get combatProp since it can be none (non existant) -->"]
@@ -19,92 +24,84 @@
 
 [r, switch(action), code:
   case "nxtcycle" : {
-  	<!-- TO DO can only be launch if no turn status is on -->
-    [r, foreach(item, tokens, ""), code: {
+    [h: addCombatLogEntry(tokenIdCaller,"globalEvent","End the turn and start a new cycle.","")]
+		
+    [h, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
-	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
-	  [r, if(turnStatus == "delay"): getName(tokenId)+": Delayed CA was not used and is lost, existing proactiveCA Malus is decreased and existing evade malus is removed<br>"]
-	  [h, if(turnStatus == "delay"): currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
-	  [h, if(turnStatus == "off"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
-	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
-	  [h: setState("CurrentTurn", 0, tokenId)]
+			[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+	    [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+			[h: delayedLogMsg = "Delayed CA was not used and is lost, existing proactiveCA Malus is decreased and existing evade malus is removed<br>"]
+			[h, if(turnStatus == "delay"): addCombatLogEntry(tokenId,"globalEvent",delayedLogMsg,"")]
+			[h, if(turnStatus == "delay"): currentCombatStatus = resetDelayedTurn(tokenId,currentCombatStatus)]
+			[h, if(turnStatus == "off"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+			[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+			[h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
+			[h: setState("CurrentTurn", 0, tokenId)]
     }]
-	<!-- Increment Cycle Number -->
-	[h: cycleNb = json.get(combatProp, "cycle") + 1]
-	[h: combatProp = json.set(combatProp,"cycle",cycleNb)]
-	[h: setProperty("combat",combatProp,cLogTokenId)]	
-	
-	Cycle [r: cycleNb] is starting.<br>	
-	[h: msg = "New Cycle, First to act"]
+
+		[h: cycleNb = json.get(combatProp, "cycle") + 1]
+		[h: combatProp = json.set(combatProp,"cycle",cycleNb)]
+		[h: setProperty("combat",combatProp,cLogTokenId)]	
+		
+		[h: msg = strformat("Cycle %{cycleNb} is starting")]
   };
-  case "nxtmr" : {
-  	<!-- All activeCa are reset to ccCA,  	
-  	proactiveCA & reactiveCa are reset to 0, 
-  	castCa & fumble lost CA are no reset they go other multiple round,
-  	all turnStatus (but disabled) are reset to on and activeTurn to 0 -->
-  	
-  	<!-- TO DO can only be launch if all turn status are either disable or out -->
-  	
-    [r, foreach(item, tokens, ""), code: {
+  case "nxtmr" : {	
+	  [h: addCombatLogEntry(tokenIdCaller,"globalEvent","End the turn and start a new MR.","")]
+		
+    [h, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
-	  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-	  
-	  [h: ccCA = json.get(currentCombatStatus,"ccCA")]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
-
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
-      
-      [h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
-      [h, if(weaponReach == "outmanoeuvred"): currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
-	  
-	  [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
-	  [h, if(turnStatus != "disabled"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
-	  [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
-
-	  <!-- Manage charging status -->
-	  [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
-	  [h, if(chargeStatus == "prepareCharge"): currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","chargeReady")]
-	  [h, if(chargeStatus == "passageDone"): currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
-	  [h, if(chargeStatus == "passageDone"): setState("Charging", 0, tokenId)]
-	  
-	  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
-	  
-	  <!-- reset States -->
-	  [h: setState("CurrentTurn", 0, tokenId)]
-	  [h: setState("Out", 0, tokenId)]
-	  [h: setState("Outmanoeuvred", 0, tokenId)]
-
+			[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+			
+			[h: ccCA = json.get(currentCombatStatus,"ccCA")]
+			[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+	
+			[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+			[h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+				
+			[h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+			[h, if(weaponReach == "outmanoeuvred"): currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
+			
+			[h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
+			[h, if(turnStatus != "disabled"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+			[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+	
+			[h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
+			[h, if(chargeStatus == "prepareCharge"): currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","chargeReady")]
+			[h, if(chargeStatus == "passageDone"): currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+			[h, if(chargeStatus == "passageDone"): setState("Charging", 0, tokenId)]
+			
+			[h: setProperty("combatStatus",currentCombatStatus,tokenId)]	 
+			
+			[h: setState("CurrentTurn", 0, tokenId)]
+			[h: setState("Out", 0, tokenId)]
+			[h: setState("Outmanoeuvred", 0, tokenId)]
     }]
-    <!-- Reset Cycle Number -->
+
 		[h: combatProp = json.set(combatProp,"cycle",1)]
 		
-		<!-- Increment MR Number -->
 		[h: mrNb = json.get(combatProp, "mr") + 1]
 		[h: combatProp = json.set(combatProp,"mr",mrNb)]
 		[h: setProperty("combat",combatProp,cLogTokenId)]	
 	
-		MR [r: mrNb] is starting.<br>	
-		[h: msg = "New MR, First to act"]
+		[h: msg = strformat("MR %{mrNb} is starting")]
   };
   case "reset" : {
   	[h: res = input("junk|This will create a new combat, reset all CA value, cycle & mr Nb and reroll initiative. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true",
 		"combatDesc|new combat|Combat short desc / nickname :")]
   	[h: abort(res)]
-		<!-- create a new CombatLog token with cycle, mr, and initiRoll reset to 1 -->
+		
+		[h: "<!-- create a new CombatLog token with cycle, mr, and initiRoll reset to 1 -->"]
 		[h: cLogTokenId = createNewClogToken(combatDesc)]
 		
     [r, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
 			[h: currentCombatStatus = getProperty("combatStatus",tokenId)] 
 			
-			<!-- Reset currentCombatStatus -->
-			<!-- 1st, bind it to new combatLog token -->
+			[h: "<!-- Reset currentCombatStatus -->"]
+			[h: "<!-- 1st, bind it to new combatLog token -->"]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"cLogTokenId",cLogTokenId)]
 	
-			<!-- then set everything to default / 0 before recomputing some values -->
+			[h: "<!-- then set everything to default / 0 before recomputing some values -->"]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
@@ -116,15 +113,16 @@
 			[h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+			[h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
 			
-			<!-- reset weapon CA-->
+			[h: "<!-- reset weapon CA-->"]
 			[h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",defWeaponNb)]
 			[h: newWeaponCA = defWeaponNb - 1]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
 			
-			<!-- recompute ccA -->
+			[h: "<!-- recompute ccA -->"]
 			[h: baseCA = json.get(currentCombatStatus,"baseCA")]
 			[h: bonusCA = json.get(currentCombatStatus,"bonusCA")]
 			[h: magicCA = json.get(currentCombatStatus,"magicCA")]
@@ -134,13 +132,15 @@
 			[h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",ccCA)]
 	
 			[h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
-			<!-- reset All Log -->
+			
+			[h: "<!-- reset All Token Log -->"]
 			[h: logCombatAction(tokenId,"reset","")]
 			
-			<!-- reset All States -->
+			[h: "<!-- reset All States -->"]
 			[h: setAllStates(0, tokenId)]
 			[h: setInitiativeHold(0,tokenId)]
-			<!-- roll Initiative -->
+			
+			[h: "<!-- roll Initiative -->"]
 			[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
 			[h: currentSR = json.get(propStrikeRank, "current")]
 			[h:status=input(
@@ -150,24 +150,27 @@
 			[h:abort(status)]
 			[h: diceRoll = roll(1,1d10)]
 			[h: initiative = diceRoll+SRbonus+currentSR-SRmalus]
-			[r: getName(tokenId)] - Initiative = <b>[r: initiative]</b> : diceRoll ([r: diceRoll]) + SRbonus([r: SRbonus]) + currentSR([r: currentSR]) - SRmalus([r: SRmalus])<br>
-			<!-- roll Initiative -->
+			
+			[h: logMsg = strformat("Rolled Initiative = <b>%{initiative}</b> : diceRoll (%{diceRoll}) + SRbonus(%{SRbonus}) + currentSR(%{currentSR}) - SRmalus(%{SRmalus})<br>")]
+			[h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
+			
 			[h: setInitiative(initiative,tokenId)]
 			[h: sortInitiative()]
     }]
-    [h: msg = "Initiative rolled, First to act"]
+    [h: msg = strformat("Combat <b>%{combatDesc}</b> is set & initiative is rolled !<br>")]
 		[h: combatProp = getProperty("combat",cLogTokenId)]
-		Combat <b>[r: json.get(combatProp,"desc")]</b> is set & initiative is rolled !<br>
   };
   case "rollinit" : {
-    <!-- add a test - can only happen before a new MR -->
-    [r, foreach(item, tokens, ""), code: {
+    [h: "<!-- add a test - can only happen before a new MR -->"]
+    [h, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
-      <!-- reset activeTurn to 0 -->
+
 			[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 			[h: setState("CurrentTurn", 0, tokenId)]
 			[h: setProperty("combatStatus",json.set(currentCombatStatus,"activeTurn",0),tokenId)]
-			<!-- to do : compute SR base on current DEx & INt vlue and wether the token has armour penalty or not -->
+			
+			[h: "<!-- to do : compute SR base on current DEx & INt vlue and wether the token has armour penalty or not -->"]
+			
 			[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
 			[h: currentSR = json.get(propStrikeRank, "current")]
 			[h:status=input(
@@ -175,35 +178,34 @@
 			"SRbonus|0|SR Bonus",
 			"SRmalus|0|SR Malus")]
 			[h:abort(status)]
+			
 			[h: diceRoll = roll(1,1d10)]
 			[h: initiative = diceRoll+SRbonus+currentSR-SRmalus]
-			[r: getName(tokenId)] - Initiative = <b>[r: initiative]</b> : diceRoll ([r: diceRoll]) + SRbonus([r: SRbonus]) + currentSR([r: currentSR]) - SRmalus([r: SRmalus])<br>
-			<!-- roll Initiative -->
+			[h: logMsg = strformat("Rolled Initiative = <b>%{initiative}</b> : diceRoll (%{diceRoll}) + SRbonus(%{SRbonus}) + currentSR(%{currentSR}) - SRmalus(%{SRmalus})<br>")]
+			[h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
+
 			[h: setInitiative(initiative,tokenId)]
 			[h: sortInitiative()]
     }] 
-    <!-- Increment Init Roll Number -->
+    
 		[h: initRoll = json.get(combatProp, "initRoll") + 1]
 		[h: combatProp = json.set(combatProp,"initRoll",initRoll)]
 		[h: setProperty("combat",combatProp,cLogTokenId)]	
 	
-		[r: initRoll] serie of initiative rolls is done.
-		[h: msg = "Initiative rolled, First to act"]
+		[h: msg = "Initiative rolled."]
   };
   default: {
- 	<!-- do nothing -->
  	<br><b>[r: action]</b> is not implemented in <i>updateGlobalCombat</i> !<br>
   }
 ]
-<!-- Each time we roll initiative, change cycle or change mr we focus on the token with highest SR -->
-<!-- select the token with the highest SR and set activeTurn to 1 -->
+[h: "<!-- Each time we roll initiative, change cycle or change mr we focus on the token with highest SR -->"]
+[h: "<!-- select the token with the highest SR and set activeTurn to 1 -->"]
+
 [h: initList = getInitiativeList()]
 [h: firstToken = json.path.read(initList, "tokens.[0].tokenId")]
 [h: firstTokenName = getName(firstToken)]
   
-[r: firstTokenName] will start first.
-
-[h: logMsg = strformat("%{msg}. %{firstTokenName} will start first.")]
+[h: logMsg = strformat("%{msg} %{firstTokenName} will start first.")]
 [h: addCombatLogEntry(firstToken,"globalEvent",logMsg,"")]
  
 [h: currentCombatStatus = getProperty("combatStatus",firstToken)]
@@ -211,14 +213,12 @@
 [h: setState("CurrentTurn", 1, firstToken)]
 [h: setCurrentInitiative(0)]
   
-<!-- Refresh / Open Combat Action Window for current Active Token-->
+[h: "<!-- Refresh Combat Action & Combat Window -->"]
+
 [h: macroParam = json.set("{}", "tokenId", firstToken,"msg",msg)]
 [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]
 
-<!-- Refresh Combat Window -->
-[h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId)]
-[h: lnkTxt = macroLinktext("openCombat@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")][h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
 [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
 [h: execLink(lnkTxt,0,"all")]

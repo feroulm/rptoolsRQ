@@ -129,8 +129,9 @@
 
 		[r, if(CurrCLogTokenId != "none"), code:{
 			[h: logs = getProperty("combatLog", CurrCLogTokenId)]
-			[r, foreach(logEntryKey, logs, ""), code: {
-				[h: logEntry = json.get(logs,logEntryKey)]
+			[h: logs = json.sort(logs,"d","logId")]
+			[r, foreach(logEntry, logs, ""), code: {
+				[h: logEntryKey = json.get(logEntry,"logId")]
 				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter,"logCycleFilter",logCycleFilter)]
 				[r, macro("showFilteredLogEntry@Lib:RQII"): macroParam]
 			}]
