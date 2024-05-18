@@ -1,4 +1,4 @@
-modelVersion:v1.0.1
+modelVersion:v1.0.2
 CommonSkills
 AdvSkills
 CombatSkills
@@ -6,6 +6,8 @@ MagicSkills
 combat
 combatLog
 damageMod
+situationMod
+fatigueLevel
 meleeWeaponDb
 rangeWeaponDb
 spellsDb
@@ -13,6 +15,5 @@ divineSpellsDb
 sorcerySpellsDb
 draconicSpellsDb
 spiritSpellsDb
-fatigueLevel
 heroicDb
 traitsDb

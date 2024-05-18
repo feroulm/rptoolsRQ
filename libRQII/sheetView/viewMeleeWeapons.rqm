@@ -1,5 +1,14 @@
 [h: tokenId = macro.args]
 
+[h: propDamageMod = getProperty("DamageMod",tokenId)]
+[h: tokenDmgMod = json.get(propDamageMod, "current")]
+
+[h, if(tokenDmgMod != "0"), code:{
+  [h: tokenDmgModDisplay = "<span style='color:red'>"+tokenDmgMod+"</span>"]
+};{
+  [h: tokenDmgModDisplay = ""]
+}]
+
 [h: wpList = getWeaponNbLst(tokenId)]
 <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
   <thead>
@@ -25,7 +34,7 @@
         </td>
         <td>[r: getStrProp(wProp, "Size")]</td>
         <td>[r: getStrProp(wProp, "Reach")]</td>
-        <td>[r: getStrProp(wProp, "Damage")]</td>
+        <td>[r: getStrProp(wProp, "Damage")+tokenDmgModDisplay]</td>
         <td>[r: getStrProp(wProp, "ApHp")]</td>
         <td>[r: getStrProp(wProp, "Manoeuvre")]</td>
         <td>[r: getStrProp(wProp, "Special")]</td>

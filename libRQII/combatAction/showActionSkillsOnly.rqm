@@ -3,6 +3,18 @@
 [h: tokenMap = getCurrentMapName()]
 [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
 
+[h: malusInfo = ""]
+
+[h: fatMalus = getFatigueMalus(tokenId)]
+[h, if(fatMalus!=""): malusInfo = fatMalus+" ";""]
+
+[h: smodMalus = getSituationModMalus(tokenId)]
+[h, if(smodMalus!=""): malusInfo = malusInfo+smodMalus+" ";""]
+
+[r, if(malusInfo != ""), code:{
+  <span style="font-weight: bold;color:red">Malus :</span> [r: malusInfo]<br><br>
+};{}]
+
 [h: aSkills = getProperty("combatSkills", tokenId)]
 [foreach(skill, aSkills, ","), code: {
   [h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]

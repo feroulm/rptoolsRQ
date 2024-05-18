@@ -8,8 +8,18 @@
 
 [h: setProperty("fatigue",newFatigue,tokenId)]
 
-<!-- Refresh edit Window for the new token -->
+[h: logMsg = strformat("Fatigue level set to <b>%{newLevel}</b>")]
+[r: addCombatLogEntry(tokenId,"updateCharac",logMsg,"")]
+
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
+
+[h: "<!-- Refresh Combat Window if it is opened -->"]
+[h: isOpen = getDialogProperties("Combat Sheet")]
+[h, if(!json.isEmpty(isOpen)), code:{
+  [h: macroParam = json.set("{}", "tab", "main")]
+  [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+	[h: execLink(lnkTxt,0,"all")]
+};{}]
 
 [h, if(srcWindow == "openSheetMgt"), code:{
   [r, macro("openSheetMgt@Lib:RQII"): macroParam]

@@ -1,0 +1,12 @@
+[h: "<!-- getSituationModMalus - Function to return situationMod Malus -->"]
+[h: "<!-- if = none, return an empty string -->"]
+
+[h: tokenId = arg(0)]
+[h: situationMods = getLibProperty("situationMod","Lib:RQII")]
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: situationMod = json.get(currentCombatStatus,"situationMod")]
+
+[h: situationModMalusPath = situationMod+".skillGrade"]
+[h: situationModMalus = situationMod+" : <b>"+json.path.read(situationMods,situationModMalusPath)+" %</b>"]
+
+[r, if(situationMod != "none") : situationModMalus] 

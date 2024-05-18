@@ -10,46 +10,45 @@
 [h: logMsgDbg = strformat("<i>combatAction::logCombatAction</i> : current Combat Token - cLogTokenId=%{cLogTokenId})")]
 [h: log.debug(logMsgDbg)]
 
-[h, if(cLogTokenId == "none"), code :{
-	[h: "<!-- No combat token found - this an anomaly -->"]
-	[h: logMsgDbg = strformat("<i>combatAction::logCombatAction</i> : there is no current combat token (cLogTokenId=%{cLogTokenId}). Create a combat first")]
-  [h: log.debug(logMsgDbg)]
-	[assert(0,logMsgDbg,0)]
+[r, if(cLogTokenId == "none"), code :{
+  [h: "<!-- No combat token found - log is sent to chat window -->"]
+  [r: logMsg]
 };{
   [h: combatProp = getProperty("combat",cLogTokenId)]
   [h: cycleNB = json.get(combatProp, "cycle")]
-	[h: mrNB = json.get(combatProp, "mr")]
+  [h: mrNB = json.get(combatProp, "mr")]
+
+
+  [h: logEntry = "(MR"+mrNB+"-C"+cycleNB+") :"+logMsg]
+  
+  [h: "<!-- update the entry -->"]
+  [h: currentCombatLog = getProperty("combatLog",tokenId)]
+  
+  [h, switch(logType), code:
+    case "proactive" : {
+      [h: newCombatLog = json.set(currentCombatLog,"lastProactiveAction",logEntry)]
+    };
+    case "reactive" : {
+      [h: newCombatLog = json.set(currentCombatLog,"lastReactiveAction",logEntry)]  
+    };
+    case "change" : {
+      [h: newCombatLog = json.set(currentCombatLog,"lastTokenChange",logEntry)]
+    };
+    case "turndeclare" : {
+      [h: newCombatLog = json.set(currentCombatLog,"turnDeclaration",logEntry)]
+    };
+    case "turnreset" : {
+      [h: newCombatLog = json.set(currentCombatLog,"turnDeclaration","")]
+    };
+    case "reset" : {
+      [h: newCombatLog = json.set(currentCombatLog,"lastProactiveAction","")]
+      [h: newCombatLog = json.set(newCombatLog,"lastReactiveAction","")] 
+      [h: newCombatLog = json.set(newCombatLog,"lastTokenChange","")]
+      [h: newCombatLog = json.set(newCombatLog,"turnDeclaration","")]
+    };
+    default: {
+      
+    }
+  ]
+  [h: setProperty("combatLog",newCombatLog,tokenId)]
 }]
-
-[h: logEntry = logMsg+" (MR"+mrNB+"-C"+cycleNB+")"]
-
-[h: "<!-- update the entry -->"]
-[h: currentCombatLog = getProperty("combatLog",tokenId)]
-
-[h, switch(logType), code:
-  case "proactive" : {
-  	[h: newCombatLog = json.set(currentCombatLog,"lastProactiveAction",logEntry)]
-  };
-  case "reactive" : {
-  	[h: newCombatLog = json.set(currentCombatLog,"lastReactiveAction",logEntry)] 	
-  };
-  case "change" : {
-  	[h: newCombatLog = json.set(currentCombatLog,"lastTokenChange",logEntry)]
-  };
-  case "turndeclare" : {
-  	[h: newCombatLog = json.set(currentCombatLog,"turnDeclaration",logEntry)]
-  };
-  case "turnreset" : {
-  	[h: newCombatLog = json.set(currentCombatLog,"turnDeclaration","")]
-  };
-  case "reset" : {
-  	[h: newCombatLog = json.set(currentCombatLog,"lastProactiveAction","")]
-  	[h: newCombatLog = json.set(newCombatLog,"lastReactiveAction","")] 
-  	[h: newCombatLog = json.set(newCombatLog,"lastTokenChange","")]
-  	[h: newCombatLog = json.set(newCombatLog,"turnDeclaration","")]
-  };
-  default: {
-  	
-  }
-]
-[h: setProperty("combatLog",newCombatLog,tokenId)]

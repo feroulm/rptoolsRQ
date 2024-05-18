@@ -13,10 +13,12 @@
 [h: defineFunction("findCurrentCombatToken","findCurrentCombatToken@Lib:RQII")]
 [h: defineFunction("addCombatLogEntry","addCombatLogEntry@Lib:RQII")]
 [h: defineFunction("askActionResult","askActionResult@Lib:RQII")]
+[h: defineFunction("getSituationModMalus","getSituationModMalus@Lib:RQII")]
 
 
 [h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
+[h: defineFunction("getFatigueMalus","getFatigueMalus@Lib:RQII")]
 
 [h: "<!-- Sheet Improvement UDFs -->"]
 [h: defineFunction("resetSkillsExperienceTmp","resetSkillsExperienceTmp@Lib:RQII")]

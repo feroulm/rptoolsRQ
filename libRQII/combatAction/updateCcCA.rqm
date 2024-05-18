@@ -1,12 +1,12 @@
-<!-- Update CA values in combatStatus properties when the following event are triggered
-- lose / grap a weapon
-- increase nb of CA because of magic
+[h:"<!-- Update CA values in combatStatus properties when the following event are triggered -->"]
+[h:"<!-- - lose / grap a weapon -->"]
+[h:"<!-- - increase nb of CA because of magic -->"]
 
-Called by :  editHumCombatAttr@Lib:RQII
-Calling : 
-- UDF computeCcCA a.k.a computeCcCA@Lib:RQII (combatAction Group)
-- openHumCombatAttr@Lib:RQII   (sheetManagement Group)
--->
+[h:"<!-- Called by :  editHumCombatAttr@Lib:RQII -->"]
+[h:"<!-- Calling :  -->"]
+[h:"<!-- - UDF computeCcCA a.k.a computeCcCA@Lib:RQII (combatAction Group) -->"]
+[h:"<!-- - openHumCombatAttr@Lib:RQII   (sheetManagement Group) -->"]
+
 [h: tokenId = json.get(macro.args, "tokenId")]
 [h: action = json.get(macro.args, "action")]
 [h: newWeaponNb = json.get(macro.args, "newWeaponNb")]
@@ -20,75 +20,68 @@ Calling :
 [h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
 [h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
 
-[r, switch(action), code:
+[h: logLongMsg =""]
+
+[h, switch(action), code:
    case "weaponca" : {
-   	<!-- update weaponCA bonus -->
+    [h: "<!-- compute weaponCA bonus -->"]
     [h: newWeaponCA = newWeaponNb - 1]
-    <!-- could not be negative... -->
+
     [h, if (newWeaponCA < 0): newWeaponCA = 0]
     [h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",newWeaponNb)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
-    <!-- recompute ccCA, may impact current CA status -->
+    
+    [h: "<!-- recompute ccCA, may impact current CA status -->"]
     [h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus)] 
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- grab new value -->
-    [r: newWeaponCA = json.get(currentCombatStatus,"weaponCA")]
+
+    [h: newWeaponCA = json.get(currentCombatStatus,"weaponCA")]
     [h: newCcCA = json.get(currentCombatStatus,"ccCA")]
+    [h: newActiveCA = json.get(currentCombatStatus,"activeCA")]
     
-    [r, if(newWeaponNb>currWeaponNb), code: {
-      [r: getName(tokenId)] grab a new weapon<br>
-      <!-- log message -->
-      [h: logMsg = "Grab a new weapon"]
-    };
-    {
-      [r: getName(tokenId)] loose a weapon<br>
-      <!-- log message -->
-      [h: logMsg = "Grab a new weapon"]
+    [h, if(newWeaponNb>currWeaponNb), code: {
+      [h: logMsg = "Grab a new weapon."]
+    };{
+      [h: logMsg = "Loose a weapon."]
     }]
     
-    [r, if(currWeaponCA == newWeaponCA), code: {	
-    	weaponBonus is unchanged, ccCA and activeCA are unchanged
-    };
-    {
-      ccCA switch from [r: currCcCA] to [r: newCcCA]<br>	
-      activeCA switch from [r: currActiveCA] to [r: json.get(currentCombatStatus,"activeCA")]<br>
+    [h, if(currWeaponCA == newWeaponCA), code: {  
+      [h: logLongMsg = strformat("%{logMsg}<br>WeaponBonus is unchanged, ccCA and activeCA are unchanged")]
+    };{
+      [h: logLongMsg = strformat("%{logMsg} <i>weaponCA</i> switch from %{currWeaponCA} to <b>%{newWeaponCA}</b>.")]
+      [h: logLongMsg = strformat("%{logLongMsg}<br><i>ccCA</i> switch from %{currCcCA} to <b>%{newCcCA}</b>.")]
+      [h: logLongMsg = strformat("%{logLongMsg} <i>activeCA</i> switch from %{currActiveCA} to <b>%{newActiveCA}</b>")]
     }]
-    
-    <!-- Refresh edit Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", tokenId)]
   };
   case "magicca" : {
-    <!-- could not be negative... -->
     [h, if (newMagicCA < 0): newMagicCA = 0]
     [h: currentCombatStatus = json.set(currentCombatStatus,"magicCA",newMagicCA)]
-    <!-- recompute ccCA, may impact current CA status -->
+    
+    [h: "<!-- recompute ccCA, may impact current CA status -->"]
     [h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus)] 
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    <!-- grab new value -->
-    [h: newCcCA = json.get(currentCombatStatus,"ccCA")]
-    
-    [r, if(currMagicCA == newMagicCA), code: {	
-    	magicCA bonus is unchanged, ccCA and activeCA are unchanged
-    };
-    {
-      magicCA switch from [r: currMagicCA] to [r: newMagicCA]<br>
-      ccCA switch from [r: currCcCA] to [r: newCcCA]<br>	
-      activeCA switch from [r: currActiveCA] to [r: json.get(currentCombatStatus,"activeCA")]<br>
-    }]
 
-    <!-- log message -->
-    [h: logMsg = "Change magicCA"]
+    [h: newCcCA = json.get(currentCombatStatus,"ccCA")]
+    [h: newActiveCA = json.get(currentCombatStatus,"activeCA")]
     
-    <!-- Refresh edit Window for the new token -->
-    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [h: logMsg = "Change magicCA."] 
+    
+    [h, if(currMagicCA == newMagicCA), code: {  
+      [h: logLongMsg = strformat("%{logMsg}<br>magicCA bonus is unchanged, ccCA and activeCA are unchanged")]
+    };{
+      [h: logLongMsg = strformat("%{logMsg} <i>magicCA</i> switch from %{currMagicCA} to <b>%{newMagicCA}</b>")]
+      [h: logLongMsg = strformat("%{logLongMsg}<br><i>ccCA</i> switch from %{currCcCA} to <b>%{newCcCA}</b>.")]
+      [h: logLongMsg = strformat("%{logLongMsg} <i>activeCA</i> switch from %{currActiveCA} to <b>%{newActiveCA}</b>")]
+    }]     
   };
 ]
 
-<!-- log the change -->
 [h: logCombatAction(tokenId,"change",logMsg)]
+[r: addCombatLogEntry(tokenId,"updateCcCA",logLongMsg,"")]
 
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
 [h, if(srcWindow == "openSheetMgt"), code:{
-  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+  [h, macro("openSheetMgt@Lib:RQII"): macroParam]
 };{
-  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+  [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
 }]

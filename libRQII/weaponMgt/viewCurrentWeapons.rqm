@@ -1,6 +1,14 @@
 [h: arguments = macro.args]
 [h: tokenId = json.get(arguments, "tokenId")]
 
+[h: propDamageMod = getProperty("DamageMod",tokenId)]
+[h: tokenDmgMod = json.get(propDamageMod, "current")]
+
+[h, if(tokenDmgMod != "0"), code:{
+  [h: tokenDmgModDisplay = "<span style='color:red'>"+tokenDmgMod+"</span>"]
+};{
+  [h: tokenDmgModDisplay = ""]
+}]
 
 <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
   <tbody>
@@ -12,7 +20,7 @@
       [r,if(isHold), code: {
       <tr>
         <td>
-          <b>[r: getStrProp(wProp, "Name")]</b>([r: getStrProp(wProp, "Damage")]) 
+          <b>[r: getStrProp(wProp, "Name")]</b>([r: getStrProp(wProp, "Damage")+tokenDmgModDisplay]) 
         </td>
         <td><i>Size</i>: [r: getStrProp(wProp, "Size")], <i>Reach</i>: [r: getStrProp(wProp, "Reach")]<br>
 				  [r: getStrProp(wProp, "Manoeuvre","")]
@@ -25,11 +33,17 @@
 		[foreach(missile, wpList, ""), code: {
       [h,macro("getMissile@Lib:RQII"): "weaponNb="+missile+"; tokId="+tokenId]
       [h: wProp = macro.return]
+      [h: missileDmgMod = getStrProp(wProp, "Modif")]
+      [h, if((tokenDmgMod != "0")&&(missileDmgMod == "Y")), code:{
+        [h: tokenDmgModDisplay = "<span style='color:red'>"+tokenDmgMod+"</span>"]
+      };{
+        [h: tokenDmgModDisplay = ""]
+      }]
       [h: isHold = getStrProp(wProp, "Hold", 0)]
       [r,if(isHold), code: {
       <tr>
         <td>
-          <b>[r: getStrProp(wProp, "Name")]</b>([r: getStrProp(wProp, "Damage")])
+          <b>[r: getStrProp(wProp, "Name")]</b>([r: getStrProp(wProp, "Damage")+tokenDmgModDisplay])
         </td>
         <td><i>Size</i>:[r: getStrProp(wProp, "Size")], <i>Load</i>: [r: getStrProp(wProp, "Load")], <i>DMG mod</i>: [r: getStrProp(wProp, "Modif")]<br>
 				[r: getStrProp(wProp, "Manoeuvre", "")].[r: getStrProp(wProp, "Special","")]

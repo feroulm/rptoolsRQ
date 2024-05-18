@@ -1,38 +1,35 @@
-<!-- combatStatus is a json object -->
 [h: tokenId = json.get(macro.args, "tokenId")]
 
 [h: combatStatus = getProperty("combatStatus",tokenId)]
-[H: propList = ""]
+[h: propList = ""]
 [h: inputStr = "tip|Modify combat status||LABEL|SPAN=TRUE"]
-[r, foreach(combatProp, combatStatus), CODE:{
-   <!-- make sure your combat properties has a valid variable format -->
-   [r: prop = "input." + replace(lower(combatProp),"[^a-zA-Z0-9_.]","")]
-   <!-- save the variable name for later use -->
-   [H: propList = json.set(propList,prop,combatProp)]
-   [H: value = json.get(combatStatus,combatProp)]
-   [H: inputStr = json.append(inputStr, strformat("%{prop}|%{value}|%{combatProp}|Text"))]
+[h, foreach(combatProp, combatStatus), CODE:{
+   [h: "<!-- make sure your combat properties has a valid variable format -->"]
+   [h: prop = "input." + replace(lower(combatProp),"[^a-zA-Z0-9_.]","")]
+
+   [h: propList = json.set(propList,prop,combatProp)]
+   [h: value = json.get(combatStatus,combatProp)]
+   [h: inputStr = json.append(inputStr, strformat("%{prop}|%{value}|%{combatProp}|Text"))]
 }]
 
-<!-- get user input -->
-[H: abort(input(json.toList(inputStr,"##")))]
+[h: abort(input(json.toList(inputStr,"##")))]
 
-<!-- validate and set new values -->
-[H: updatedCombatStatus = "{}"]
-[H, foreach(prop,propList), code: {
-   [H: combatProp = json.get(propList,prop)]
-   [H: value = eval(prop)]
-   <!-- validate value -->
-   [H, if(json.isEmpty(value)): value = 0]
-   <!-- set new value -->
-   [H: updatedCombatStatus = json.set(updatedCombatStatus,combatProp,value)]
+[h: updatedCombatStatus = "{}"]
+[h, foreach(prop,propList), code: {
+   [h: combatProp = json.get(propList,prop)]
+   [h: value = eval(prop)]
+
+   [h, if(json.isEmpty(value)): value = 0]
+
+   [h: updatedCombatStatus = json.set(updatedCombatStatus,combatProp,value)]
 }]
 
-[H: combatStatus = updatedCombatStatus] 
+[h: combatStatus = updatedCombatStatus] 
 [h: setProperty("combatStatus",combatStatus,tokenId)]
 
-<!-- Refresh Combat Action Window -->
-[h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openCombatAction@Lib:RQII"): macroParam]
-
-<!-- Refresh Combat Window -->
-[r, macro("openCombat@Lib:RQII"): ""]
+[h: logMsg = strformat("CombatStatus property object has been updated directly.")]
+[h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
+ 
+[h: macroParam = json.set("{}", "tokenId", tokenId,"msg",logMsg)]
+[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]

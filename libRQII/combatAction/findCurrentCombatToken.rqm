@@ -1,5 +1,5 @@
 [h: "<!-- findCurrentCombatToken - Function to get current combatLog token on current map -->"]
-[h: "<!-- Called by : openCombat@Lib:RQII (GM Group) -->"]
+[h: "<!-- Called by : all macros that need to log some stuff that happens during a combat -->"]
 [h: "<!-- return the token id or none if none exists -->"]
 
 

@@ -1,7 +1,6 @@
-<!--
-  update (heal or damage) a token location HP or AP 
-  - depends of combination of radio option (dmgAction = Heal or Damage) & selected submit button(dmgTarget = HP or AP) in editAPHP
--->
+[h: "<!-- update (heal or damage) a token location HP or AP -->"]
+[h: "<!-- depends of combination of radio option (dmgAction = Heal or Damage) & selected submit button(dmgTarget = HP or AP) in editAPHP -->"]
+
 [h: arguments = macro.args] 
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: locId = json.get(arguments, "TokenLoc")]
@@ -9,59 +8,66 @@
 [h: dmgAction = json.get(arguments, "dmgAction")]
 [h: pLocHP = getProperty("locHP",tokenId)]
 [h: locName = getStrProp(getProperty("locName",tokenId),strformat("loc%{locId}"))]
-[h:	locHPorig = getStrProp(getProperty("locHPorig",tokenId),strformat("loc%{locId}"))]
+[h: locHPorig = getStrProp(getProperty("locHPorig",tokenId),strformat("loc%{locId}"))]
 [h: pLocAP = getProperty("locAP",tokenId)]
 [h: amount = json.get(arguments, "Amount")]
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 
-Update [r: locName] :<br>
-current HP: [r:	curHP = getStrProp(pLocHP,strformat("loc%{locId}"))],&nbsp;
-current AP: [r:	curAP = getStrProp(pLocAP,strformat("loc%{locId}"))]<br>
+[h: curHP = getStrProp(pLocHP,strformat("loc%{locId}"))]
+[h: curAP = getStrProp(pLocAP,strformat("loc%{locId}"))]
+[h: locAction = concat(dmgAction,dmgTarget)]
 
-Action : [r: locAction = concat(dmgAction,dmgTarget)], [r: json.get(arguments, "Amount")]<br>
+[h: logLongMsg = strformat("%{dmgAction} %{dmgTarget} : <b>%{amount}</b> pts in <b>%{locName}</b>.")]
 
 [switch(locAction), code:
   case "HealHP": {
-  	new HP: [r: newLocH = curHP + json.get(arguments, "Amount")]<br>
-  	[h: logMsg = "healed HP: +"+amount+"pts in "+locName]
+    [h: newLocH = curHP + amount]
+    [h: logLongMsg = strformat("%{logLongMsg} Previous HP: %{curHP} , new HP: <b>%{newLocH}</b>")]
+    [h: logMsg = "healed HP: +"+amount+"pts in "+locName]
   };
   case "DamageHP": {
-  	new HP: [r: newLocH = curHP - json.get(arguments, "Amount")]<br>
-  	[h: logMsg = "wounded HP: -"+amount+"pts in "+locName]
+    [h: newLocH = curHP - amount]
+    [h: logLongMsg = strformat("%{logLongMsg} Previous HP: %{curHP} , new HP: <b>%{newLocH}</b>")]
+    [h: logMsg = "wounded HP: -"+amount+"pts in "+locName]
   };
   case "HealAP": {
-  	new AP: [r: newLocA = curAP + json.get(arguments, "Amount")]<br>
-  	[h: logMsg = "healed AP: +"+amount+"pts in "+locName]
+    [h: newLocA = curAP + amount]
+    [h: logLongMsg = strformat("%{logLongMsg} Previous AP: %{curAP} , new AP: <b>%{newLocA}</b>")]
+    [h: logMsg = "healed AP: +"+amount+"pts in "+locName]
   };
   case "DamageAP": {
-  	new AP: [r: newLocA = curAP - json.get(arguments, "Amount")]<br>
-  	[h: logMsg = "wounded AP: +"+amount+"pts in "+locName]
+    [h: newLocA = curAP - amount)]
+    [h: logLongMsg = strformat("%{logLongMsg} Previous AP: %{curAP} , new AP: <b>%{newLocA}</b>")]
+    [h: logMsg = "wounded AP: +"+amount+"pts in "+locName]
   };
 ]
 
-[if((dmgTarget == "HP")), code: {	
+[if((dmgTarget == "HP")), code: { 
   [h: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLocH)]
   [h: setProperty("locHP", newLocHP, tokenId)]
-  [r, if((curHP >0)&&(newLocH <= 0)&&(locHPorig + newLocH)>0), code: {
-  	<b>Serious Wound</b><br>
-  	Lost proactive CA (1d3) = [r: lostProCA = 1d3]<br>
+  [h, if((curHP >0)&&(newLocH <= 0)&&(locHPorig + newLocH)>0), code: { 
+    [h: lostProCA = 1d3]
+    [h: logLongMsg = strformat("%{logLongMsg}<br><span style='font-weight: bold;color:orange'>Serious Wound</span>: loose <b>%{lostProCA}</b> proCA")]
     [h: logMsg = logMsg+" -> Serious Wound: loose "+lostProCA+" proCA"]
     [h: currentLostProCA = json.get(currentCombatStatus,"lostProCA")]
     [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",currentLostProCA+lostProCA)]
-    [h: setProperty("combatStatus",currentCombatStatus,tokenId)] 	
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]  
   };{}]
-  [r: if((locHPorig + newLocH) <= 0, "<b>Major Wound</b><br>", "")]
+  [h, if((locHPorig + newLocH) <= 0), code:{
+    [h: logLongMsg = strformat("%{logLongMsg}<br><span style='font-weight: bold;color:red'>Majour Wound</span>: can't fight anymore, run a persistence test.")]
+  }]
 };{}]
 
-[if((dmgTarget == "AP")), code: {	
+[if((dmgTarget == "AP")), code: { 
   [h: newLocAP = setStrProp(pLocAP,strformat("loc%{locId}"),newLocA)]
   [h: setProperty("locAP", newLocAP, tokenId)]
 };{}]
 
- <!-- log the change -->
-[h: logCombatAction(tokenId,"change",logMsg)]
+[h:"<!-- get current combat token , if none is found logs are sent to the chat window-->"]
+[h: cLogTokenId = findCurrentCombatToken()]
 
-<br>Changes saved to [r: getName(tokenId)]
-<!-- Refresh -->
-[h: macroParam2 = json.set("{}", "tokenId", tokenId)]
-[r, macro("openAPHP@Lib:RQII"): macroParam2]
+[h: logCombatAction(tokenId,"change",logMsg)]
+[r: addCombatLogEntry(tokenId,"updateHPAP",logLongMsg,"")]
+ 
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[h, macro("openAPHP@Lib:RQII"): macroParam]

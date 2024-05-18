@@ -6,27 +6,32 @@
 
 [h: propMagicPoint = getProperty("MagicPoint",tokenId)]
 
-<!-- update Current Magic Point -->
 [h: baseMP = json.path.read(propMagicPoint,"MP.base")]
 [h: currMP = json.path.read(propMagicPoint,"MP.current")]
 
-[h: msgAssert = strformat("Tsss, you can't have more MP than your base value (%{baseMP}), nice try ;) !")]
-[h: assert((baseMP >= newCurrMP),msgAssert,0)]
+[h, if(newCurrMP > baseMP), code:{
+  [h: msgAssert = strformat("Tsss, you can't have more MP than your base value (%{baseMP}), nice try ;) !")]
+  [h: res = input("junk|"+msgAssert+"|ignored|LABEL|SPAN=true")]
+  [h: abort(0)]
+}]
 
-[r, if(newCurrMP>currMP), code:{
-  You regain [r: newCurrMP - currMP] magic points
+[h, if(newCurrMP>currMP), code:{
+  [h: ptsMP = newCurrMP - currMP] 
+  [h: logMsg = strformat("Regain %{ptsMP} magic points. Current MP is now <b>%{newCurrMP}</b>/%{baseMP}.")]
 };{
-  You loose [r: currMP - newCurrMP] magic points
+  [h: ptsMP = currMP - newCurrMP]
+  [h: logMsg = strformat("Loose %{ptsMP} magic points. Current MP is now <b>%{newCurrMP}</b>/%{baseMP}.")]
 }]
 [h: newPropMagicPoint = json.path.set(propMagicPoint,"MP.current",newCurrMP)]
 
 [h: setProperty("MagicPoint",newPropMagicPoint,tokenId)]
 
-<!-- Refresh edit Window for the new token -->
+[r: addCombatLogEntry(tokenId,"updateHPAP",logMsg,"")]
+
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 
 [h, if(srcWindow == "openSheetMgt"), code:{
-  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+  [h, macro("openSheetMgt@Lib:RQII"): macroParam]
 };{
-  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+  [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
 }]

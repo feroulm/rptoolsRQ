@@ -141,7 +141,7 @@
     [h: aSkills = getProperty("commonSkills", tokenId)]
     [h: skillValues = json.get(aSkills,"Unarmed")]
     , Unarmed [r: json.get(skillValues,"current")]%
-    . <b>DMG :</b> [r: json.get(propDamageMod, "current")]
+    . <b>DMG :</b> <span style='color:red'>[r: json.get(propDamageMod, "current")]</span>
     </section>
     [r, macro("viewMeleeWeapons@this"): tokenId]<br>
   </div>

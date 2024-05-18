@@ -1,12 +1,10 @@
-<!-- updateCharac 
-Update token Charac json properties, it update only the current Value (tmpCharacName)
-Called by :  
-- editSheet@lib:RQII
-- editHumCombatAttr@lib:RQII (sheetManagement Group)
-Calling : 
-- openSheetMgt@Lib:RQII
-- openHumCombatAttr@lib:RQII (sheetManagement Group)
--->
+[h:"<!-- Update token Charac json properties, it update only the current Value (tmpCharacName) -->"]
+[h:"<!-- Called by :  -->"]
+[h:"<!-- - editSheet@lib:RQII -->"]
+[h:"<!-- - editHumCombatAttr@lib:RQII (sheetManagement Group) -->"]
+[h:"<!-- Calling : -->"]
+[h:"<!-- - openSheetMgt@Lib:RQII -->"]
+[h:"<!-- - openHumCombatAttr@lib:RQII (sheetManagement Group) -->"]
 
 [h: tokenId = json.get(macro.args, "tokenId")]
 [h: srcWindow = json.get(macro.args, "srcWindow")]
@@ -21,7 +19,7 @@ Calling :
 [h: propCombatStatus = getProperty("combatStatus",tokenId)]
 [h: damageModTbl = getLibProperty("damageMod","Lib:RQII")]
 
-<!-- keep previous value to indicate which one was changes -->
+[h: "<!-- keep previous value to indicate which one was changes -->"]
 [h: currSTR = json.get(propCharac,"tmpSTR")]
 [h: currCON = json.get(propCharac,"tmpCON")]
 [h: currSIZ = json.get(propCharac,"tmpSIZ")]
@@ -40,14 +38,18 @@ Calling :
 [h: newCHA = json.get(macro.args,"CHA")]
 
 [h: logMsg = "Update "]
-<!-- Update Chacac -->
+[h: logLongMsg = ""]
+
+[h: currActiveCA = json.get(propCombatStatus,"activeCA")]
+[h: currCcCA = json.get(propCombatStatus,"ccCA")]
+
 [foreach(characName, characNames, ""), code: {
-  <!-- construct JSON varName based on prop Name -->
+  [h: "<!-- construct JSON varName based on prop Name -->"]
   [h: tmpCharacName = "tmp"+characName]
   [h: newCharacValue = json.get(macro.args, characName)]
   [h: currCharacValue = json.get(propCharac, tmpCharacName)]
-  [r, if (currCharacValue != newCharacValue), code:{
-  	[r: characName] changed from [r: currCharacValue] to [r: newCharacValue]<br>
+  [h, if (currCharacValue != newCharacValue), code:{
+    [h: strformat("%{logLongMsg}<i>%{characName}</i> has changed from %{currCharacValue} to <b>%{newCharacValue}</b>.<br>")]
   	[h: logMsg = logMsg+characName+" "]
   }]
   [h: newCharac = json.set(newCharac,tmpCharacName,newCharacValue)]
@@ -56,81 +58,85 @@ Calling :
 
 [h: setProperty("Charac",newCharac,tokenId)]
 
-<!-- log the change -->
-
 [h: logCombatAction(tokenId,"change",logMsg)]
 
-<!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->
+[h: "<!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->"]
 [h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
 [h: currentSR = json.get(propStrikeRank, "current")]
-<!-- update base value in case DEX or INT changed -->
+
+[h: "<!-- update base value in case DEX or INT changed -->"]
 [h: newBaseSR = floor((newINT + newDEX)/2)]
 [h: newSR = floor((newINT + newDEX)/2) - currentArmorPenalty]<br>
-[r, if(newSR != currentSR), code:{
-  SR Change from [r: currentSR] to [r: newSR], you should reroll initiative for next mr<br>
+[h, if(newSR != currentSR), code:{
+  [h: strformat("%{logLongMsg} <i>SR</i> has changed from %{currentSR} to <b>%{newSR}</b>, reroll initiative for next mr.<br>")]
 };{}]
 [h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
 [h: newStrikeRank = json.set(newStrikeRank,"base",newBaseSR)]
 [h: setProperty("StrikeRank",newStrikeRank,tokenId)]
 
-<!-- recompute base CA roundup (=ceil) (DEX+INT)/12 -->
+[h: "<!-- recompute base CA roundup (=ceil) (DEX+INT)/12 -->"]
 [h: currentBaseCA = json.get(propCombatStatus,"baseCA")]
 [h: newBaseCA = ceil((newINT + newDEX)/12)]
-[r, if(newBaseCA != currentBaseCA), code:{
-  baseCA Change from [r: currentBaseCA] to [r: newBaseCA]<br>
-  <!-- recompute ccCA, may impact current CA status -->
+[h, if(newBaseCA != currentBaseCA), code:{
+  [h: strformat("%{logLongMsg} <i>baseCA</i> has changed from %{currentBaseCA} to <b>%{newBaseCA}</b>.<br>")]
+  [h: "<!-- recompute ccCA, may impact current CA status -->"]
   [h: newCombatStatus = json.set(propCombatStatus,"baseCA",newBaseCA)]
   [h: newCombatStatus = computeCcCA(tokenId,newCombatStatus)] 
   [h: setProperty("combatStatus",newCombatStatus,tokenId)]
+  
+  [h: newCcCA = json.get(newCombatStatus,"ccCA")]
+  [h: newActiveCA = json.get(newCombatStatus,"activeCA")]
+  [h: logLongMsg = strformat("%{logLongMsg}<br><i>ccCA</i> switch from %{currCcCA} to <b>%{newCcCA}</b>.")]
+  [h: logLongMsg = strformat("%{logLongMsg} <i>activeCA</i> switch from %{currActiveCA} to <b>%{newActiveCA}</b>.<br>")]
 };{}]
 
-<!-- recompute Damage (FOR+TAI) - table -->
+[h: "<!-- recompute Damage (FOR+TAI) - table -->"]
 [h, if(newSTR+newSIZ>50), code:{
-  <!-- big damage mod progress by range of 10pts -->
+  [h: "<!-- big damage mod progress by range of 10pts -->"]
   [h: newDamageModIndex = ceil((newSTR + newSIZ)/10)+4]
 };
 {
-  <!-- damage progress mod by range of 5pts -->
+  [h: "<!-- damage progress mod by range of 5pts -->"]
   [h: newDamageModIndex = ceil((newSTR + newSIZ)/5)-1]
 }]
 
 [h, if(newDamageModIndex<0): newDamageModIndex = 0]
-[r, if(newDamageModIndex>17), code:{
+[h, if(newDamageModIndex>17), code:{
 	[h: newDamageModIndex = 17]
-	Damage Mod when STR + SIZ is above 130 is not implemented...continue the progession<br>
+	[h: logLongMsg = strformat("%{logLongMsg}<span style='font-weight: bold;color:red'>Damage Mod when STR + SIZ is above 130 is not implemented...</span>continue the progession<br>")]
 }]
 [h: newDamageMod = json.get(damageModTbl,newDamageModIndex)]
 [h: currentDamageMod = json.get(propDamageMod,"current")]
-[r, if(currentDamageMod != newDamageMod), code:{
-	Damage Mod change from [r: currentDamageMod] to [r: newDamageMod]<br>
+[h, if(currentDamageMod != newDamageMod), code:{
+	[h: logLongMsg = strformat("%{logLongMsg} Damage Mod change from %{currentDamageMod} to <b>%{newDamageMod}</b>.<br>")]
 	[h: newPropDamageMod = json.set(propDamageMod,"current",newDamageMod)]
 	[h: setProperty("damageMod",newPropDamageMod,tokenId)]
 };{}]
 
-<!-- recompute Magic Point -->
-<!-- base MP = newPOW, current MP = currentMP + (newPOW - prevPOW) -->
-[r, if(newPOW != currPOW), code:{
+[h: "<!-- recompute Magic Point -->"]
+[h: "<!-- base MP = newPOW, current MP = currentMP + (newPOW - prevPOW) -->"]
+[h, if(newPOW != currPOW), code:{
   [h: newMP = newPOW - json.get(propMagicPoint,"dedPOW")]
   [h: currMP = json.path.read(propMagicPoint,"MP.current")]
   [h: newMagicPoint = json.path.set(propMagicPoint,"MP.base",newMP)]
   [h: newCurrMP = currMP + (newPOW - currPOW)]
   [h: newMagicPoint = json.path.set(newMagicPoint,"MP.current",newCurrMP)]
   [h: setProperty("MagicPoint",newMagicPoint,tokenId)]
-  Current MP change from [r: currMP] to [r: newCurrMP]<br>
+  [h: logLongMsg = strformat("%{logLongMsg}Current MP change from %{currMP} to %{newCurrMP}.<br>")]
 };{}]
 
-<!-- recompute HP (CON+SIZ)/2 (rounded up) 
-- modifiy only hpInit since origHP are computed dynamically base on hpInit
-- rule : increasing HP during combat could change an existing wound level, it is considered as a magical healing. if it is decreasing it is considered as an injury
--->
+[h: "<!-- recompute HP (CON+SIZ)/2 (rounded up) -->"]
+[h: "<!-- - modifiy only hpInit since origHP are computed dynamically base on hpInit. TODO - manage an automatic update #13-->"]
+[h: "<!-- - rule : increasing HP during combat could change an existing wound level, it is considered as a magical healing. if it is decreasing it is considered as an injury -->"]
 [h: newHpInit = ceil((newCON + newSIZ)/5)]
 [h: currHpInit = getProperty("hpInit",tokenId)]
-[r, if(newHpInit != currHpInit), code:{
-  Change HP :  [r: newHpInit- currHpInit] in every locations
+[h, if(newHpInit != currHpInit), code:{
+  [h: hpLocChange = newHpInit- currHpInit]
+  [h: logLongMsg = strformat("%{logLongMsg} CON or/and SIZ has changed. HP needs to be modified :  add <i>manually</i> %{hpLocChange} in every locations if the token is a human (<i>Check what happens if it is a monster</i>).<br>")]
   [h: setProperty("hpInit",newHpInit,tokenId)]
 };{}]
 
-<!-- recompute Skills -->
+[h: "<!-- recompute Skills -->"]
 
 [h: currSkill = getProperty("commonSkills",tokenId)]
 [h: newSkill = computeSkill(currSkill,tokenId)]
@@ -148,11 +154,12 @@ Calling :
 [h: newSkill = computeSkill(currSkill,tokenId)]
 [h: setProperty("advSkills",newSkill,tokenId)]
 
-<!-- Refresh edit Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 
+[r: addCombatLogEntry(tokenId,"updateCharac",logLongMsg,"")]
+
 [h, if(srcWindow == "openSheetMgt"), code:{
-  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+  [h, macro("openSheetMgt@Lib:RQII"): macroParam]
 };{
-  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+  [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
 }]
