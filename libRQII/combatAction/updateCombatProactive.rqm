@@ -5,7 +5,7 @@
 [h: nextTokenOffset = json.get(macro.args, "nextTokenOffset")]
 
 [h: "<!-- for log management -->"]
-[h: actionLabel = json.get(macro.args, "edit_btn")]
+[h: actionLabel = json.get(macro.args, "actionLabel")]
 [h: logMsg = ""]
 [h: logComment = ""]
 [h: logTokenStatus = ""]

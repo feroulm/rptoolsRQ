@@ -35,12 +35,12 @@
 }]
 [r, if(tokenFound), code:{
   [h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
-  <form action="[r:linkUpdateCombat]" method="json">
+  <form class="pure-form" action="[r:linkUpdateCombat]" method="json">
         <input type="hidden" name="tokenId" value="[r:tokenId]">
         <input type="hidden" name="action" value="nxtturn">
         <input type="hidden" name="nextTokenId" value="[r:nextTokenId]">
         <input type="hidden" name="nextTokenOffset" value="[r:nextTokenOffset]">
-        <input type="submit" name="edit_btn" value="next turn">
+        <input type="submit" name="edit_btn" value="next turn" class="pure-button pure-button-primary">
   </form>
 }]
 [r, if(tokenOut == maxOffset), code:{
@@ -51,28 +51,28 @@
   [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
   [h: activeCA = json.get(currentCombatStatus,"activeCA")]
   [r, if((turnStatus == "off")&&(activeCA>0)), code:{
-    <form action="[r:linkUpdateGlobalCombat]" method="json">
+    <form class="pure-form" action="[r:linkUpdateGlobalCombat]" method="json">
 		  <input type="hidden" name="tokenId" value="[r:tokenId]">
       <input type="hidden" name="tokens" value=[r: tokens]>
       <input type="hidden" name="action" value="nxtcycle">
       <input type="submit" name="edit_btn" value="Next Cycle">
     </form>
   };{
-  	<form action="[r:linkUpdateGlobalCombat]" method="json">
+  	<form class="pure-form" action="[r:linkUpdateGlobalCombat]" method="json">
 		  <input type="hidden" name="tokenId" value="[r:tokenId]">
       <input type="hidden" name="tokens" value=[r: tokens]>
       <input type="hidden" name="action" value="nxtmr">
-      <input type="submit" name="edit_btn" value="Next MR">
+      <input type="submit" name="edit_btn" value="Next MR" class="pure-button pure-button-primary">
     </form> 	
   }]
 }]
 [r, if(tokenNotFound), code:{
   [h: tokens = json.get(initList,"tokens")]
   [h: linkUpdateGlobalCombat = macroLinkText("updateGlobalCombat@Lib:RQII", "all")]
-  <form action="[r:linkUpdateGlobalCombat]" method="json">
+  <form class="pure-form" action="[r:linkUpdateGlobalCombat]" method="json">
 	  <input type="hidden" name="tokenId" value="[r:tokenId]">
     <input type="hidden" name="tokens" value=[r: tokens]>
     <input type="hidden" name="action" value="nxtcycle">
-    <input type="submit" name="edit_btn" value="Next Cycle">
+    <input type="submit" name="edit_btn" value="Next Cycle" class="pure-button pure-button-primary">
   </form>
 }]

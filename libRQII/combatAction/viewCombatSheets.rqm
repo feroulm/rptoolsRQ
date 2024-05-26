@@ -83,9 +83,7 @@
   <thead>
   <tr>
     <th colspan="2">Token (and Condition)</th>
-    <th>CA</th>
-    <th>Turn</th>
-    <th>MP</th>
+    <th>Turn / CA / MP</th>
     <th>Skills</th>
     <th>AP / HP / Wound</th>
     <th>Weapons (DMG)</th>
@@ -122,18 +120,21 @@
   <br>- [r: json.get(currentCombatLog,"lastReactiveAction")]
   <br>- [r: json.get(currentCombatLog,"lastTokenChange")]
   </td>
-  <td>[r: json.get(currentCombatStatus,"activeCA")] / <b>[r: json.get(currentCombatStatus,"ccCA")]</b></td>
-  <td style="text-align:center">[r: upper(json.get(currentCombatStatus,"turnStatus"))]<br><br>
-    [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","","cLogTokenId",CurrCLogTokenId)]
+  <td>
+    <p style="text-align:center">
+      [r: upper(json.get(currentCombatStatus,"turnStatus"))]<br><br>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","","cLogTokenId",CurrCLogTokenId)]
       [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
       <a class="pure-button pure-button-primary" href="[r: lnkTxt]">Act</a>
-  </td>
-  [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
-  <td>
-    [r, if(isNPC(tokenId) && !isGM()), code: {
-    };{
-      [r: json.path.read(propMagicPoint,"MP.current")]/<b>[r: json.path.read(propMagicPoint,"MP.base")]</b>
-    }]
+    </p>  
+    <p style="text-align:left;font-size:110%">
+      [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
+      CA : <span style="font-weight: bold;color:blue">[r: json.get(currentCombatStatus,"activeCA")]</span> / [r: json.get(currentCombatStatus,"ccCA")]
+      [r, if(isNPC(tokenId) && !isGM()), code: {
+      };{
+        <br>MP : <span style="font-weight: bold;color:blue">[r: json.path.read(propMagicPoint,"MP.current")]</span> / [r: json.path.read(propMagicPoint,"MP.base")]
+      }]
+    </p>
   </td>
   <td>
      [r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]

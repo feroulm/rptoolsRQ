@@ -10,6 +10,7 @@
 [h: tokenId = json.get(macro.args, "tokenId")]
 [h: action = json.get(macro.args, "action")]
 [h: newWeaponNb = json.get(macro.args, "newWeaponNb")]
+[h: weaponName = json.get(macro.args, "weaponName")]
 [h: newMagicCA = json.get(macro.args, "newMagicCA")]
 [h: srcWindow = json.get(macro.args, "srcWindow")]
 
@@ -24,6 +25,7 @@
 
 [h, switch(action), code:
    case "weaponca" : {
+
     [h: "<!-- compute weaponCA bonus -->"]
     [h: newWeaponCA = newWeaponNb - 1]
 
@@ -40,15 +42,15 @@
     [h: newActiveCA = json.get(currentCombatStatus,"activeCA")]
     
     [h, if(newWeaponNb>currWeaponNb), code: {
-      [h: logMsg = "Grab a new weapon."]
+      [h: logMsg = "Grab a new weapon : <i>"+weaponName+"</i>."]
     };{
-      [h: logMsg = "Loose a weapon."]
+      [h: logMsg = "Loose weapon : <i>"+weaponName+"</i>."]
     }]
     
     [h, if(currWeaponCA == newWeaponCA), code: {  
       [h: logLongMsg = strformat("%{logMsg}<br>WeaponBonus is unchanged, ccCA and activeCA are unchanged")]
     };{
-      [h: logLongMsg = strformat("%{logMsg} <i>weaponCA</i> switch from %{currWeaponCA} to <b>%{newWeaponCA}</b>.")]
+      [h: logLongMsg = strformat("%{logMsg}<br><i>weaponCA</i> switch from %{currWeaponCA} to <b>%{newWeaponCA}</b>.")]
       [h: logLongMsg = strformat("%{logLongMsg}<br><i>ccCA</i> switch from %{currCcCA} to <b>%{newCcCA}</b>.")]
       [h: logLongMsg = strformat("%{logLongMsg} <i>activeCA</i> switch from %{currActiveCA} to <b>%{newActiveCA}</b>")]
     }]
@@ -80,8 +82,15 @@
 [r: addCombatLogEntry(tokenId,"updateCcCA",logLongMsg,"")]
 
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[h, if(srcWindow == "openSheetMgt"), code:{
-  [h, macro("openSheetMgt@Lib:RQII"): macroParam]
-};{
-  [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
-}]
+
+[h, switch(srcWindow), code:
+   case "openSheet" : {
+    [h, macro("openSheet@Lib:RQII"): macroParam]
+   };
+   case "openSheetMgt" : {
+    [h, macro("openSheetMgt@Lib:RQII"): macroParam]
+   };
+   default:{
+    [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+   }
+ ]

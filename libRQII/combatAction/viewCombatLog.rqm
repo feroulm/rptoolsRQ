@@ -50,16 +50,24 @@
   </div>     
 </div> 
 <div class="container pure-g">
-	<div class="pure-u-md-4-24">
+	<div class="pure-u-md-6-24">
 		[h: linkUdpateCurrentCombat = macroLinkText("openCombatSheets@Lib:RQII", "all")]
 		<form class="pure-form" action="[r:linkUdpateCurrentCombat]" method="json">
 		<input type="hidden" name="tab" value="log">
 		<table class="content pure-table pure-table-striped table-striped-custom">
-		<tbody>
+		<thead>
+      <tr>
+        <th></th>
+        <th>Log Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
 		[h: cond = json.set("{}","propertyType" ,"RQ_Log")]
 		[h: cLogTokens = getTokens("json", cond)]
 		[r, foreach(cLogTokenId, cLogTokens, ""), code:{
 			[h: combatProp = getProperty("combat",clogTokenId)]
+      [h: cLogStatus = json.get(combatProp,"status")]
+      
 			<tr>
 				<td>
 					[h: isSelected = ""]
@@ -69,10 +77,23 @@
 				<td>
 					[r: json.get(combatProp,"desc")]
 				</td>
+        <td>
+					[r: json.get(combatProp,"status")]
+          [r, if(cLogStatus == "current"), code:{
+          [h: macroParam = json.set("{}", "action", "disable","cLogTokenId",cLogTokenId)]
+          [h: link = macroLinkText("updateCombatLog@Lib:RQII", "all",macroParam)]
+          <a class="button-warning pure-button" href="[r: link]">Disable Current</a>
+          };{}]
+          [r, if(cLogStatus == "currentDisabled"), code:{
+            [h: macroParam = json.set("{}", "action", "renable","cLogTokenId",cLogTokenId)]
+            [h: link = macroLinkText("updateCombatLog@Lib:RQII", "all",macroParam)]
+            <a class="button-warning pure-button" href="[r: link]">Renable Current</a>
+          };{}]
+				</td>
 			</tr>
 		}]
 			<tr>
-				<td colspan="2">
+				<td colspan="3">
 					<button type="submit" class="pure-button pure-button-primary">Select a combat</button>
 				</td>
 			</tr>
@@ -110,6 +131,8 @@
 		</form>
 		</div>
 	</div>
+  <div class="pure-u-md-5-24">
+  </div>
 </div>
 <div class="container pure-g">
   <div class="pure-u-1">
@@ -132,7 +155,7 @@
 			[h: logs = json.sort(logs,"d","logId")]
 			[r, foreach(logEntry, logs, ""), code: {
 				[h: logEntryKey = json.get(logEntry,"logId")]
-				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter,"logCycleFilter",logCycleFilter)]
+				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter,"logCycleFilter",logCycleFilter,"cLogTokenId",CurrCLogTokenId)]
 				[r, macro("showFilteredLogEntry@Lib:RQII"): macroParam]
 			}]
 		};{

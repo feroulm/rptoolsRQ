@@ -14,14 +14,17 @@
 }]
 
 [h: param = json.set("{}", "tokenId", tokenId, "msg", msg)]
-[frame("Combat Action"): {
+[frame5("Combat Action"): {
 <html>
 <head>
-<link rel="onChangeSelection" type="macro" href="[r:link]">
-<title>Combat Action - [r: getName(tokenId)]</title>
+  <link rel="onChangeSelection" type="macro" href="[r:link]">
+  <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+	<link rel="stylesheet" type="text/css" href="pureGridsResponsiveCss@Lib:RQII">
+  <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+  <title>Combat Action - [r: getName(tokenId)]</title>
 </head>
-<body>
-[r, macro("editCombatAction@Lib:RQII"): param]
+<body class="body-custom">
+  [r, macro("editCombatAction@Lib:RQII"): param]
 </body>
 </html>
 }]

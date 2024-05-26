@@ -1,0 +1,23 @@
+[h: "<!-- updateCombatLogEntry -->"]
+[h: arguments = macro.args]
+
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>combat::updateCombatLogEntry</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: logIdx = json.get(arguments, "logIdx")]
+  [h: cLogTokenId = json.get(arguments, "cLogTokenId")]
+}]
+
+[h: logs = getProperty("combatLog", cLogTokenId)]
+[h: logNewEntry = json.get(logs,logIdx)]
+[h: logNewEntry = json.set(logNewEntry,"currMr",json.get(arguments, "currMr"))]
+[h: logNewEntry = json.set(logNewEntry,"currCycle",json.get(arguments, "currCycle"))]
+[h: logNewEntry = json.set(logNewEntry,"logMsg",json.get(arguments, "logMsg"))]
+[h: logNewEntry = json.set(logNewEntry,"logComment",json.get(arguments, "logComment"))]
+
+[h: logs = json.set(logs,logIdx,logNewEntry)]
+[h: setProperty("combatLog",logs,cLogTokenId)]	
+
+[h: macroParam = json.set("{}", "tab", "log","cLogTokenId", cLogTokenId)]
+[h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]

@@ -40,4 +40,6 @@
 [h: combatProp = json.set(combatProp,"initRoll",1)]
 [h: setProperty("combat",combatProp,cLogTokenId)]	
 
+[h: addCombatLogEntry(cLogTokenId,"globalEvent",logMsg,"")]
+
 [r: cLogTokenId]

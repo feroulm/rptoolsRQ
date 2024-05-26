@@ -1,6 +1,6 @@
 [h: tokenId = json.get(macro.args, "tokenId")]
 [h: action = json.get(macro.args, "action")]
-[h: actionLabel = json.get(macro.args, "edit_btn")]
+[h: actionLabel = json.get(macro.args, "actionLabel")]
 
 [h: cLogTokenId = "none"]
 [h: cLogTokenId = json.get(macro.args,"cLogTokenId")]

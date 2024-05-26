@@ -5,6 +5,7 @@
 [h: logMrFilter = json.get(macro.args, "logMrFilter")]
 [h: logCycleFilter = json.get(macro.args, "logCycleFilter")]
 [h: tokenNameFilter = json.get(macro.args, "tokenNameFilter")]
+[h: cLogTokenId = json.get(macro.args, "cLogTokenId")]
 
 
 [h: tokenId = json.get(logEntry,"tokenId")]
@@ -14,14 +15,21 @@
 [h: logCurrMr = json.get(logEntry,"currMr")]
 [h: logCurrCycle = json.get(logEntry,"currCycle")]
 
+
+
 [r, if(matches(logType,logTypeFilter) && matches(logCurrCycle,logCycleFilter) && matches(logCurrMr,logMrFilter) && matches(tokenName,tokenNameFilter)), code:{
-				<tr>
-					<td>[r: logEntryKey]</td>
-					<td>MR [r: json.get(logEntry,"currMr")] / C[r: json.get(logEntry,"currCycle")]</td>
-					<td>[r: tokenName]</td>
-					<td>[r: json.get(logEntry,"logType")]</td>
-					<td>[r: json.get(logEntry,"logMsg")]</td>
-					<td>[r: json.get(logEntry,"logComment")]</td>
-					<td>[r: json.get(logEntry,"serverTime")]</td>
-				</tr>
+	<tr>
+		<td>[r: logEntryKey]</td>
+		<td>MR [r: json.get(logEntry,"currMr")] / C[r: json.get(logEntry,"currCycle")]</td>
+		<td>[r: tokenName]</td>
+		<td>[r: json.get(logEntry,"logType")]</td>
+		<td>[r: json.get(logEntry,"logMsg")]</td>
+		<td>[r: json.get(logEntry,"logComment")]</td>
+		<td>[r: json.get(logEntry,"serverTime")]</td>
+    <td>
+      [h: macroParam = json.set("{}", "logId", logEntryKey,"cLogTokenId",cLogTokenId)]
+      [h: link = macroLinkText("editCombatLogEntry@Lib:RQII", "all",macroParam)]
+    <a class="button-warning pure-button" href="[r: link]">edit</a>
+    </td>
+	</tr>
 }]

@@ -1,6 +1,8 @@
 <!-- Principe , on ajoute les nouveau champ et on remet les valeur des anciens champs "important" si il existe
 
-- Dans la macro definir la nouvelle structure dans newCombatStatusModel
+- A chaque evol de combatStatus on défini dans cette macro :
+--- la nouvelle structure dans newCombatStatusModel
+--- la var patchVersionTag qui doit matcher l'item versionTag de la structure
 - Copier l'ancienne structure dans oldCombatStatus
 - mettre à jour la nouvelle structuer
 - recopier si elle existe les valeurs suivantes :
@@ -15,6 +17,9 @@
 - ce qui est du param "spécifique" c'est uniquement defWeaponNb , bonusCA magicCA
 -->
 
+<!-- cas pour passer de a plusieurs version.... 
+- Passage de v1.0.0 à v3.0.0 : on check juste l'existence de spellReady
+-->
 <!-- version history 
 - v1.0.0 : initial version
 - v2.0.0 : add spellReady prop
@@ -25,8 +30,8 @@
 
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
-[h: res = input("junk|This will reset all token combatStatus properties value for "+getName(tokenId)+ ". Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
-[h: abort(res)]	
+
+[h: patchVersionTag = "v3.0.0"]
 
 [h: newCombatStatusModel = '{
     "turnStatus": "on",
@@ -50,25 +55,36 @@
     "weaponReach": "ok",
     "currWeaponNb": 1,
     "defWeaponNb": 1,
-		"spellReady": 0,
 		"cLogTokenId": "none",
 		"versionTag" : "v3.0.0"
 }']
 
 [h: oldCombatStatus = getProperty("combatStatus",tokenId)]
 
-<!-- copy value which can be specific to each token and not computable -->
-[h: defWeaponNb = json.get(oldCombatStatus,"defWeaponNb")]
-[h: magicCA = json.get(oldCombatStatus,"magicCA")]
-[h: bonusCA = json.get(oldCombatStatus,"bonusCA")]
+<!-- Check version -->
+[h: currentVersion = json.get(oldCombatStatus,"versionTag")]
+[h, if(currentVersion == ""), code:{
+  [h: propspellReady = json.get(oldCombatStatus,"spellReady")]
+  [h, if(propspellReady != "") : currentVersion = "v2.0.0";currentVersion = "v1.0.0"]
+}]
 
-[h: newCombatStatusModel = json.set(newCombatStatusModel,"defWeaponNb",defWeaponNb)]
-[h: newCombatStatusModel = json.set(newCombatStatusModel,"magicCA",magicCA)]
-[h: newCombatStatusModel = json.set(newCombatStatusModel,"bonusCA",bonusCA)]
+[h: patchLog = "Patching <i>combatStatus</i> properties for <b>"+getName(tokenId)+ "</b> from <i>"+currentVersion+"</i> to <b>"+patchVersionTag+"</b>"]
+[h: res = input("junk|<html>"+patchLog+". <br>This will reset all token value. <br>Are you sure?  Click OK to confirm.</html>|ignored|LABEL|SPAN=true")]
+[h: abort(res)]	
 
-<!-- recompute value using un UDF function -->
-<pre>
-[r: newCombatStatusModel = computeCombatStatus(newCombatStatusModel,tokenId)]
-</pre>
+<!-- copy value when the item exists -->
+
+[h, foreach(item, oldCombatStatus, ""), code:{
+  [h: itemValue = json.get(oldCombatStatus,item)]
+  [h, if(itemValue != "") : newCombatStatusModel = json.set(newCombatStatusModel,item,itemValue)]
+}]
+
+<!-- Check if current Combat Token exist and patch cLogTokenID value in that case -->
+[h:"<!-- get current combat token -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
+
+[h, if(cLogTokenId != "none") : newCombatStatusModel = json.set(newCombatStatusModel,"cLogTokenId",cLogTokenId)]
 
 [h: setProperty("combatStatus",newCombatStatusModel,tokenId)]
+
+[r: patchLog] is done.

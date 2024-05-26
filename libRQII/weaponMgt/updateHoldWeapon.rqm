@@ -1,0 +1,28 @@
+[h: "<!-- action to update hold weapon status -->"]
+[h: arguments = macro.args]
+
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: weaponId = json.get(arguments, "weaponId")]
+[h: weaponfamily = json.get(macro.args, "weaponfamily")]
+[h: srcWindow = json.get(macro.args, "srcWindow")]
+
+[h: hold = json.get(arguments, "holdValue")]
+
+[h, switch(weaponfamily), code:
+  case "melee" : {
+    [h: Weapons = getProperty("Weapons",tokenId)]
+    [h: Weapons = setStrProp(Weapons, strformat("Weapon%{weaponId}Hold"), hold)]
+    [h: weaponName = getStrProp(Weapons, strformat("Weapon%{weaponId}Name"))]
+    [h: setProperty("Weapons",Weapons,tokenId)]
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"action","weaponca","srcWindow",srcWindow,"newWeaponNb",computeHoldWeaponNb(tokenId),"weaponName",weaponName)]
+    [r, macro("updateCcCA@Lib:RQII"): macroParam]
+    };
+  case "missile" : {
+    [h: Missiles = getProperty("Missiles",tokenId)]
+    [h: Missiles = setStrProp(Missiles, strformat("Missile%{weaponId}Hold"), hold)]
+    [h: weaponName = getStrProp(Missiles, strformat("Missile%{weaponId}Name"))]
+    [h: setProperty("Missiles",Missiles,tokenId)]
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"action","weaponca","srcWindow",srcWindow,"newWeaponNb",computeHoldWeaponNb(tokenId),"weaponName",weaponName)]
+    [r, macro("updateCcCA@Lib:RQII"): macroParam]
+  };
+]

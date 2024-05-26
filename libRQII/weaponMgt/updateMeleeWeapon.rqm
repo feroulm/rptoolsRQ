@@ -31,7 +31,9 @@
 
 [h: "<!-- Recompute currWeaponNb & ccCA based on Hold new value -->"]
 
-[h: macroParam = json.set("{}", "tokenId", tokenId,"action","weaponca","srcWindow","openSheetMgt","newWeaponNb",computeHoldWeaponNb(tokenId))]
+[h: weaponName = getStrProp(Weapons, strformat("Weapon%{weaponId}Name"))]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"action","weaponca","srcWindow","openSheetMgt","newWeaponNb",computeHoldWeaponNb(tokenId),"weaponName",weaponName)]
 [r, macro("updateCcCA@Lib:RQII"): macroParam]
 
 [h: "<!-- Refresh edit Window for the new token -->"]

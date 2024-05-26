@@ -1,0 +1,2 @@
+[h: macroParam = json.set("{}","noparam","")]
+[h, macro("createCombatNoStatusReset@Lib:RQII"): macroParam]  

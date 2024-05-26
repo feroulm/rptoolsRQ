@@ -1,0 +1,30 @@
+[h: "<!-- updateCombatLog - Update some log related property based on the given action param -->"]
+[h: "<!-- - toggle status current or currentDIsabled for log activation. -->"]
+[h: arguments = macro.args]
+[h: action = json.get(arguments, "action")]
+[h: cLogTokenId = json.get(arguments, "cLogTokenId")]
+
+[h, if(cLogTokenId == "none" || cLogTokenId == "" ), code:{
+	[h: logDbgMsg = strformat("<i>combatAction::updateCombatLog</i> : there is no current combat token (cLogTokenId=%{cLogTokenId}). Create a combat first")]
+  [h: log.debug(logDbgMsg)]
+	[assert(0,logDbgMsg,0)]
+};{	
+	[h: combatProp = getProperty("combat",cLogTokenId)]
+}]
+
+[r, switch(action), code:
+  case "disable" : {
+    [h: combatProp = json.set(combatProp,"status","currentDisabled")]
+  };
+  case "renable" : {
+    [h: combatProp = json.set(combatProp,"status","current")]
+  };
+  default: {
+ 	<br><b>[r: action]</b> is not implemented in <i>updateCombatLog</i> !<br>
+  }
+]
+[h: setProperty("combat",combatProp,cLogTokenId)]	
+
+[h: macroParam = json.set("{}", "tab", "log","cLogTokenId", cLogTokenId)]
+[h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]

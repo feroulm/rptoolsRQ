@@ -1,0 +1,72 @@
+[h: arguments = macro.args]
+
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>combat::editCombatLogEntry</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: logId = json.get(arguments, "logId")]
+  [h: cLogTokenId = json.get(arguments, "cLogTokenId")]
+}]
+
+[dialog5("Edit Log Entry"): {
+<html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>Edit Log Entry</title>
+    </head>
+<body class="body-custom">
+
+
+[h: logs = getProperty("combatLog", cLogTokenId)]
+
+[h: logIdEntry = json.get(json.path.read(logs, "[?(@.logId == '"+logId+"')]"), 0)]
+[h: logEntryIndex = json.indexOf(logs, logIdEntry)]
+
+[h: logMr = json.get(logIdEntry,"currMr")]
+[h: logCycle = json.get(logIdEntry,"currCycle")]
+[h: logType = json.get(logIdEntry,"logType")]
+[h: logMsg = json.get(logIdEntry,"logMsg")]
+[h: logComment = json.get(logIdEntry,"logComment")]
+[h: logServerTime = json.get(logIdEntry,"serverTime")]
+
+<div class="container pure-g">
+  <div class="pure-u-1">
+      Edit Log Entry (idx [r: logEntryIndex])
+			[h: link = macroLinkText("updateCombatLogEntry@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:link]" method="json">
+			<input type="hidden" name="logIdx" value="[r:logEntryIndex]">
+      <input type="hidden" name="cLogTokenId" value="[r: cLogTokenId]">
+      <table class="content pure-table pure-table-striped">
+      <tbody>
+        <tr>
+          <td>MR</td>
+          <td>
+              <input type="text" size="3" name="currMr" placeholder="mr" value="[r:logMr]"/>
+          </td>
+        </tr>
+        <tr>
+          <td>Cycle</td>
+          <td><input type="text" size="3" name="currCycle" placeholder="cycle" value="[r:logCycle]"/></td>
+        </tr>
+        <tr>
+          <td>Msg</td>
+          <td><textarea size="25" name="logMsg" placeholder="msg" rows="6">[r:logMsg]</textarea></td>
+        </tr>
+        <tr>
+          <td>Comment</td>
+          <td><textarea size="25" name="logComment" placeholder="comment" rows="6">[r:logComment]</textarea></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button type="submit" class="pure-button pure-button-primary">Update</button>
+          </td>
+        </tr>
+      </tbody>
+       </table> 
+		</form>  
+  </div>
+</div>
+
+</body>
+</html>
+}]

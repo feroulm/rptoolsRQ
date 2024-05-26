@@ -92,6 +92,7 @@
 		
 		[h: "<!-- create a new CombatLog token with cycle, mr, and initiRoll reset to 1 -->"]
 		[h: cLogTokenId = createNewClogToken(combatDesc)]
+    [h: addCombatLogEntry(cLogTokenId,"globalEvent","Combat : <i>"+combatDesc+"</i> is created","")]
 		
     [r, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]

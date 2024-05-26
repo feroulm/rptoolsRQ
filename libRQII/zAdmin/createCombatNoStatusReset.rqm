@@ -1,0 +1,24 @@
+<!-- createCombatNoStatusReset - Create a combat token on a map , without resetting combatStatus value for existing token on the map 
+- mainly use to patch / migrate existing and non finished combat without :
+-- loosing the current value for proactiveCA, reactiveCA etc.
+-- resetting token combatLog prop.
+-- resetting States
+-- rerolling Initiative
+-->
+
+[h: res = input("junk|<html>This will create a new combat. CR, MR will be reset and may need manual adjustement.<br> only <i>cLogTokenId</i> will be updated on tokens <i>combatStatus</i> prop. <br> Are you sure?  Click OK to confirm.</html>|ignored|LABEL|SPAN=true",
+		"combatDesc|new combat|Combat short desc / nickname :")][h: abort(res)]
+    
+[h: "<!-- create a new CombatLog token with cycle, mr, and initiRoll reset to 1 -->"]
+[h: cLogTokenId = createNewClogToken(combatDesc)]
+[h: addCombatLogEntry(cLogTokenId,"globalEvent","Combat : <i>"+combatDesc+"</i> is created","")]
+
+[h: "<!-- Patch cLogTokenId for each token -->"]
+
+[h: tokens = json.get(getInitiativeList(), "tokens")]
+[h, foreach(item, tokens, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+	[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+  [h: currentCombatStatus = json.set(currentCombatStatus,"cLogTokenId",cLogTokenId)]
+  [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+}]

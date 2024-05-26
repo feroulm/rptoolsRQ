@@ -1,11 +1,13 @@
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)), code:{
-	[assert(0,"<i>combatAction::editCombatAction</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+  [assert(0,"<i>combatAction::editCombatAction</i> : no arguments, this macro can't be called without mandatory parameters",0)]
 };
 {
-	[h: tokenId = json.get(arguments,"tokenId")]
-	[h: msg = json.get(arguments,"msg")]
+  [h: tokenId = json.get(arguments,"tokenId")]
+  [h: msg = json.get(arguments,"msg")]
 }]
+
+[h: tokenMap = getCurrentMapName()]
 
 <!-- Combat Status variable -->
 [h: tCombatStatus = getProperty("combatStatus",tokenId)]
@@ -54,23 +56,60 @@
 
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
 
-[r, if (activeTurn), code:{
-<span style="font-weight: bold;color:green"><a class="pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>&nbsp;(Active Turn)</span>
-};{
-<span style="font-weight: bold;color:black"><a class="pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a> </span>	
-}]
-<hr>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <table class="content pure-table table-striped-custom">
+      <tbody>
+      [r, if (activeTurn), code:{      
+        <tr class="active">
+          <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
+          <td><a id="active" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>
+          <td>Acting in its Turn
+          <br><br>CA : <span style="font-weight: bold;color:blue">[r: json.get(tCombatStatus,"activeCA")]</span> / [r: json.get(tCombatStatus,"ccCA")]
+            [r, if(isNPC(tokenId) && !isGM()), code: {
+            };{
+            <br>MP : <span style="font-weight: bold;color:blue">[r: json.path.read(propMagicPoint,"MP.current")]</span> / [r: json.path.read(propMagicPoint,"MP.base")]
+            }]
+          </td>
+          <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
+        </tr>
+      };{
+        <tr>
+          <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
+          <td><a class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>
+          <td>
+            Not acting in its turn
+            <br><br>CA : <span style="font-weight: bold;color:blue">[r: json.get(tCombatStatus,"activeCA")]</span> / [r: json.get(tCombatStatus,"ccCA")]
+            [r, if(isNPC(tokenId) && !isGM()), code: {
+            };{
+            <br>MP : <span style="font-weight: bold;color:blue">[r: json.path.read(propMagicPoint,"MP.current")]</span> / [r: json.path.read(propMagicPoint,"MP.base")]
+            }]
+          </td>
+          <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
+        </tr>
+      }]
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <!-- Common info whatever the type of action, like situationModifier, range status -->
-[r, if(weaponReach != "ok"),code:{
-	Token is currently <i>[r: weaponReach]</i>.<br>
-}]
-[r, if(situationMod == "prone"): "<b>Token is prone, -20% malus on fighting action</b>"]<br>
 
-<!-- Show last action result (erased at each refresh) -->
-[r, if (msg != ""), code:{
-<b>[r: msg]</b><br><br>
-}]
+<div class="container pure-g">
+  <div class="pure-u-1">
+    [r, if(weaponReach != "ok"),code:{
+      Token is currently <i>[r: weaponReach]</i>.<br>
+    }]
+    [r, if(situationMod == "prone"): "<b>Token is prone, -20% malus on fighting action</b>"]<br>
+    
+    <!-- Show last action result (erased at each refresh) -->
+    [r, if (msg != ""), code:{
+    <b>[r: msg]</b><br><br>
+    }]
+  </div>
+</div>
 
 <!-- Compute condition based on various value -->
 [h: showProactiveAction = 0]
@@ -135,10 +174,13 @@
 [h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
 
 <!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
+<div class="container pure-g">
+  <div class="pure-u-1">
 [r, if (showProactiveAction), code :{
   [r, if(turnDeclaration == ""), code:{
-  	<b>STEP1</b> - If opponent can react, declare the action first :<br>  	
-  	<form action="[r:linkUpdateCombatProactive]" method="json">
+    <b>STEP1</b> - If opponent can react, declare the action first.
+    <hr>    
+    <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
              <option selected="selected">Attack</option>
@@ -156,10 +198,13 @@
           [r: htmlSelectCombatToken("actionTarget",tokenId)]
           <input type="text" name="actionDesc" size="20">
           <input type="hidden" name="action" value="declareProactive">
-          <input type="submit" name="edit_btn" value="Declare Action">
-    </form> 	
+          <input type="submit" name="actionLabel" value="Declare Action" class="pure-button pure-button-primary">
+    </form>   
   };{
-  	<form action="[r:linkUpdateCombatProactive]" method="json">
+    <br>  
+     Token is currently doing : <b>[r: turnDeclaration]</b><br>
+    <br>
+    <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
              <option selected="selected">Attack</option>
@@ -177,204 +222,160 @@
           [r: htmlSelectCombatToken("actionTarget",tokenId)]
           <input type="text" name="actionDesc" size="20">
           <input type="hidden" name="action" value="declareProactive">
-          <input type="submit" name="edit_btn" value="Change declared action">
+          <input type="submit" name="actionLabel" value="Change declared action" class="pure-button pure-button-primary">
     </form> 
-    <br>	
-  	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
-     <br>
+
   }]
   <span style="font-weight: bold;color:red"><b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.</span><br>
   <br>
-  <b>STEP2</b> - Select the proactive action <b>that has been done</b>, this will end the active turn<hr>
+
+  <b>STEP2</b> - Select the proactive action <b>that has been done</b>, this will end the active turn.
+  <hr>
   [r, if(castCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br></span>"]
   [r, if(reloadCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+reloadCA+" remaining reloadCA, you should reload before shooting.<br></span>"]
   <table>
     <tr>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="attack">
-          <input type="submit" name="edit_btn" value="Attack">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","attack","actionLabel","Attack")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Attack</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="delay">
-          <input type="submit" name="edit_btn" value="delay">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delay","actionLabel","Delay")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Delay</a>
       </td>      
       <td>
-      [h, if(castCA == 0): castAction = "firstCast"]
-      [h, if(castCA > 0): castAction = "pursueCast"]
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="[r:castAction]">
-          <input type="submit" name="edit_btn" value="[r:castAction]">
-        </form>
+        [h, if(castCA == 0): castAction = "firstCast"]
+        [h, if(castCA > 0): castAction = "pursueCast"]
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action",castAction,"actionLabel",castAction)]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">[r:castAction]</a>
       </td>
       <td>
-      [h, if(reloadCA == 0): rangeAction = "Shoot"]
-      [h, if(reloadCA > 0): rangeAction = "Reload"]
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="[r:rangeAction]">
-          <input type="submit" name="edit_btn" value="[r:rangeAction]">
-        </form>
+        [h, if(reloadCA == 0): rangeAction = "Shoot"]
+        [h, if(reloadCA > 0): rangeAction = "Reload"]
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action",rangeAction,"actionLabel",rangeAction)]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">[r:rangeAction]</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="Outmanoeuvre">
-          <input type="submit" name="edit_btn" value="Outmanoeuvre">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","Outmanoeuvre","actionLabel","Outmanoeuvre")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Outmanoeuvre</a>
       </td>
       [r, if(weaponReach != "ok"), code:{
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="changeRange">
-          <input type="submit" name="edit_btn" value="[r:changeRangeAction]">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","changeRange","actionLabel",changeRangeAction)]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">[r:changeRangeAction]</a>
       </td>
       }]
       [r, if(chargeStatus == "none"), code:{
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="chargePrepare">
-          <input type="submit" name="edit_btn" value="Charging">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargePrepare","actionLabel","Charging")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Charging</a>
       </td>
       }]
     </tr>
     <tr>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="proactiveNodice">
-          <input type="submit" name="edit_btn" value="Dither">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Dither")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Dither</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="proactiveNodice">
-          <input type="submit" name="edit_btn" value="Brace">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Brace")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Brace</a>
       </td>     
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="holdMagic">
-          <input type="submit" name="edit_btn" value="Hold Magic">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","holdMagic","actionLabel","Hold Magic")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Hold Magic</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="proactiveNodice">
-          <input type="submit" name="edit_btn" value="Move">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Move")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Move</a>
       </td> 
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="regainFooting">
-          <input type="submit" name="edit_btn" value="Regain Footing">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","regainFooting","actionLabel","Regain Footing")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Regain Footing</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="proactiveNodice">
-          <input type="submit" name="edit_btn" value="Ready Weapon">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Ready Weapon")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Ready Weapon</a>
       </td>
     </tr>
   </table>
 }]
 <!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
 [r, if (showReactiveAction), code :{
-  [r, if(chargeStatus=="prepareCharge"): "<b>!!Token is charging</b>. Doing an Evade will break the charge.<br>"]	
+  [r, if(chargeStatus=="prepareCharge"): "<b>!!Token is charging</b>. Doing an Evade will break the charge.<br>"] 
 
   [r, if(turnStatus == "delay"), code:{ 
-		[r: showDelayedAction(tokenId)]
-		<br>If you still want to delay you turn use the <i>non-delayed</i> reactive action below. They will not use your proactive CA.<br><br>
-	};{
-		Turn is no active, token can only take reactive actions.<br>
-	}]
-	
+    [r: showDelayedAction(tokenId)]
+    <br>If you still want to delay you turn use the <i>non-delayed</i> reactive action below. They will not use your proactive CA.<br><br>
+  };{
+    Turn is no active, token can only take reactive actions.<hr>
+  }]
+  
   <table style="padding: 0px; cellspacing:0px; border-spacing:0 0px;">
     <tr>
       <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parry">
-          <input type="submit" name="edit_btn" value="Parry">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Parry")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Parry</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parry">
-          <input type="submit" name="edit_btn" value="Counter Spell">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Counter Spell")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Counter Spell</a>
       </td>
       <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="evade">
-          <input type="submit" name="edit_btn" value="Evade">
-        </form>
-      </td>
-      <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="evadeProne">
-          <input type="submit" name="edit_btn" value="Evade (Prone)">
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parry">
-          <input type="submit" name="edit_btn" value="Outmanoeuvre: Resist">
-        </form>
-      </td>
-      <td></td>
-      <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parry">
-          <input type="submit" name="edit_btn" value="Change Range: Resist">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Outmanoeuvre: Resist")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Outmanoeuvre: Resist</a>       
       </td>
       <td></td>
     </tr>
     <tr>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="chargeRiposte">
-          <input type="submit" name="edit_btn" value="Charge: Riposte">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evadeProne","actionLabel","Evade (Prone)")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Evade (Prone)</a>
+      </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evade","actionLabel","Evade")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Evade</a>
+      </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Change Range: Resist")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Change Range: Resist</a>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeRiposte","actionLabel","Charge: Riposte")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button pure-button-active" href="[r: link]">Charge: Riposte</a>
       </td>  
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="chargeRiposte">
-          <input type="submit" name="edit_btn" value="Charge: Mounted Attack">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeRiposte","actionLabel","Charge: Mounted Attack")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button pure-button-active" href="[r: link]">Charge: Mounted Attack</a>
       </td>  
       <td>
-        <form action="[r:linkUpdateCombatReactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parry">
-          <input type="submit" name="edit_btn" value="Change Range: Riposte">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Change Range: Riposte")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Change Range: Riposte</a>
       </td>
       <td></td>
     </tr>
@@ -386,8 +387,8 @@
 
 [r, if (showOnlyChargingAction), code :{
   [r, if(turnDeclaration == ""), code:{
-  	<b>STEP1</b> - If opponent can react, declare the action first :<br>  	
-  	<form action="[r:linkUpdateCombatProactive]" method="json">
+    <b>STEP1</b> - If opponent can react, declare the action first :<br>    
+    <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
              [r, if(chargeStatus == "none"): "<option selected='selected'>Charging</option>"]
@@ -399,10 +400,10 @@
           [r: htmlSelectCombatToken("actionTarget",tokenId)]
           <input type="text" name="actionDesc" size="20">
           <input type="hidden" name="action" value="declareProactive">
-          <input type="submit" name="edit_btn" value="Declare Action">
-    </form> 	
+          <input type="submit" name="actionLabel" value="Declare Action" class="button-small pure-button">
+    </form>   
   };{
-  	<form action="[r:linkUpdateCombatProactive]" method="json">
+    <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <select name="declaredAction" size="">
              [r, if(chargeStatus == "none"): "<option selected='selected'>Charging</option>"]
@@ -414,246 +415,241 @@
           [r: htmlSelectCombatToken("actionTarget",tokenId)]
           <input type="text" name="actionDesc" size="20">
           <input type="hidden" name="action" value="declareProactive">
-          <input type="submit" name="edit_btn" value="Change declared action">
+          <input type="submit" name="actionLabel" value="Change declared action" class="button-small pure-button">
     </form> 
-    <br>	
-  	 Token is currently doing : <b>[r: turnDeclaration]</b><br>
+    <br>  
+     Token is currently doing : <b>[r: turnDeclaration]</b><br>
      <br>
   }]
   <span style="font-weight: bold;color:red"><b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.</span><br>
 
-	
+  
   [r, if(chargeStatus == "chargeReady"), code:{
-  	 Charge is ready, select either Passage or Crash Action :
+     Charge is ready, select either Passage or Crash Action :
   }]
   [r, if(chargeStatus == "passageDone"), code:{
-  	 Charge as passed, continue moving till end of the MR :
+     Charge as passed, continue moving till end of the MR :
   }]
   [r, if(chargeStatus == "prepareCharge"), code:{
-  	 Token is charging, continue moving till end of the MR :
+     Token is charging, continue moving till end of the MR :
   }]
   <table>
     <tr>
       [r, if(chargeStatus == "chargeReady"), code:{
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
+        <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="chargePassage">
-          <input type="submit" name="edit_btn" value="Charge: Passage">
+          <input type="submit" name="actionLabel" value="Charge: Passage" class="button-small pure-button">
         </form>
       </td>
       <td>
         <form action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="chargeCrash">
-          <input type="submit" name="edit_btn" value="Charge: Crash">
+          <input type="submit" name="actionLabel" value="Charge: Crash" class="button-small pure-button">
         </form>
       </td>
       }]
       [r, if((chargeStatus == "passageDone")||(chargeStatus == "prepareCharge")), code:{
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
+        <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
           <input type="hidden" name="tokenId" value="[r:tokenId]">
           <input type="hidden" name="action" value="proactiveNodice">
-          <input type="submit" name="edit_btn" value="[r:chargeAction]">
+          <input type="submit" name="actionLabel" value="[r:chargeAction]" class="button-small pure-button">
         </form>
       </td>
       }]
     </tr>
   </table>
-	
+  
 }]
 
 [r, if (showNoProactiveAction), code :{
   You have to delay your turn :<ul>
   [r: noProactiveActionMsg]
   </ul>
-  <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="delay">
-          <input type="submit" name="edit_btn" value="delay">
-  </form>
+  [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delay")]
+  [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+  <a class="pure-button-primary pure-button" href="[r: link]">Delay</a>
 }]
 
 [r, if (showNoAction), code :{
-  Can only do free actions<br>
-  No actions because :<ul>[r: noActionMsg]</ul>
+  <i>Can only do free actions</i>. No actions because :<ul>[r: noActionMsg]</ul>
   <!-- jump to next token which is not out or disabled -->
   [r, if (activeTurn): getNextTurn(tokenId)]
 }]
-<br>
-Change after combat action
-<hr>
-[r, if(spellReady > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have used Hold Magic, and have a spell to release<br></span>"]
-[h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
-[h: tokenType = getPropertyType(tokenId)]
-[h, switch(tokenType):
-  case "RQ_Human" : linkDamageHeal = macroLinkText("openAPHP@Lib:RQII", "all");
-  case "RQ_Monster" : linkDamageHeal = macroLinkText("openAPHP@Lib:RQII", "all");
-  default: linkDamageHeal = macroLinkText("openAPHP@Lib:RQII", "all");
-]
-<table style="padding: 0px; cellspacing:0px;">
-  <tr>
-    <td>
-      <form action="[r:linkDamageHeal]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="submit" name="edit_btn" value="Damage / Heal">
-      </form>
-    </td>
-    [r, if(weaponReach != "outmanoeuvred"), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="outmanoeuvred">
-          <input type="submit" name="edit_btn" value="Outmanoeuvred">
-        </form>
-      </td>
-    }]
-    [r, if(weaponReach != "outranged"), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="outranged">
-          <input type="submit" name="edit_btn" value="Outranged">
-        </form>
-      </td>
-    }]
-    [r, if(weaponReach != "closed"), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="closed">
-          <input type="submit" name="edit_btn" value="Closed">
-        </form>
-      </td>
-    }]
-    <td>
-      [h: linkOpenHumCombatAttr = macroLinkText("openHumCombatAttr@Lib:RQII", "all")]
-	  <form action="[r:linkOpenHumCombatAttr]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="submit" name="edit_btn" value="Change Charac & Weapon">
-      </form>
-    </td>
-    <td>
-      [h: linkDisable = macroLinkText("updateCombat@Lib:RQII", "all")]
-      <form action="[r:linkDisable]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="disable">
-        <input type="submit" name="edit_btn" value="disable">
-      </form>
-    </td>
-  </tr>
-  <tr>
-    [r, if(weaponReach != "ok"), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="delreachmalus">
-          <input type="submit" name="edit_btn" value="Remove reach malus">
-        </form>
-      </td>
-    }]
-    [r, if(situationMod == "prone"), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="delprone">
-          <input type="submit" name="edit_btn" value="Remove Prone">
-        </form>
-      </td>
-    }]
-    [r, if(situationMod != "prone"), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="prone">
-          <input type="submit" name="edit_btn" value="Prone">
-        </form>
-      </td>
-    }]
-	[r, if(spellReady>0), code:{
-      <td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="releaseSpell">
-          <input type="submit" name="edit_btn" value="Release Spell">
-        </form>
-      </td>
-    }]
-	<td>
-        <form action="[r:linkUpdateCombat]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="dismissMagic">
-          <input type="submit" name="edit_btn" value="Dismiss Magic">
-        </form>
-     </td>
-  </tr>
-</table>
-<br>
-Combat status - Data
-<hr>
-<table>
-  <tr>
-    <td colspan="2">Turn</td>
-    <td colspan="2">CA values</td>
-    <td colspan="2">Compute CA</td>
-    <td colspan="4">Malus</td>
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <b>Change after combat action</b>
+    <hr>
+    [r, if(spellReady > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have used Hold Magic, and have a spell to release<br></span>"]
 
-  </tr>
-  <tr>
-    <td>turnStatus</td><td> [r: turnStatus] </td>
-    <td>activeCA</td><td> [r: activeCA] </td>
-    <td>baseCA</td><td> [r: baseCA] </td>
-    <td>castCA</td><td> [r: castCA] </td>
-    <td>lostProCA</td><td> [r: lostProCA] </td>
-  </tr>
-  <tr>
-    <td>activeTurn</td><td> [r: activeTurn] </td> 
-    <td>ccCA</td><td> [r: ccCA] </td>
-    <td>bonusCA</td><td> [r: bonusCA] </td>
-    <td>reloadCA</td><td>[r: reloadCA] </td>
-    <td>lostCA</td><td> [r: lostCA] </td>
-  </tr>
-  <tr>
-    <td>chargeStatus</td><td>[r: chargeStatus]</td>
-    <td>proactiveCA</td><td> [r: proactiveCA] </td>
-    <td>weaponCA</td><td> [r: weaponCA] </td>
-    <td>firstEvade</td><td> [r: firstEvade] </td>
-    <td>currWeaponNb</td><td> [r: currWeaponNb]</td>
-  </tr>
-  <tr>
-    <td>situationMod</td><td>[r: situationMod]</td>
-    <td>reactiveCA</td><td> [r: reactiveCA] </td>
-    <td>magicCA</td><td> [r: magicCA] </td>
-    <td>weaponReach</td><td> [r: weaponReach]</td>
-    <td>defWeaponNb</td><td> [r: defWeaponNb]</td>
-  </tr>
-  <tr>
-    <td>spellReady</td><td>[r: spellReady]</td>
-		<td></td><td></td>
-		<td></td><td></td>
-    <td></td><td></td>
-    <td></td><td></td>
-  </tr>
-	  <tr>
-		<td>versionTag</td><td>[r: versionTag]</td>
-		[h: cLogTokenExist = findToken(clogTokenId)]
-		[r, if(cLogTokenExist == ""), code: {
-			<td>cLogTokenId</td><td colspan="7">
-				<span style="font-weight: bold;color:red">WARNING. Linked combatToken not found on this map.</span>
-			</td>
-		};{
-			[h: combatProp = getProperty("combat",clogTokenId)]
-			<td>cLogTokenId</td><td colspan="7">[r: cLogTokenId] ([r: json.get(combatProp,"desc")])</td>
-		}]
-  </tr>
-  <tr>
-    <td colspan="5">
-      [h: linkSetCombatStatus = macroLinkText("setTokenCombatStatus@Lib:RQII", "")]
-      <form action="[r:linkSetCombatStatus]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="submit" name="edit_btn" value="Edit Combat Status">
-      </form>
-    </td>
-  </tr>
-</table> 
+    <table style="padding: 0px; cellspacing:0px;">
+      <tr>
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId)]
+          [h: link = macroLinkText("openAPHP@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Damage / Heal</a>
+        </td>
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId)]
+          [h: link = macroLinkText("openHumCombatAttr@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Change Charac & Weapon</a>
+        </td>
+      [r, if(weaponReach != "outmanoeuvred"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","outmanoeuvred")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Outmanoeuvred</a>
+        </td>
+      }]
+      [r, if(weaponReach != "outranged"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","outranged")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Outranged</a>
+        </td>
+      }]
+      [r, if(weaponReach != "closed"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","closed")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Closed</a>
+        </td>
+      }]
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","disable")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Disable</a>
+        </td>
+      </tr>
+      <tr>
+      [r, if(weaponReach != "ok"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delreachmalus")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Remove reach malus</a>
+        </td>
+      }]
+      [r, if(situationMod == "prone"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delprone")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Remove Prone</a>
+        </td>
+      }]
+      [r, if(situationMod != "prone"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","prone")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Prone</a>
+        </td>
+      }]
+      [r, if(spellReady>0), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","releaseSpell")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Release Spell</a>
+        </td>
+      }]
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","dismissMagic")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Dismiss Magic</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <i>Current HP & AP</i>
+    <hr> 
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      [r, macro("viewWoundOnly@Lib:RQII"): macroParam]
+    };{
+        [r, macro("viewCurrentAPHP@Lib:RQII"): macroParam]
+    }]
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <i>Current Hold Weapon</i>
+    <hr>
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, macro("viewCurrentWeapons@Lib:RQII"): macroParam]
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <i>Combat status - Data</i>
+    <hr>
+    <table class="content pure-table pure-table-striped table-striped-custom">
+      <tr>
+        <td colspan="2">Turn</td>
+        <td colspan="2">CA values</td>
+        <td colspan="2">Compute CA</td>
+        <td colspan="4">Malus</td>
+    
+      </tr>
+      <tr>
+        <td>turnStatus</td><td> [r: turnStatus] </td>
+        <td>activeCA</td><td> [r: activeCA] </td>
+        <td>baseCA</td><td> [r: baseCA] </td>
+        <td>castCA</td><td> [r: castCA] </td>
+        <td>lostProCA</td><td> [r: lostProCA] </td>
+      </tr>
+      <tr>
+        <td>activeTurn</td><td> [r: activeTurn] </td> 
+        <td>ccCA</td><td> [r: ccCA] </td>
+        <td>bonusCA</td><td> [r: bonusCA] </td>
+        <td>reloadCA</td><td>[r: reloadCA] </td>
+        <td>lostCA</td><td> [r: lostCA] </td>
+      </tr>
+      <tr>
+        <td>chargeStatus</td><td>[r: chargeStatus]</td>
+        <td>proactiveCA</td><td> [r: proactiveCA] </td>
+        <td>weaponCA</td><td> [r: weaponCA] </td>
+        <td>firstEvade</td><td> [r: firstEvade] </td>
+        <td>currWeaponNb</td><td> [r: currWeaponNb]</td>
+      </tr>
+      <tr>
+        <td>situationMod</td><td>[r: situationMod]</td>
+        <td>reactiveCA</td><td> [r: reactiveCA] </td>
+        <td>magicCA</td><td> [r: magicCA] </td>
+        <td>weaponReach</td><td> [r: weaponReach]</td>
+        <td>defWeaponNb</td><td> [r: defWeaponNb]</td>
+      </tr>
+      <tr>
+        <td>spellReady</td><td>[r: spellReady]</td>
+        <td></td><td></td>
+        <td></td><td></td>
+        <td></td><td></td>
+        <td></td><td></td>
+      </tr>
+        <tr>
+        <td>versionTag</td><td>[r: versionTag]</td>
+        [h: cLogTokenExist = findToken(clogTokenId)]
+        [r, if(cLogTokenExist == ""), code: {
+          <td>cLogTokenId</td><td colspan="7">
+            <span style="font-weight: bold;color:red">WARNING. Linked combatToken not found on this map.</span>
+          </td>
+        };{
+          [h: combatProp = getProperty("combat",clogTokenId)]
+          <td>cLogTokenId</td><td colspan="7">[r: cLogTokenId] ([r: json.get(combatProp,"desc")])</td>
+        }]
+      </tr>
+      <tr>
+        <td colspan="5">
+          [h: macroParam = json.set("{}", "tokenId", tokenId)]
+          [h: link = macroLinkText("setTokenCombatStatus@Lib:RQII", "all",macroParam)]
+          <a class="pure-button" href="[r: link]">Edit Combat Status</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

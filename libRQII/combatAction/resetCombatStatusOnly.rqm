@@ -1,0 +1,43 @@
+[h: "<!-- resetCombatStatusOnly - Technical method to reset an existing combatStatus prop without rerolling initiative for the selected tokens in a combat -->"]
+[h: "<!-- launch on selected token(s) from panel GM/Reset combatStatus Only -->"]
+
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+
+
+[h: res = input("junk|<html>This will reset all <i>combatStatus</i> values (but <i>ClogTokenId</i> and <i>versionTag</i>) for token <b>"+getName(tokenId)+"</b>. <br>Are you sure?  Click OK to confirm.</html>|ignored|LABEL|SPAN=true")]
+[h: abort(res)]
+
+[h: currentCombatStatus = getProperty("combatStatus",tokenId)] 
+
+[h: "<!-- then set everything to default / 0 before recomputing some values -->"]
+[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"lostCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
+
+[h: "<!-- reset weapon CA-->"]
+[h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",defWeaponNb)]
+[h: newWeaponCA = defWeaponNb - 1]
+[h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
+
+[h: "<!-- recompute ccA -->"]
+[h: baseCA = json.get(currentCombatStatus,"baseCA")]
+[h: bonusCA = json.get(currentCombatStatus,"bonusCA")]
+[h: magicCA = json.get(currentCombatStatus,"magicCA")]
+	
+[h: ccCA = baseCA + bonusCA + newWeaponCA + magicCA]
+[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",ccCA)]
+
+[h: setProperty("combatStatus",currentCombatStatus,tokenId)]

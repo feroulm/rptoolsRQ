@@ -7,7 +7,7 @@
 [h: cLogTokenId = json.get(macro.args,"cLogTokenId")]
 [h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
 
-[h: actionLabel = json.get(macro.args, "edit_btn")]
+[h: actionLabel = json.get(macro.args, "actionLabel")]
 
 [h: logMsg = ""]
 [h: logComment = ""]

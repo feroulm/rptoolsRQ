@@ -16,6 +16,7 @@
     <th>AP/HP</th>
     <th>Manoeuvre</th>
     <th>Special</th>
+    <th>Hold</th>
   </tr>
   </thead>
   <tbody>
@@ -42,6 +43,17 @@
         <td>[r: getStrProp(wProp, "ApHp")]</td>
         <td>[r: getStrProp(wProp, "Manoeuvre")]</td>
         <td>[r: getStrProp(wProp, "Special")]</td>
+        <td>
+          [r, if(isHold), code:{
+            [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",missile,"weaponfamily","missile","holdValue",0,"srcWindow","openSheet")]
+            [h: lnkTxt = macroLinktext("updateHoldWeapon@Lib:RQII", "all",macroParam)]
+            <a class="pure-button button-warning button-small" href="[r: lnkTxt]"><b>-</b></a>
+          };{
+            [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",missile,"weaponfamily","missile","holdValue",1,"srcWindow","openSheet")]
+            [h: lnkTxt = macroLinktext("updateHoldWeapon@Lib:RQII", "all",macroParam)]
+            <a class="pure-button button-secondary button-small" href="[r: lnkTxt]"><b>+</b></a>
+          }]
+        </td>
       </tr>
     }]
   </tbody>
