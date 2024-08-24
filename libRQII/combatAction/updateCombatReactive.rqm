@@ -101,8 +101,12 @@
 
 [h: "<!-- log the action -->"]
 
+[h: newLostProCA = json.get(currentCombatStatus,"lostProCA")]
 [h: caStatus = json.get(currentCombatStatus,"activeCA")+"/"+json.get(currentCombatStatus,"ccCA")]
 [h: commentMsg = "Remaining CA :"+caStatus]
+[h, if (newLostProCA > 0), code: {
+[h: commentMsg = strformat("%{commentMsg}<br>Remaining lostProCA : %{newLostProCA}")]
+};{}]
 [h: logComment = strformat("%{commentMsg}<br>%{logComment}")]
 	
 [h: logCombatAction(tokenId,"reactive",logMsg)]

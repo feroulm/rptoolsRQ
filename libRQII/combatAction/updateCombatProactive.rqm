@@ -15,9 +15,12 @@
 [h, if(json.isEmpty(cLogTokenId)) : cLogTokenId = "none"]
 	
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+
 [h: activeCA = json.get(currentCombatStatus,"activeCA")]
 [h: proactiveCA = json.get(currentCombatStatus,"proactiveCA")]
 [h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
+[h: lostProCA = json.get(currentCombatStatus,"lostProCA")]
+
 [h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
 
@@ -121,6 +124,13 @@
 			[h: abort(0)]
 		}]
 		
+    [h: "<!-- decrement lostProCA if a parry or an evade is done as a delayed action-->"]
+    [h, if (lostProCA > 0), code: {
+      [h: lostProCA = lostProCA -1 ]
+      [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",lostProCA)]	
+      [h: logComment = strformat("%{logComment} Remaining lostProCA : %{lostProCA}.")]
+    };{}]	
+    
 		[h: logMsg = strformat("%{logMsg} %{logTokenStatus}")]
 		
     [h: remainingCA = activeCA - 1]
