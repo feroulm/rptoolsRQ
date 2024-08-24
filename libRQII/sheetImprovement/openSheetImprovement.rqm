@@ -14,9 +14,13 @@
       <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
       <title>ImproveSheet [r: getName(tokenId)]</title>
     </head>
-    <body>
-	  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    <body class="body-custom">
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
+      [h: macroParam = json.set("{}", "tokenId", tokenId)]
       [r, macro("editSheetImprovement@Lib:RQII"): macroParam]
+    }]
     </body>
 </html>
 }]

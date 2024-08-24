@@ -2,14 +2,16 @@
 [h: "<!-- Called by : all macros that need to log some stuff that happens during a combat -->"]
 [h: "<!-- return the token id or none if none exists -->"]
 
+[h: mapName = arg(0)]
+[h, if(mapName = ""): mapName = getCurrentMapName()]
 
-[h: cond = json.set("{}","propertyType" ,"RQ_Log")]
+[h: cond = json.set("{}","propertyType" ,"RQ_Log","mapName",mapName)]
 [h: cLogTokens = getTokens("json", cond)]
 
 [h: CurrcLogTokenId = "none"]
 
 [h, foreach(cLogTokenId, cLogTokens, ""), code:{
-	[h: combatProp = getProperty("combat",cLogTokenId)]
+	[h: combatProp = getProperty("combat",cLogTokenId,mapName)]
 	[h, if(json.get(combatProp,"status") == "current"), code:{
 		[h: CurrcLogTokenId = cLogTokenId]
 	};{}]	

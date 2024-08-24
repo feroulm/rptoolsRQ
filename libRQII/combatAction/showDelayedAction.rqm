@@ -1,80 +1,62 @@
 [h: "<!-- Function to Display specific actions when turn has been delayed -->"]
 [h: "<!-- return nothing, but the html form -->"]
 [h: tokenId = arg(0)] 
-[h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]
-[h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
+
 <span style="color:red"><b>Turn has been delayed.</b> You can use your proactive CA to take a reactive action (parry, evade, ...).
 <br>Or you can play you turn just before the current player (use <b>interrupt</b>)<br></span>
 - <i>Reminder</i> : if your proactive CA is not used before the next cycle you will loose it ;) !<br><br>
+<b>Reactive Actions using your active CA</b>
+<hr>
 <table>
   <tr>
     <td>
-      <form action="[r:linkUpdateCombatProactive]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="parrydelayed">
-        <input type="submit" name="edit_btn" value="Parry(delayed)">
-      </form>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parrydelayed","actionLabel","Parry(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Parry(delayed)</a>  
     </td>
     <td>
-      <form action="[r:linkUpdateCombatProactive]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="evadedelayed">
-        <input type="submit" name="edit_btn" value="Evade(delayed)">
-      </form>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parrydelayed","actionLabel","Outmanoeuvre: Resist(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Outmanoeuvre: Resist(delayed)</a>
     </td>
     <td>
-      <form action="[r:linkUpdateCombatProactive]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="evadeProneDelayed">
-        <input type="submit" name="edit_btn" value="Evade Prone(delayed)">
-      </form>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parrydelayed","actionLabel","Counter Spell(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Counter Spell(delayed)</a>
     </td>
   </tr>
   <tr>
     <td>
-      <form action="[r:linkUpdateCombatProactive]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="parrydelayed">
-        <input type="submit" name="edit_btn" value="Outmanoeuvre: Resist(delayed)">
-      </form>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evadedelayed","actionLabel","Evade(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Evade(delayed)</a>
     </td>
     <td>
-      <form action="[r:linkUpdateCombatProactive]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="parrydelayed">
-        <input type="submit" name="edit_btn" value="Change Range: Resist(delayed)">
-      </form>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parrydelayed","actionLabel","Change Range: Resist(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Change Range: Resist(delayed)</a>
     </td>
     <td>
-      <form action="[r:linkUpdateCombatProactive]" method="json">
-        <input type="hidden" name="tokenId" value="[r:tokenId]">
-        <input type="hidden" name="action" value="parrydelayed">
-        <input type="submit" name="edit_btn" value="Counter Spell(delayed)">
-      </form>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parrydelayed","actionLabel","Charge: Riposte(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Charge: Riposte(delayed)</a>      
     </td>
   </tr>
-    <tr>
-      <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parrydelayed">
-          <input type="submit" name="edit_btn" value="Charge: Riposte(delayed)">
-        </form>
-      </td>    
-      <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="parrydelayed">
-          <input type="submit" name="edit_btn" value="Change Range: Riposte(delayed)">
-        </form>
-      </td>
-      <td>
-				<form action="[r:linkUpdateCombatReactive]" method="json">
-					<input type="hidden" name="tokenId" value="[r:tokenId]">
-					<input type="hidden" name="action" value="interrupt">
-					<input type="submit" name="edit_btn" value="Interrupt">
-				</form>
-			</td>
-      <td></td>
-    </tr>
+   <tr>
+     <td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evadeProneDelayed","actionLabel","Evade Prone(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Evade Prone(delayed)</a>
+     </td>    
+     <td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parrydelayed","actionLabel","Change Range: Riposte(delayed)")]
+      [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button" href="[r: link]">Change Range: Riposte(delayed)</a>
+     </td>
+     <td>
+      [h: macroParam = json.set("{}", "tokenId", tokenId,"action","interrupt","actionLabel","Interrupt")]
+      [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+      <a class="button-small pure-button pure-button-primary" href="[r: link]">Interrupt</a>
+		</td>
+   </tr>
 </table>

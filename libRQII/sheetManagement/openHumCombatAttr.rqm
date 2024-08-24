@@ -14,7 +14,11 @@
       <title>Token Combat Attributes - [r: getName(tokenId)]</title>
     </head>
     <body>
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
       [r, macro("editHumCombatAttr@Lib:RQII"): tokenId]
+    }]   
     </body>
 </html>
 }]

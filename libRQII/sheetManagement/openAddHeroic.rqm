@@ -23,8 +23,12 @@
       <title>Add Heroic Ability - [r: getName(tokenId)]</title>
     </head>
     <body>
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
       [h: macroParam = json.set("{}", "tokenId", tokenId,"nameFilter",nameFilter,"typeFilter",typeFilter)]
       [r, macro("editAddHeroic@Lib:RQII"): macroParam]
+    }]
     </body>
 </html>
 }]

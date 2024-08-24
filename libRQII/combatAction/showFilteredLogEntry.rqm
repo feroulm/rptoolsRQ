@@ -29,7 +29,9 @@
     <td>
       [h: macroParam = json.set("{}", "logId", logEntryKey,"cLogTokenId",cLogTokenId)]
       [h: link = macroLinkText("editCombatLogEntry@Lib:RQII", "all",macroParam)]
-    <a class="button-warning pure-button" href="[r: link]">edit</a>
+      [r, if(isGM()), code:{
+        <a class="button-warning pure-button" href="[r: link]">edit</a>
+      };{}]
     </td>
 	</tr>
 }]

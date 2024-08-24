@@ -16,7 +16,11 @@
       <title>Sheet Edition - [r: getName(tokenId)]</title>
     </head>
     <body class="body-custom">
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
       [r, macro("editSheet@Lib:RQII"): tokenId]
+    }]
     </body>
 </html>
 }]

@@ -13,8 +13,12 @@
       <title>Sheet Equipment Edition - [r: getName(tokenId)]</title>
     </head>
     <body>
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
       [h: macroParam = json.set("{}", "tokenId", tokenId)]
       [r, macro("editEquipmentMgt@Lib:RQII"): macroParam]
+    }]
     </body>
 </html>
 }]

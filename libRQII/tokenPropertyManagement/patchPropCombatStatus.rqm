@@ -30,6 +30,7 @@
 
 [h: arguments = macro.args]
 [h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+[h, if(json.isEmpty(arguments)): mapName = getCurrentMapName(); mapName = json.get(arguments,"mapName")]
 
 [h: patchVersionTag = "v3.0.0"]
 
@@ -59,7 +60,11 @@
 		"versionTag" : "v3.0.0"
 }']
 
-[h: oldCombatStatus = getProperty("combatStatus",tokenId)]
+[h: oldCombatStatus = getProperty("combatStatus",tokenId,mapName)]
+[r, if(json.isEmpty(oldCombatStatus)), code:{
+		<br><br><b>[r: getName(tokenId, mapName)] have no combatStatus prop !</b><br>
+		[h: oldCombatStatus = json.set("{}","versionTag","v0.0.0")]
+};{}]
 
 <!-- Check version -->
 [h: currentVersion = json.get(oldCombatStatus,"versionTag")]
@@ -68,11 +73,11 @@
   [h, if(propspellReady != "") : currentVersion = "v2.0.0";currentVersion = "v1.0.0"]
 }]
 
-[h: patchLog = "Patching <i>combatStatus</i> properties for <b>"+getName(tokenId)+ "</b> from <i>"+currentVersion+"</i> to <b>"+patchVersionTag+"</b>"]
+[h: patchLog = "Patching <i>combatStatus</i> properties for <b>"+getName(tokenId,mapName)+ "</b> from <i>"+currentVersion+"</i> to <b>"+patchVersionTag+"</b>"]
 [h: res = input("junk|<html>"+patchLog+". <br>This will reset all token value. <br>Are you sure?  Click OK to confirm.</html>|ignored|LABEL|SPAN=true")]
 [h: abort(res)]	
 
-<!-- copy value when the item exists -->
+<!-- copy existing value when the item exists -->
 
 [h, foreach(item, oldCombatStatus, ""), code:{
   [h: itemValue = json.get(oldCombatStatus,item)]
@@ -81,10 +86,13 @@
 
 <!-- Check if current Combat Token exist and patch cLogTokenID value in that case -->
 [h:"<!-- get current combat token -->"]
-[h: cLogTokenId = findCurrentCombatToken()]
+[h: cLogTokenId = findCurrentCombatToken(mapName)]
 
 [h, if(cLogTokenId != "none") : newCombatStatusModel = json.set(newCombatStatusModel,"cLogTokenId",cLogTokenId)]
 
-[h: setProperty("combatStatus",newCombatStatusModel,tokenId)]
+[h: "<!-- Update versionTag according to current patch -->"]
+[h: newCombatStatusModel = json.set(newCombatStatusModel,"versionTag",patchVersionTag)]
+
+[h: setProperty("combatStatus",newCombatStatusModel,tokenId,mapName)]
 
 [r: patchLog] is done.

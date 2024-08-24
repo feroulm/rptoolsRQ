@@ -4,15 +4,18 @@
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
-[frame("locAPHP"): {
+[frame5("locAPHP"): {
 <html>
 <head>
-<link rel="onChangeSelection" type="macro" href="[r:link]">
+  <link rel="onChangeSelection" type="macro" href="[r:link]">
+  <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+	<link rel="stylesheet" type="text/css" href="pureGridsResponsiveCss@Lib:RQII">
+  <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
 <title>Update AP or HP - [r: getName(tokenId)]</title>
 </head>
-<body>
-[h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("editAPHP@Lib:RQII"): macroParam]
+<body class="body-custom">
+  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+  [r, macro("editAPHP@Lib:RQII"): macroParam]
 </body>
 </html>
 }]

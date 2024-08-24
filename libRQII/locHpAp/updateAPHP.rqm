@@ -9,6 +9,7 @@
 [h: pLocHP = getProperty("locHP",tokenId)]
 [h: locName = getStrProp(getProperty("locName",tokenId),strformat("loc%{locId}"))]
 [h: locHPorig = getStrProp(getProperty("locHPorig",tokenId),strformat("loc%{locId}"))]
+[h: locAPorig = getStrProp(getProperty("locAPorig",tokenId),strformat("loc%{locId}"))]
 [h: pLocAP = getProperty("locAP",tokenId)]
 [h: amount = json.get(arguments, "Amount")]
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
@@ -22,6 +23,10 @@
 [switch(locAction), code:
   case "HealHP": {
     [h: newLocH = curHP + amount]
+    [h, if(newLocH > locHPorig), code:{
+      [h: newLocH = locHPorig]
+      [h: logLongMsg = strformat("%{logLongMsg} Too many heal points. Location HP is fully restored.")]
+    };{}]
     [h: logLongMsg = strformat("%{logLongMsg} Previous HP: %{curHP} , new HP: <b>%{newLocH}</b>")]
     [h: logMsg = "healed HP: +"+amount+"pts in "+locName]
   };
@@ -32,17 +37,37 @@
   };
   case "HealAP": {
     [h: newLocA = curAP + amount]
+    [h, if(newLocA > locAPorig), code:{
+      [h: newLocA = locAPorig]
+      [h: logLongMsg = strformat("%{logLongMsg} Too many heal points. Location AP is fully restored.")]
+    };{}]
     [h: logLongMsg = strformat("%{logLongMsg} Previous AP: %{curAP} , new AP: <b>%{newLocA}</b>")]
     [h: logMsg = "healed AP: +"+amount+"pts in "+locName]
   };
   case "DamageAP": {
     [h: newLocA = curAP - amount)]
+    [h, if(newLocA < 0), code:{
+      [h: newLocA = 0]
+      [h: logLongMsg = strformat("%{logLongMsg} Too many damage points. Location AP is set to 0.")]
+    };{}]
     [h: logLongMsg = strformat("%{logLongMsg} Previous AP: %{curAP} , new AP: <b>%{newLocA}</b>")]
     [h: logMsg = "wounded AP: +"+amount+"pts in "+locName]
   };
+  case "ResetHP": {
+    [h: pLocHPorig = getProperty("locHPorig",tokenId)]
+    [h: setProperty("locHP", pLocHPorig, tokenId)]
+    [h: logLongMsg = strformat("Reset all loc HP to their original value")]
+    [h: logMsg = "Reset all loc HP"]
+  };
+  case "ResetAP": {
+    [h: pLocAPorig = getProperty("locAPorig",tokenId)]
+    [h: setProperty("locAP", pLocAPorig, tokenId)]
+    [h: logLongMsg = strformat("Reset all loc AP to their original value")]
+    [h: logMsg = "Reset all loc AP"]
+  };
 ]
 
-[if((dmgTarget == "HP")), code: { 
+[if((dmgTarget == "HP")&&(dmgAction != "Reset")), code: { 
   [h: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLocH)]
   [h: setProperty("locHP", newLocHP, tokenId)]
   [h, if((curHP >0)&&(newLocH <= 0)&&(locHPorig + newLocH)>0), code: { 
@@ -54,11 +79,11 @@
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]  
   };{}]
   [h, if((locHPorig + newLocH) <= 0), code:{
-    [h: logLongMsg = strformat("%{logLongMsg}<br><span style='font-weight: bold;color:red'>Majour Wound</span>: can't fight anymore, run a persistence test.")]
+    [h: logLongMsg = strformat("%{logLongMsg}<br><span style='font-weight: bold;color:red'>Major Wound</span>: can't fight anymore, run a persistence test.")]
   }]
 };{}]
 
-[if((dmgTarget == "AP")), code: { 
+[if((dmgTarget == "AP")&& (dmgAction != "Reset")), code: { 
   [h: newLocAP = setStrProp(pLocAP,strformat("loc%{locId}"),newLocA)]
   [h: setProperty("locAP", newLocAP, tokenId)]
 };{}]

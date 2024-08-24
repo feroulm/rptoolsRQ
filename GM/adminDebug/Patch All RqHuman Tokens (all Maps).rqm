@@ -1,0 +1,2 @@
+[h: macroParam = json.set("{}","noparam",noparam)]
+[r, macro("patchAllMapsRqHumanToken@Lib:RQII"): macroParam]  

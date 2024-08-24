@@ -1,6 +1,9 @@
 [h: link = macroLinkText("openAddMeleeWeapon@Lib:RQII", "none")]
 [h: arguments = macro.args]
-[h, if(json.isEmpty(arguments)): abort(0)]
+[h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
+[h, if(listCount(tokenId) != 1): abort(0)]
+[h: tokenType = getPropertyType(tokenId)]
+[h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
 [frame("Add Melee Weapon"): {
 <html>
     <head>
@@ -9,7 +12,11 @@
       <title>Add Melee Weapon(s)</title>
     </head>
 <body>
-[r, macro("editAddMeleeWeapon@Lib:RQII"): arguments]
+  [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
+      [r, macro("editAddMeleeWeapon@Lib:RQII"): arguments]
+  }]
 </body>
 </html>
 }]

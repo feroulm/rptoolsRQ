@@ -22,10 +22,26 @@
   [r: skill] : [r: json.get(skillValues,"current")]%
 }]
 [h: aSkills = getProperty("commonSkills", tokenId)]
+
 [h: unarmedValue = json.get(aSkills,"Unarmed")]
+[h, if(json.isEmpty(unarmedValue)), code:{
+  [h: unarmedValue = json.set("{}", "current", 0)]
+};{}]
+
 [h: evadeValue = json.get(aSkills,"Evade")]
-[h: evadeValue = json.get(aSkills,"Evade")]
+[h, if(json.isEmpty(evadeValue)), code:{
+  [h: evadeValue = json.set("{}", "current", 0)]
+};{}]
+
 [h: resilienceValue = json.get(aSkills,"Resilience")]
+[h, if(json.isEmpty(resilienceValue)), code:{
+  [h: resilienceValue = json.set("{}", "current", 0)]
+};{}]
+
 [h: persistenceValue = json.get(aSkills,"Persistence")]
+[h, if(json.isEmpty(persistenceValue)), code:{
+  [h: persistenceValue = json.set("{}", "current", 0)]
+};{}]
+
 <br> Unarmed [r: json.get(unarmedValue,"current")]%, Evade [r: json.get(evadeValue,"current")]%
 <br><br> Resilience [r: json.get(resilienceValue,"current")]%, Persistence [r: json.get(persistenceValue,"current")]%

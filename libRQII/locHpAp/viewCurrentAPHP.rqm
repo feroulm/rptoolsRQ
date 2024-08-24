@@ -15,47 +15,73 @@
 
 <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
   <thead>
-	<tr>
-	  <th>Location</th>
-	  [for(i,1,pLocNb+1,1,""), code:{
+  <tr>
+    <th>Location</th>
+    [for(i,1,pLocNb+1,1,""), code:{
       <th>
-	    [r: getStrProp(pLocName, strformat("loc%{i}"))]<br>
-		([r: getStrProp(pLocD20, strformat("loc%{i}"))])
-	  </th>
-      }]
-	</tr>
+        [r: getStrProp(pLocName, strformat("loc%{i}"))]<br>
+        ([r: getStrProp(pLocD20, strformat("loc%{i}"))])
+      </th>
+    }]
+  </tr>
   </thead>
   <tbody>
-	<tr>
-		<td style="text-align:left;">AP</td>
-		[for(i,1,pLocNb+1,1,""), code:{
-      	<td>
-	    	[r: getStrProp(pLocAP, strformat("loc%{i}"))]
-	  	</td>
-      	}]
-	</tr>
-	<tr>
-		<td style="text-align:left;">HP</td>
-		[for(i,1,pLocNb+1,1,""), code:{
-      	<td>
-	    	[r: getStrProp(pLocHP, strformat("loc%{i}"))]
-	  	</td>
-      	}]
-	</tr>
-	<tr>
-	  <td>Wound</td>
-	  [for(i,1,pLocNb+1,1,""), code:{
-      	<td>
-      	   [h: locOrigValue = getStrProp(pLocHPorig, strformat("loc%{i}"))]
-      	   [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
-      	   [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
-      	   	  <span style="font-weight: bold;color:orange">S</span>
-      	   };{}]
-      	   [r, if((locCurrentValue + locOrigValue) <= 0), code: {
-      	   	  <span style="font-weight: bold;color:red">M</span>
-      	   };{}]
-	  	</td>
+  <tr>
+    <td style="text-align:left;">AP</td>
+    [for(i,1,pLocNb+1,1,""), code:{
+        <td>
+        [h: locAPOrigValue = getStrProp(pLocAPorig, strformat("loc%{i}"))]
+        [h: locAPCurrentValue = getStrProp(pLocAP, strformat("loc%{i}"))]
+        [r, if ((locAPCurrentValue < locAPOrigValue) &&(locAPCurrentValue >0)), code: {
+            <span style="font-weight: bold;color:blue">[r: locAPCurrentValue]</span>
+        };{}]
+        [r, if ((locAPCurrentValue <= 0)&&(locAPOrigValue>0)), code: {
+            <span style="font-weight: bold;color:red">[r: locAPCurrentValue]</span>
+        };{}]
+        [r, if (locAPCurrentValue == locAPOrigValue), code: {
+          [r: locAPCurrentValue]
+        };{}]
+      </td>
+    }]
+  </tr>
+  <tr>
+    <td style="text-align:left;">HP</td>
+    [for(i,1,pLocNb+1,1,""), code:{
+        <td>
+          [h: locOrigValue = getStrProp(pLocHPorig, strformat("loc%{i}"))]
+          [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
+          [r, if((locCurrentValue < locOrigValue)&&(locCurrentValue >0)), code: {
+              <span style="font-weight: bold;color:blue">[r: locCurrentValue]</span>
+          };{}]
+          [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
+              <span style="font-weight: bold;color:orange">[r: locCurrentValue]</span>
+          };{}]
+          [r, if((locCurrentValue + locOrigValue) <= 0), code: {
+              <span style="font-weight: bold;color:red">[r: locCurrentValue]</span>
+          };{}]
+          [r, if(locCurrentValue == locOrigValue), code: {
+              [r: locCurrentValue]
+          };{}]
+      </td>
+        }]
+  </tr>
+  <tr>
+    <td>Wound</td>
+    [for(i,1,pLocNb+1,1,""), code:{
+        <td>
+           [h: locOrigValue = getStrProp(pLocHPorig, strformat("loc%{i}"))]
+           [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
+           [r, if((locCurrentValue < locOrigValue)&&(locCurrentValue >0)), code: {
+              <span style="font-weight: bold;color:blue">L</span>
+           };{}]
+           [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
+              <span style="font-weight: bold;color:orange">S</span>
+           };{}]
+           [r, if((locCurrentValue + locOrigValue) <= 0), code: {
+              <span style="font-weight: bold;color:red">M</span>
+           };{}]
+      </td>
       }]
-	</tr>
-  </tbody>	
+  </tr>
+  </tbody>  
 </table>

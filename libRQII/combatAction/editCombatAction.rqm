@@ -65,7 +65,11 @@
       [r, if (activeTurn), code:{      
         <tr class="active">
           <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
-          <td><a id="active" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>
+          <td><a id="active" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a><br>
+            [h: macroParam = json.set("{}", "tokenId", tokenId)]
+            [h: link = macroLinkText("openForgotReactiveAction@Lib:RQII", "all",macroParam)]
+            <a class="button-small pure-button" href="[r: link]">Reactive Action<br>before turn</a>
+          </td>
           <td>Acting in its Turn
           <br><br>CA : <span style="font-weight: bold;color:blue">[r: json.get(tCombatStatus,"activeCA")]</span> / [r: json.get(tCombatStatus,"ccCA")]
             [r, if(isNPC(tokenId) && !isGM()), code: {
@@ -321,9 +325,10 @@
     [r: showDelayedAction(tokenId)]
     <br>If you still want to delay you turn use the <i>non-delayed</i> reactive action below. They will not use your proactive CA.<br><br>
   };{
-    Turn is no active, token can only take reactive actions.<hr>
+    Turn is no active, token can only take reactive actions.<br><br>
   }]
-  
+  <b>Reactive Action</b>
+  <hr>
   <table style="padding: 0px; cellspacing:0px; border-spacing:0 0px;">
     <tr>
       <td>
@@ -332,14 +337,32 @@
         <a class="button-small pure-button" href="[r: link]">Parry</a>
       </td>
       <td>
-        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Counter Spell")]
-        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">Counter Spell</a>
-      </td>
-      <td>
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Outmanoeuvre: Resist")]
         [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
         <a class="button-small pure-button" href="[r: link]">Outmanoeuvre: Resist</a>       
+      </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Counter Spell")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Counter Spell</a>      
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evade","actionLabel","Evade")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Evade</a>      
+      </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Change Range: Resist")]
+        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Change Range: Resist</a>
+      </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeRiposte","actionLabel","Charge: Riposte")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button pure-button-active" href="[r: link]">Charge: Riposte</a>
       </td>
       <td></td>
     </tr>
@@ -347,36 +370,18 @@
       <td>
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evadeProne","actionLabel","Evade (Prone)")]
         [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">Evade (Prone)</a>
-      </td>
-      <td>
-        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","evade","actionLabel","Evade")]
-        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">Evade</a>
-      </td>
-      <td>
-        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Change Range: Resist")]
-        [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">Change Range: Resist</a>
-      </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>
-        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeRiposte","actionLabel","Charge: Riposte")]
-        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button pure-button-active" href="[r: link]">Charge: Riposte</a>
-      </td>  
-      <td>
-        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeRiposte","actionLabel","Charge: Mounted Attack")]
-        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button pure-button-active" href="[r: link]">Charge: Mounted Attack</a>
+        <a class="button-small pure-button" href="[r: link]">Evade (Prone)</a>      
       </td>  
       <td>
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","parry","actionLabel","Change Range: Riposte")]
         [h: link = macroLinkText("updateCombatReactive@Lib:RQII", "all",macroParam)]
         <a class="button-small pure-button" href="[r: link]">Change Range: Riposte</a>
       </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeRiposte","actionLabel","Charge: Mounted Attack")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button pure-button-active" href="[r: link]">Charge: Mounted Attack</a>
+      </td>  
       <td></td>
     </tr>
   </table>
@@ -425,7 +430,7 @@
 
   
   [r, if(chargeStatus == "chargeReady"), code:{
-     Charge is ready, select either Passage or Crash Action :
+     Charge is ready, select either Still charging, Passage or Crash Action :
   }]
   [r, if(chargeStatus == "passageDone"), code:{
      Charge as passed, continue moving till end of the MR :
@@ -437,18 +442,19 @@
     <tr>
       [r, if(chargeStatus == "chargeReady"), code:{
       <td>
-        <form class="pure-form" action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="chargePassage">
-          <input type="submit" name="actionLabel" value="Charge: Passage" class="button-small pure-button">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Move")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Still moving</a>
+      </td> 
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargePassage","actionLabel","Charge attack: Passage")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Charge attack: Passage</a>      
       </td>
       <td>
-        <form action="[r:linkUpdateCombatProactive]" method="json">
-          <input type="hidden" name="tokenId" value="[r:tokenId]">
-          <input type="hidden" name="action" value="chargeCrash">
-          <input type="submit" name="actionLabel" value="Charge: Crash" class="button-small pure-button">
-        </form>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargeCrash","actionLabel","Charge attack: Crash")]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Charge attack: Crash</a>      
       </td>
       }]
       [r, if((chargeStatus == "passageDone")||(chargeStatus == "prepareCharge")), code:{

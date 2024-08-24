@@ -54,12 +54,14 @@
           <a class="pure-button pure-button-primary" href="[r: link]">Refresh</a>
         </td>
         <td>
+        [r, if(isGM()), code:{
           [h: macroParam = json.set("{}", "tokens", tokens, "action", "rollinit","cLogTokenId",CurrCLogTokenId)]
           [h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
           <a class="pure-button pure-button-primary" href="[r: link]">Roll Initiative</a>
+        };{}]
         </td>    
         <td>
-          [r, if(CurrCLogTokenId != "none"), code:{
+          [r, if((CurrCLogTokenId != "none")&& isGM()), code:{
             [h: macroParam = json.set("{}", "tokens", tokens, "action", "reset","cLogTokenId",CurrCLogTokenId)]
             [h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
             <a class="button-warning pure-button" href="[r: link]">Create new combat</a>
@@ -69,10 +71,12 @@
     </tbody>
   </table>
   };{
-   No current Combat on this map - Create a combat first
-    [h: macroParam = json.set("{}", "tokens", tokens, "action", "reset","cLogTokenId",CurrCLogTokenId)]
-    [h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
-    <a class="button-warning pure-button" href="[r: link]">Create new combat</a>
+  No current Combat on this map - Create a combat first
+    [r, if(isGM()), code:{
+      [h: macroParam = json.set("{}", "tokens", tokens, "action", "reset","cLogTokenId",CurrCLogTokenId)]
+      [h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
+      <a class="button-warning pure-button" href="[r: link]">Create new combat</a>
+    };{}]
   }]
   </div>
 </div>
@@ -125,7 +129,10 @@
       [r: upper(json.get(currentCombatStatus,"turnStatus"))]<br><br>
       [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","","cLogTokenId",CurrCLogTokenId)]
       [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+      [r, if(isNPC(tokenId) && !isGM()), code: {
+      };{
       <a class="pure-button pure-button-primary" href="[r: lnkTxt]">Act</a>
+      }]
     </p>  
     <p style="text-align:left;font-size:110%">
       [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]

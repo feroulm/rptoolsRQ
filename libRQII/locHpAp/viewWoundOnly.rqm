@@ -13,7 +13,7 @@
 [h: pLocHPorig = getProperty("locHPorig", tokenId)]
 [h: pLocNb = getProperty("locNb", tokenId)]
 
-<table class="content pure-table pure-table-striped">
+<table id="inner" class="content pure-table pure-table-striped table-striped-custom">
   <thead>
 	<tr>
 	  <th>Location</th>
@@ -31,13 +31,16 @@
 	  [for(i,1,pLocNb+1,1,""), code:{
       	<td>
       	   [h: locOrigValue = getStrProp(pLocHPorig, strformat("loc%{i}"))]
-      	   [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
-      	   [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
-      	   	  <span style="font-weight: bold;color:orange">S</span>
-      	   };{}]
-      	   [r, if((locCurrentValue + locOrigValue) <= 0), code: {
-      	   	  <span style="font-weight: bold;color:red">M</span>
-      	   };{}]
+           [h: locCurrentValue = getStrProp(pLocHP, strformat("loc%{i}"))]
+           [r, if((locCurrentValue < locOrigValue)&&(locCurrentValue >0)), code: {
+              <span style="font-weight: bold;color:blue">L</span>
+           };{}]
+           [r, if((locCurrentValue <= 0)&&(locCurrentValue + locOrigValue)>0), code: {
+              <span style="font-weight: bold;color:orange">S</span>
+           };{}]
+           [r, if((locCurrentValue + locOrigValue) <= 0), code: {
+              <span style="font-weight: bold;color:red">M</span>
+           };{}]
 	  	</td>
       }]
 	</tr>

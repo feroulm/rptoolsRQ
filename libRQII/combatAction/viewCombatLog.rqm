@@ -79,12 +79,12 @@
 				</td>
         <td>
 					[r: json.get(combatProp,"status")]
-          [r, if(cLogStatus == "current"), code:{
+          [r, if((cLogStatus == "current")&& isGM()), code:{
           [h: macroParam = json.set("{}", "action", "disable","cLogTokenId",cLogTokenId)]
           [h: link = macroLinkText("updateCombatLog@Lib:RQII", "all",macroParam)]
           <a class="button-warning pure-button" href="[r: link]">Disable Current</a>
           };{}]
-          [r, if(cLogStatus == "currentDisabled"), code:{
+          [r, if((cLogStatus == "currentDisabled")&& isGM()), code:{
             [h: macroParam = json.set("{}", "action", "renable","cLogTokenId",cLogTokenId)]
             [h: link = macroLinkText("updateCombatLog@Lib:RQII", "all",macroParam)]
             <a class="button-warning pure-button" href="[r: link]">Renable Current</a>

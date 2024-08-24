@@ -1,0 +1,40 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): mapName = getCurrentMapName(); mapName = json.get(arguments,"mapName")]
+
+[h: cond = json.set("{}","propertyType" ,"RQ_Human","mapName",mapName)]
+[h: rqHumanTokens = getTokens("json", cond)]
+Show map tokens infos
+<br><br>
+<b>combatStatus property patching</b>
+<hr>
+[r, foreach(tokenId, rqHumanTokens, ""), code:{
+	[h: currentCombatStatus = getProperty("combatStatus",tokenId, mapName)]
+	[r, if(json.isEmpty(currentCombatStatus)), code:{
+		<br><br><b>[r: getName(tokenId, mapName)] have no combatStatus prop !</b><br>
+		[h: currentCombatStatus = json.set("{}","versionTag","v0.0.0")]
+	};{}]
+	[h: "<!-- Check version -->"]
+	[h: currentVersion = json.get(currentCombatStatus,"versionTag")]
+	
+	[h, if(currentVersion == ""), code:{
+  		[h: propspellReady = json.get(currentCombatStatus,"spellReady")]
+  		[h, if(propspellReady != "") : currentVersion = "v2.0.0";currentVersion = "v1.0.0"]
+	}]
+	[r, if(currentVersion != "v3.0.0"), code:{
+	  <br>[r: getName(tokenId,mapName)] combatStatus is [r: currentVersion] and needs to be patched 
+	}]
+}]
+
+<br><br>
+<b>Non RQ_Human tokens on the map</b>
+<hr>
+[h: cond = json.set("{}","mapName",mapName)]
+[h: tokenIds = getTokens("json", cond)]
+[r, foreach(tokenId, tokenIds, ""), code:{
+
+[h: tokenType = getPropertyType(tokenId, mapName)]
+[r, if(tokenType != "RQ_Human"),code:{
+	<br>[r: getName(tokenId,mapName)] is of type : [r: tokenType]
+}]
+	
+}]

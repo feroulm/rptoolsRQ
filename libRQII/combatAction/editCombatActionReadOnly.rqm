@@ -1,0 +1,262 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)), code:{
+  [assert(0,"<i>combatAction::editCombatActionReadOnly</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+};
+{
+  [h: tokenId = json.get(arguments,"tokenId")]
+  [h: msg = json.get(arguments,"msg")]
+}]
+
+[h: tokenMap = getCurrentMapName()]
+
+<!-- Combat Status variable -->
+[h: tCombatStatus = getProperty("combatStatus",tokenId)]
+
+[h: turnStatus = json.get(tCombatStatus,"turnStatus")]
+[h: activeTurn = json.get(tCombatStatus,"activeTurn")]
+[h: chargeStatus = json.get(tCombatStatus,"chargeStatus")]
+[h: spellReady = json.get(tCombatStatus,"spellReady")]
+[h: situationMod = json.get(tCombatStatus,"situationMod")]
+
+[h: activeCA = json.get(tCombatStatus,"activeCA")]
+[h: ccCA = json.get(tCombatStatus,"ccCA")]
+[h: proactiveCA = json.get(tCombatStatus,"proactiveCA")]
+[h: reactiveCA = json.get(tCombatStatus,"reactiveCA")]
+
+[h: baseCA = json.get(tCombatStatus,"baseCA")]
+[h: bonusCA = json.get(tCombatStatus,"bonusCA")]
+[h: weaponCA = json.get(tCombatStatus,"weaponCA")]
+[h: magicCA = json.get(tCombatStatus,"magicCA")]
+
+[h: castCA = json.get(tCombatStatus,"castCA")]
+[h: reloadCA = json.get(tCombatStatus,"reloadCA")]
+[h: lostProCA = json.get(tCombatStatus,"lostProCA")]
+[h: lostCA = json.get(tCombatStatus,"lostCA")]
+[h: firstEvade = json.get(tCombatStatus,"firstEvade")]
+[h: weaponReach = json.get(tCombatStatus,"weaponReach")]
+[h: currWeaponNb = json.get(tCombatStatus,"currWeaponNb")]
+[h: defWeaponNb = json.get(tCombatStatus,"defWeaponNb")]
+
+[h: clogTokenId = json.get(tCombatStatus,"cLogTokenId")]
+[h: versionTag = json.get(tCombatStatus,"versionTag")]
+
+<!-- Combat Log -->
+[h: currentCombatLog = getProperty("combatLog",tokenId)]
+[h: turnDeclaration = json.get(currentCombatLog,"turnDeclaration")]
+
+<!-- Change button name and action based on various status -->
+[h, if(castCA == 0): castAction = "firstCast"]
+[h, if(castCA > 0): castAction = "pursueCast"]
+[h, if(reloadCA == 0): rangeAction = "Shoot"]
+[h, if(reloadCA > 0): rangeAction = "Reload"]
+[h, if(weaponReach == "outranged"): changeRangeAction = "Closing"]
+[h, if(weaponReach == "closed"): changeRangeAction = "Disengaging"]
+[h, if(chargeStatus == "prepareCharge"): chargeAction = "Continue Charging"]
+[h, if(chargeStatus == "passageDone"): chargeAction = "Finishing Charge Passage"]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+[h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
+
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <table class="content pure-table table-striped-custom">
+      <tbody>
+      [r, if (activeTurn), code:{      
+        <tr class="active">
+          <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
+          <td><a id="active" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>
+          <td>Acting in its Turn
+          <br><br>CA : <span style="font-weight: bold;color:blue">[r: json.get(tCombatStatus,"activeCA")]</span> / [r: json.get(tCombatStatus,"ccCA")]
+            [r, if(isNPC(tokenId) && !isGM()), code: {
+            };{
+            <br>MP : <span style="font-weight: bold;color:blue">[r: json.path.read(propMagicPoint,"MP.current")]</span> / [r: json.path.read(propMagicPoint,"MP.base")]
+            }]
+          </td>
+          <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
+        </tr>
+      };{
+        <tr>
+          <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
+          <td><a class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>
+          <td>
+            Not acting in its turn
+            <br><br>CA : <span style="font-weight: bold;color:blue">[r: json.get(tCombatStatus,"activeCA")]</span> / [r: json.get(tCombatStatus,"ccCA")]
+            [r, if(isNPC(tokenId) && !isGM()), code: {
+            };{
+            <br>MP : <span style="font-weight: bold;color:blue">[r: json.path.read(propMagicPoint,"MP.current")]</span> / [r: json.path.read(propMagicPoint,"MP.base")]
+            }]
+          </td>
+          <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
+        </tr>
+      }]
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Common info whatever the type of action, like situationModifier, range status -->
+
+<div class="container pure-g">
+  <div class="pure-u-1">
+    [r, if(weaponReach != "ok"),code:{
+      Token is currently <i>[r: weaponReach]</i>.<br>
+    }]
+    [r, if(situationMod == "prone"): "<b>Token is prone, -20% malus on fighting action</b>"]<br>
+    
+    <!-- Show last action result (erased at each refresh) -->
+    [r, if (msg != ""), code:{
+    <b>[r: msg]</b><br><br>
+    }]
+  </div>
+</div>
+
+<!-- Compute condition based on various value -->
+[h: showProactiveAction = 0]
+[h: showOnlyChargingAction = 0]
+[h: showReactiveAction = 0]
+[h: showNoProactiveAction = 0]
+[h: showNoAction = 1]
+[h: noActionMsg = ""]
+[h: noProactiveActionMsg = ""]
+
+<!-- token can do a proactive action when it is his turn, if he has some CA left, if he has not played already during this cycle and if he has not lose proactiveCA -->
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReach != "outmanoeuvred")&&(chargeStatus == "none")),code:{
+  [h: showProactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+<!-- since we can make an OR in the if condition, we reapeat an if for each case noProactiveAction Case-->
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA>0)),code:{
+  [h: showNoProactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+<!-- case when he made a first evade action before -->
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade>0)),code:{
+  [h: showNoProactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+<!-- case when outmanoeuvred -->
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(weaponReach == "outmanoeuvred")),code:{
+  [h: showNoProactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+[h, if ((activeTurn)&&(turnStatus == "disabled")),code:{
+  [h: showProactiveAction = 0]
+  [h: showNoProactiveAction = 0]
+  [h: showNoAction = 1]
+}]
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(chargeStatus != "none")),code:{
+  [h: showProactiveAction = 0]
+  [h: showNoProactiveAction = 0]
+  [h: showNoAction = 0]
+  [h: showOnlyChargingAction = 1]
+}]
+[h, if ((!activeTurn)&&(activeCA>0)),code:{
+  [h: showReactiveAction = 1]
+  [h: showNoAction = 0]
+}]
+[h, if ((!activeTurn)&&(turnStatus == "disabled")),code:{
+  [h: showReactiveAction = 0]
+  [h: showNoAction = 1]
+}]
+[h, if (activeCA<=0): noActionMsg = noActionMsg + "<li>no more CA for this MR</li>"]
+
+<!-- Reason for noProactive action -->
+[h, if (lostProCA>0): noProactiveActionMsg = noProactiveActionMsg + "<li>You have still "+lostProCA+ " lost proactive CA because of an event, you can only do reactive actions for this turn</li>"]
+[h, if (firstEvade>0): noProactiveActionMsg = noProactiveActionMsg + "<li>first Evade done in previous turn, no proactive action for this turn</li>"]
+[h, if (weaponReach == "outmanoeuvred"): noProactiveActionMsg = noProactiveActionMsg + "<li>token is outmanoeuvred, no proactive action for this MR</li>"]
+[h, if (turnStatus == "disabled"): noActionMsg = noActionMsg + "<li>turn is disabled, token is out of combat</li>"]
+[h, if (turnStatus == "off"): noActionMsg = noActionMsg + "<li>Token has already play his turn during this cycle</li>"]
+
+<!-- Update action target -->
+[h: linkUpdateCombat = macroLinkText("updateCombat@Lib:RQII", "all")]
+[h: linkUpdateCombatProactive = macroLinkText("updateCombatProactive@Lib:RQII", "all")]
+[h: linkUpdateCombatReactive = macroLinkText("updateCombatReactive@Lib:RQII", "all")]
+
+<!-- Show proactive action : only if activeTurn = 1 , if activeCA >0 and if turn is On -->
+<div class="container pure-g">
+  <div class="pure-u-1">
+[r, if (showProactiveAction), code :{
+  [r, if(turnDeclaration == ""), code:{
+   
+  };{
+    <br>  
+     Token is currently doing : <b>[r: turnDeclaration]</b><br>
+    <br>
+  }]
+  <br>
+
+  [r, if(castCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+castCA+" remaining castCA, you should pursue your casting.<br></span>"]
+  [r, if(reloadCA > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have "+reloadCA+" remaining reloadCA, you should reload before shooting.<br></span>"]
+
+}]
+<!-- Show reactive action : only if turnStatus = delay or on and activeTurn  -->
+[r, if (showReactiveAction), code :{
+  [r, if(chargeStatus=="prepareCharge"): "<b>!!Token is charging</b>. Doing an Evade will break the charge.<br>"] 
+
+  [r, if(turnStatus == "delay"), code:{ 
+    <br>If you still want to delay you turn use the <i>non-delayed</i> reactive action. They will not use your proactive CA.<br><br>
+  };{
+    Turn is no active, token can only take reactive actions.<hr>
+  }]
+}]
+
+<!-- Charge specific case -->
+
+[r, if (showOnlyChargingAction), code :{
+  [r, if(turnDeclaration == ""), code:{
+   
+  };{
+    <br>  
+     Token is currently doing : <b>[r: turnDeclaration]</b><br>
+     <br>
+  }]
+  <span style="font-weight: bold;color:red"><b>!!</b> : Reactive action and changes must be achieved first on opponent(s) before selecting an action below.</span><br>
+
+  [r, if(chargeStatus == "chargeReady"), code:{
+     Charge is ready, select either Passage or Crash Action :
+  }]
+  [r, if(chargeStatus == "passageDone"), code:{
+     Charge as passed, continue moving till end of the MR :
+  }]
+  [r, if(chargeStatus == "prepareCharge"), code:{
+     Token is charging, continue moving till end of the MR :
+  }] 
+}]
+
+[r, if (showNoProactiveAction), code :{
+  You have to delay your turn :<ul>
+  [r: noProactiveActionMsg]
+  </ul>
+}]
+
+[r, if (showNoAction), code :{
+  <i>Can only do free actions</i>. No actions because :<ul>[r: noActionMsg]</ul>
+}]
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    [r, if(spellReady > 0): "<span style='font-weight: bold;color:red'><b>!!</b> You have used Hold Magic, and have a spell to release<br></span>"]
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <i>Current HP & AP</i>
+    <hr> 
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+      [r, macro("viewWoundOnly@Lib:RQII"): macroParam]
+    };{
+        [r, macro("viewCurrentAPHP@Lib:RQII"): macroParam]
+    }]
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <i>Current Hold Weapon</i>
+    <hr>
+    [h: macroParam = json.set("{}", "tokenId", tokenId)]
+    [r, macro("viewCurrentWeapons@Lib:RQII"): macroParam]
+  </div>
+</div>

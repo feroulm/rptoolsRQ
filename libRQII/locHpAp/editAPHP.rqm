@@ -10,42 +10,77 @@
 
 [h: pLocNb = getProperty("locNb", tokenId)]
 [h: link = macroLinkText("updateAPHP@Lib:RQII", "all")]
-<form action="[r:link]" method="json">
- <input type="hidden" name="tokenId" value="[r:tokenId]">
-<h3>[r:getName(tokenId)]</h3>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <table>
+      <tr>
+        <td><img src="[r: getTokenPortrait(60,tokenId,tokenMap)]"></img></td>
+        <td><h3> [r: getName(tokenId)]</h3></td>
+      </tr>
+    </table>
+    <hr>
+    [r, if(isNPC(tokenId) && !isGM()), code: {
+    };{
+      <form class="pure-form" action="[r:link]" method="json">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <table width="*" class="content">
+      <tr>
+        <td>Damage :</td>
+        <td><input type="radio" name="dmgAction" value="Damage" checked="checked"></t>
+      </tr>
+      <tr>
+        <td>Heal :</td> 
+        <td><input type="radio" name="dmgAction" value="Heal"></td>
+      </tr>
+      
+      <tr>
+        <td><b>Amount :</b></td>
+        <td><input type="text" name="Amount" size="3" align="right"></td>
+      </tr>
+      
+      [h: pLocName= getProperty("locName", tokenId)]
+      
+      <tr>
+        <td><b>Location :</b></td>
+        <td>
+          <select name="TokenLoc" size="1">
+            [for(i,1,pLocNb+1,1,""), code: {
+                <option value="[r: i]">[r: getStrProp(pLocName, strformat("loc%{i}"))]</option>
+            }]
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><i>Update :</i></td>
+        <td><input type="submit" name="dmgTarget" value="HP" class="pure-button pure-button-primary"> <input type="submit" name="dmgTarget" value="AP" class="pure-button pure-button"></td>
+      </tr> 
+      </table>
+      </form>
+    }]
+  </div>
+</div>
 <hr>
-<table width="*">
-<tr>
-  <td>Damage :</td>
-  <td><input type="radio" name="dmgAction" value="Damage" checked="checked"></t>
-</tr>
-<tr>
-  <td>Heal :</td> 
-  <td><input type="radio" name="dmgAction" value="Heal"></td>
-</tr>
-
-<tr>
-  <td><b>Amount :</b></td>
-  <td><input type="text" name="Amount" size="3" align="right"></td>
-</tr>
-
-[h: pLocName= getProperty("locName", tokenId)]
-
-<tr>
-  <td><b>Location :</b></td>
-  <td>
-    <select name="TokenLoc" size="1">
-      [for(i,1,pLocNb+1,1,""), code: {
-          <option value="[r: i]">[r: getStrProp(pLocName, strformat("loc%{i}"))]</option>
-      }]
-    </select>
-  </td>
-</tr>
-<tr>
-  <td><i>Update :</i></td>
-  <td><input type="submit" name="dmgTarget" value="HP"> <input type="submit" name="dmgTarget" value="AP"></td>
-</tr> 
-</table>
-</form>
+<div class="container pure-g">
+  <div class="pure-u-1">
+  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+  [r, if(isNPC(tokenId) && !isGM()), code: {
+      [r, macro("viewWoundOnly@Lib:RQII"): macroParam]
+  };{
+    [r, macro("viewAPHP@this"): tokenId]
+  }]
+  </div>
+</div>
 <hr>
-[r, macro("viewAPHP@this"): tokenId]
+<div class="container pure-g">
+  <div class="pure-u-1">
+  [r, if(isNPC(tokenId) && !isGM()), code: {
+  };{
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"dmgAction","Reset","dmgTarget","HP")]
+    [h: link = macroLinkText("updateAPHP@Lib:RQII", "all",macroParam)]
+    <a class="button-small pure-button pure-button-primary" href="[r: link]">Reset Orig HP</a>
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"dmgAction","Reset","dmgTarget","AP")]
+    [h: link = macroLinkText("updateAPHP@Lib:RQII", "all",macroParam)]
+    <a class="button-small pure-button" href="[r: link]">Reset Orig AP</a>
+  </div>
+  }]
+</div>

@@ -24,7 +24,11 @@
   <title>Combat Action - [r: getName(tokenId)]</title>
 </head>
 <body class="body-custom">
+[r, if(isNPC(tokenId) && !isGM()), code: {
+  [r, macro("editCombatActionReadOnly@Lib:RQII"): param]
+};{
   [r, macro("editCombatAction@Lib:RQII"): param]
+}]
 </body>
 </html>
 }]

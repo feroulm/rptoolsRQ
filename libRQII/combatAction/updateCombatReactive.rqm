@@ -107,6 +107,8 @@
 	
 [h: logCombatAction(tokenId,"reactive",logMsg)]
 [h: addCombatLogEntry(tokenId,"reactiveAction",logMsg,logComment)]
+
+[h: closeDialog("Forgot Reactive Combat Action")]
     
 [h: "<!-- Refresh Combat Action Window for current Active Token-->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg,"cLogTokenId", cLogTokenId)]

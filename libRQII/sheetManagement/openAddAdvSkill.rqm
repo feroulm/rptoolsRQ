@@ -24,7 +24,11 @@
       <title>Add [r: skType] Skills - [r: getName(tokenId)]</title>
     </head>
 <body>
-[r, macro("editAddAdvSkill@Lib:RQII"): arguments]
+  [r, if(isNPC(tokenId) && !isGM()), code: {
+      Sorry you cannot edit this token.
+    };{
+      [r, macro("editAddAdvSkill@Lib:RQII"): arguments]
+  }]
 </body>
 </html>
 }]
