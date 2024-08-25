@@ -12,6 +12,20 @@
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
 [h, if(isNPC(tokenId)&&!isGM()): abort(0)]
 
+[h: logTypeFilter = json.get(arguments, "logTypeFilter")]
+[h, if(json.isEmpty(logTypeFilter)), code:{
+	[h: logTypeFilter = ".*"]
+};{
+  [h, if(logTypeFilter == "") : logTypeFilter = ".*"]
+}]
+
+[h: logSessionNameFilter = json.get(arguments, "logSessionNameFilter")]
+[h, if(json.isEmpty(logSessionNameFilter)), code:{
+	[h: logSessionNameFilter = ".*"]
+};{
+  [h, if(logSessionNameFilter == "") : logSessionNameFilter = ".*"]
+}]
+
 [h: dialogName = "Sheet"+tokenId]
 
 [dialog5(dialogName,"width=888; height=830; temporary=1"): {
@@ -30,8 +44,12 @@
 	    case "magic" :{
   	      [r, macro("viewSheetMagic@Lib:RQII"): macroParam]
         };
-		case "skills" :{
+      case "skills" :{
   	      [r, macro("viewSheetSkills@Lib:RQII"): macroParam]
+        };
+      case "logs" :{
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter)]
+  	      [r, macro("viewSheetLogs@Lib:RQII"): macroParam]
         };
         default: {
           [r, macro("viewSheet@Lib:RQII"): macroParam]

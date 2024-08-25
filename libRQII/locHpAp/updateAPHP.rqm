@@ -92,7 +92,7 @@
 [h: cLogTokenId = findCurrentCombatToken()]
 
 [h: logCombatAction(tokenId,"change",logMsg)]
-[r: addCombatLogEntry(tokenId,"updateHPAP",logLongMsg,"")]
+[r: addCombatLogEntry(tokenId,"updateHPAP",logLongMsg,"","1")]
  
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 [h, macro("openAPHP@Lib:RQII"): macroParam]

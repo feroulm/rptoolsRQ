@@ -29,6 +29,9 @@
 [h: defineFunction("getMissileNbLst","getMissileNbLst@Lib:RQII")]
 [h: defineFunction("computeHoldWeaponNb","computeHoldWeaponNb@Lib:RQII")]
 
+[h: "<!-- Token Property Management UDFs -->"]
+[h: defineFunction("findCurrentTokenLog","findCurrentTokenLog@Lib:RQII")]
+
 [h: "<!-- Generic UDFs -->"]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
 [h: defineFunction("sortJson","sortJson@Lib:RQII")]

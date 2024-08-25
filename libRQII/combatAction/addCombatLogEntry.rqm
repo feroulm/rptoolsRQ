@@ -1,24 +1,55 @@
 [h: "<!-- addCombatLogEntry - Function to add a log entry to the current combatLog token on current map -->"]
 [h: "<!-- Called by several combatAction/update* method  -->"]
-[h: "<!-- if no combatLogToken is found, log to the chat window, otherwise return nothing -->"]
+[h: "<!-- if no combatLogToken is found, we try to log on the tokenLog (if the token is a pc) otherwise we log to the chat window, otherwise return nothing -->"]
 
 [h: tokenId = arg(0)]
 [h: logType = arg(1)]
 [h: logMsg = arg(2)]
 [h: logComment = arg(3)]
 
+[h: numArgs = argCount()]
+[h, if(numArgs == 5), code:{
+	[h: logToToken = arg(4)]
+};{
+	[h: logToToken = "0"]
+}]
+
+[h: timestamp = json.get(getInfo("server"),"timeDate")]
+
 [h:"<!-- get current combat token -->"]
 [h: cLogTokenId = findCurrentCombatToken()]
 
+[h:"<!-- get current tokenLog token for tokenId -->"]
+[h: tLogTokenId = findCurrentTokenLog(tokenId)]
+[h, if(tLogTokenId != "none"), code :{
+    [h: campainDescProp = getLibProperty("campainDesc", "Lib:RQII")]
+    [h: tokenLogProp = getProperty("tokenLog",tLogTokenId)]
+    [h: currentSessionName = json.get(campainDescProp,"currentSessionName")]
+    
+    [h: len = json.length(tokenLogProp)]
+    [h: nextId = len + 1]
+    
+    [h: newTokenLogValues = json.set("{}","logId",nextId,"tokenId",tokenId)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"logType",logType)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"logMsg",logMsg)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"logComment",logComment)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"serverTime",timestamp)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"sessionName",currentSessionName)]
+}]
+
 [r, if(cLogTokenId == "none"), code :{
-  <b>[r: getName(tokenId)]</b> : [r: logMsg]
-  [r: logComment]
+  [r, if(tLogTokenId == "none"), code :{
+    <b>[r: getName(tokenId)]</b> : [r: logMsg]
+    [r: logComment]
+  };{
+    [h: tokenLogProp = json.append(tokenLogProp,newTokenLogValues)]   
+    [h: setProperty("tokenLog", tokenLogProp, tLogTokenId)]
+  }]
 };{
   [h: combatProp = getProperty("combat",cLogTokenId)]
   [h: currMr = json.get(combatProp,"mr"))]
   [h: currCycle = json.get(combatProp,"cycle"))]
-
-  [h: timestamp = json.get(getInfo("server"),"timeDate")]
+  
   [h: logs = getProperty("combatLog", cLogTokenId)]
   
   [h: len = json.length(logs)]
@@ -35,4 +66,9 @@
   [h: logs = json.append(logs,newLogValues)]
     
   [h: setProperty("combatLog", logs, cLogTokenId)]
+  
+  [r, if((tLogTokenId != "none") && (logToToken == "1")), code :{
+    [h: tokenLogProp = json.append(tokenLogProp,newTokenLogValues)]   
+    [h: setProperty("tokenLog", tokenLogProp, tLogTokenId)]
+  }]
 }]

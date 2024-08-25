@@ -436,7 +436,12 @@
 	[h: caStatus = json.get(currentCombatStatus,"activeCA")+"/"+json.get(currentCombatStatus,"ccCA")]
 	[h: commentMsg = "Remaining CA :"+caStatus]
 	[h: logComment = strformat("%{commentMsg}<br>%{logComment}")]
-	[h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment)]
+  [h, if (action == "firstCast"), code:{
+    [h: "<!-- We log also to the tokenLog -->"]
+    [h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment,"1")]
+  };{
+    [h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment)]
+  }]
 };{
   [h: getName(tokenId)] is playing is turn and has declared : [h: logMsg]	
 	[h: addCombatLogEntry(tokenId,"declareAction",logMsg,"")]

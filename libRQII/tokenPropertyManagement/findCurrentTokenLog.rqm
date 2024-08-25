@@ -1,0 +1,20 @@
+[h: "<!-- findCurrentTokenLog - Function to get current corresponding tokenLog token on map _Main_AE for tokenId-->"]
+[h: "<!-- Called by : all macros that need to log some stuff that happens outside a combat -->"]
+[h: "<!-- return the token id or none if none exists -->"]
+
+[h: tokenId = arg(0)] 
+[h: cond = json.set("{}","propertyType" ,"RQ_Log","mapName","_Main_AE")]
+[h: tLogTokens = getTokens("json", cond)]
+
+[h: CurrTokenLogTokenId = "none"]
+
+[h: logTokenName = "tokenLog_"+getName(tokenId)]
+
+[h, foreach(tLogTokenId, tLogTokens, ""), code:{
+  [h: tokenName = getName(tLogTokenId)]
+	[h, if(tokenName == logTokenName), code:{
+		[h: CurrTokenLogTokenId = tLogTokenId]
+	};{}]	
+}]
+
+[r: CurrTokenLogTokenId]

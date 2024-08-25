@@ -1,0 +1,123 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h: propNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+
+[h:"<!-- get current tokenLog token for tokenId -->"]
+[h: tLogTokenId = findCurrentTokenLog(tokenId)]
+
+[h: logTypeFilter = json.get(arguments, "logTypeFilter")]
+[h, if(json.isEmpty(logTypeFilter)), code:{
+	[h: logTypeFilter = ".*"]
+};{
+  [h, if(logTypeFilter == "") : logTypeFilter = ".*"]
+}]
+
+[h: logSessionNameFilter = json.get(arguments, "logSessionNameFilter")]
+[h, if(json.isEmpty(logSessionNameFilter)), code:{
+	[h: logSessionNameFilter = ".*"]
+};{
+  [h, if(logSessionNameFilter == "") : logSessionNameFilter = ".*"]
+}]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+	<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>[r: getName(tokenId,tokenMap)]</a>
+        <ul class="pure-menu-list">
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "main")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "magic")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Magic</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "skills")]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Skills</a>
+			</li>
+			<li class="pure-menu-item">
+			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openAPHP@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Damage / Heal</a>
+			</li>
+			<li class="pure-menu-item">
+		      [h: macroParam = json.set("{}", "tokenId", tokenId)]
+              [h: lnkTxt = macroLinktext("openSheetMgt@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Edit Sheet</a>
+			</li>
+      <li class="pure-menu-item pure-menu-selected">
+              [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "logs","logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter)]
+              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+	          <a class="pure-menu-link" href="[r: lnkTxt]">Logs</a>
+			</li>
+			<li class="pure-menu-item"><a class="pure-menu-link" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>Wiki</a></li>
+        </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+	<div class="pure-u-md-5-24">
+	<div class="section">
+    [h: linkOpenSheet = macroLinkText("openSheet@Lib:RQII", "all")]
+		<form class="pure-form pure-form-stacked" action="[r:linkOpenSheet]" method="json">
+      <input type="hidden" name="tab" value="logs">
+			<input type="hidden" name="tokenId" value="[r: tokenId]">
+			<fieldset>
+        <legend>Select filter</legend>
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-4">
+                <label for="logTypeFilter">log Type</label>
+                <input type="text" id="logTypeFilter" name="logTypeFilter" value="[r:logTypeFilter]" class="pure-u-16-24" />
+            </div>
+						<div class="pure-u-1 pure-u-md-1-4">
+                <label for="logSessionNameFilter">sessionName</label>
+                <input type="text" id="logSessionNameFilter" name="logSessionNameFilter" value="[r:logSessionNameFilter]" class="pure-u-18-24" />
+            </div>
+        </div>
+        <button type="submit" class="pure-button pure-button-primary">Filter</button>
+    </fieldset>
+		</form>
+		</div>
+	</div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+		<table class="content pure-table pure-table-striped">
+		<thead>
+			<tr>
+			<th>logId</th>
+			<th>Session Name</th>
+			<th>log Type</th>
+			<th>Event(s)</th>
+			<th>Comment</th>
+			<th>Server Time</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		[r, if(tLogTokenId != "none"), code:{
+			[h: logs = getProperty("tokenLog", tLogTokenId)]
+			[h: logs = json.sort(logs,"d","logId")]
+			[r, foreach(logEntry, logs, ""), code: {
+				[h: logEntryKey = json.get(logEntry,"logId")]
+				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter,"tLogTokenId",tLogTokenId)]
+				[r, macro("showFilteredTokenLogEntry@Lib:RQII"): macroParam]
+			}]
+		};{
+			<tr>
+				<td colspan="7">! No tokenLog found.<br><br>
+        You can create one on _Main_AE map. <br> It must be of type <i>RQ_Log</i> <br> and it must use the naming convention : <b>tokenLog_</b><i>the token name</i></td>
+			</tr>
+		}]
+		</tbody>
+		</table>
+		</div>
+</div>

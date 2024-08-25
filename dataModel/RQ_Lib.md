@@ -1,11 +1,19 @@
 ## RQ_Lib
 
-Current version : v1.0.1
+Current version : v1.0.3
 
 History :
+- v1.0.3 : add *campainDesc* property
+- v1.0.2 : 
 - v1.0.1 : add modelVersion property
 - v1.0.0 : First stable version (including all improvment to manage combat, pnj sheet, etc.)
 - v0.0.0 : First unstable version
+
+### campainDesc
+
+Use to store global variable for the whole campain.
+
+* **currentSessionName** : Nickname of the current game session. Used in the token Log as a filtering option.
 
 ### combat
 

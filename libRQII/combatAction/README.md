@@ -46,7 +46,24 @@ combat : property of a combatLog Token
 [h: archiveDesc =  "(OLD)"+json.get(globalCombat,"desc")]
 [h: globalCombat = json.set(globalCombat,"desc","Farm Attack PJ1")]
 ```
- 
+### Token log relationship
+
+The same macro (*libRQII/combatAction/addCombatLogEntry*) is also used to manage another log (tokenLog), specific to a token.
+- cf [token property management readme](../tokenPropertyManagement/README.md).
+
+In order to log an action on both the *combatLog* and the *tokenLog* the *addCombatLogEntry* macro must be called with an additional param set to 1. 
+
+As for example in the *updateCombatProactive* macro
+
+```
+[h, if (action == "firstCast"), code:{
+    [h: "<!-- We log also to the tokenLog -->"]
+    [h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment,"1")]
+  };{
+    [h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment)]
+  }]
+```
+
 ## Combat Status
 When this structure evolves it must be patched on all token, to do this use the macro :
 - cf [patchPropCombatStatus](../tokenPropertyManagement/patchPropCombatStatus.rqm)
