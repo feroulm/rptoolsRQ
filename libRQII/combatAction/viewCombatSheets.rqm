@@ -104,6 +104,9 @@
   [h: situationMod = json.get(currentCombatStatus,"situationMod")]
   [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
   [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+  
+  [h: macroParam = json.set("{}", "tokenId",tokenId)]
+  [h: linkEditLabel = macroLinkText("editTokenLabelAndNotes@Lib:RQII", "all",macroParam)]
 
   <!-- concat various condition situationMod, range, charging -->
   [h: tokenOtherStatus = ""]
@@ -117,8 +120,8 @@
     [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
 
   <tr class="[r:cssSelector]">
-  <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img><br>[r: tokenOtherStatus ]</td>
-  <td><a id="[r:cssSelector]" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a>
+  <td><a href="[r: linkEditLabel]"><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></a><br>[r: tokenOtherStatus ]</td>
+  <td><a id="[r:cssSelector]" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)] <i>[r: getLabel(tokenId)]</i></a> 
   <br><i>[r: json.get(currentCombatLog,"turnDeclaration")]</i>
   <br>- [r: json.get(currentCombatLog,"lastProactiveAction")]
   <br>- [r: json.get(currentCombatLog,"lastReactiveAction")]

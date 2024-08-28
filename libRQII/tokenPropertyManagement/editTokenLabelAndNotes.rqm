@@ -1,0 +1,74 @@
+[h: arguments = macro.args]
+
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>combat::editTokenLabelAndNotes</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: tokenId = json.get(arguments, "tokenId")]
+}]
+
+[dialog5("Edit Token Label and Notes"): {
+<html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>Edit Token Label & Notes</title>
+    </head>
+<body class="body-custom">
+
+[h: tokenLabel = getLabel(tokenId)]
+[h: tokenNotes = getNotes(tokenId)]
+[h: tokenGMNotes = getGMNotes(tokenId)]
+[h: tokenMap = getCurrentMapName()]
+
+<div class="container pure-g">
+  <div class="pure-u-1">
+    <table class="content pure-table pure-table-striped">
+     <tr>
+          <td><img src="[r: getTokenPortrait(50,tokenId,tokenMap)]"></img></td>
+          <td>[r: getName(tokenId)] <br> <i>[r: tokenLabel]</i> </td>
+          <td>[r: tokenNotes]</td>
+     </tr>
+     [r, if(isGM()), code: {
+     	<tr>
+     	  <td></td>
+     	  <td colspan="2">[r: tokenGMNotes]</td>
+     	</tr>
+     };{}]
+     </table>    
+  </div>
+  <div class="pure-u-1">
+	  [h: link = macroLinkText("updateTokenLabelAndNotes@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:link]" method="json">
+      <input type="hidden" name="tokenId" value="[r: tokenId]">
+      <table class="content pure-table pure-table-striped">
+      <tbody>
+        <tr>
+          <td>Label</td>
+          <td>
+              <input type="text" size="55" name="tokenLabel" placeholder="tokenLabel" value="[r:tokenLabel]"/>
+          </td>
+        </tr>
+        <tr>
+          <td>Notes</td>
+          <td><textarea name="tokenNotes" placeholder="tokenNotes" rows="6" cols="60">[r:tokenNotes]</textarea></td>
+        </tr>
+        [r, if(isGM()), code: {
+        <tr>
+          <td>GM Notes</td>
+          <td><textarea name="tokenGMNotes" placeholder="tokenGMNotes" rows="6" cols="60">[r:tokenGMNotes]</textarea></td>
+        </tr>
+        };{}]
+        <tr>
+          <td colspan="2">
+            <button type="submit" class="pure-button pure-button-primary">Update</button>
+          </td>
+        </tr>
+      </tbody>
+       </table> 
+		</form>  
+  </div>
+</div>
+
+</body>
+</html>
+}]

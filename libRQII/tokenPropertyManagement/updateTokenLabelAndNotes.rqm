@@ -1,0 +1,20 @@
+[h: "<!-- updateTokenLabelAndNotes -->"]
+[h: arguments = macro.args]
+
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>combat::updateTokenLabelAndNotes</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  
+  [h: tokenId = json.get(arguments, "tokenId")]
+  [h: tokenLabel = json.get(arguments, "tokenLabel")]
+  [h: tokenNotes = json.get(arguments, "tokenNotes")]
+  [h: tokenGMNotes = json.get(arguments, "tokenGMNotes")]
+}]
+
+[h: setLabel(tokenLabel,tokenId)]
+[h: setNotes(tokenNotes,tokenId)]
+[h: setGMNotes(tokenGMNotes,tokenId)]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+[h: lnkTxt = macroLinktext("editTokenLabelAndNotes@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
