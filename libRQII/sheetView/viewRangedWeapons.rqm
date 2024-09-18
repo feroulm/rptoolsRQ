@@ -1,4 +1,6 @@
-[h: tokenId = macro.args]
+[h: arguments = macro.args]
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
 
 [h: propDamageMod = getProperty("DamageMod",tokenId)]
 [h: tokenDmgMod = json.get(propDamageMod, "current")]
@@ -45,11 +47,11 @@
         <td>[r: getStrProp(wProp, "Special")]</td>
         <td>
           [r, if(isHold), code:{
-            [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",missile,"weaponfamily","missile","holdValue",0,"srcWindow","openSheet")]
+            [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",missile,"weaponfamily","missile","holdValue",0,"srcWindow",srcWindow)]
             [h: lnkTxt = macroLinktext("updateHoldWeapon@Lib:RQII", "all",macroParam)]
             <a class="pure-button button-warning button-small" href="[r: lnkTxt]"><b>-</b></a>
           };{
-            [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",missile,"weaponfamily","missile","holdValue",1,"srcWindow","openSheet")]
+            [h: macroParam = json.set("{}", "tokenId", tokenId,"weaponId",missile,"weaponfamily","missile","holdValue",1,"srcWindow",srcWindow)]
             [h: lnkTxt = macroLinktext("updateHoldWeapon@Lib:RQII", "all",macroParam)]
             <a class="pure-button button-secondary button-small" href="[r: lnkTxt]"><b>+</b></a>
           }]

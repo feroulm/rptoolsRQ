@@ -1,16 +1,72 @@
 [h: arguments = macro.args] 
 [h: tokenId = json.get(arguments, "tokenId")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
 
+[h: propWealth = getProperty("wealth", tokenId)]
+[h: wealthHold = json.get(propWealth,"hold")]
+[h: prevHoldGP = json.get(wealthHold,"gp")]
+[h: prevHoldSP = json.get(wealthHold,"sp")]
+[h: prevHoldCP = json.get(wealthHold,"cp")]
+[h: prevHoldOthers = json.get(wealthHold,"others")]
+[h: wealthHidden = json.get(propWealth,"hidden")]
+[h: prevHiddenGP = json.get(wealthHidden,"gp")]
+[h: prevHiddenSP = json.get(wealthHidden,"sp")]
+[h: prevHiddenCP = json.get(wealthHidden,"cp")]
+[h: prevHiddenOthers = json.get(wealthHidden,"others")]
 
 [h: holdGP = json.get(arguments,"holdGP")]
 [h: holdSP = json.get(arguments,"holdSP")]
 [h: holdCP = json.get(arguments,"holdCP")]
 [h: holdOthers = json.get(arguments,"holdOthers")]
 
+[h: logMsg = ""]
+
+[h, if(holdGP>prevHoldGP), code:{
+  [h: pts = holdGP - prevHoldGP] 
+  [h: logMsg = strformat("%{logMsg}Gain %{pts} GP. Current GP is now <b>%{holdGP}</b>.<br>")]
+}]
+[h, if(prevHoldGP>holdGP), code:{
+  [h: pts = prevHoldGP - holdGP]
+  [h: logMsg = strformat("%{logMsg}Loose %{pts} GP. Current GP is now <b>%{holdGP}</b>.<br>")]
+}]
+[h, if(holdSP>prevHoldSP), code:{
+  [h: pts = holdSP - prevHoldSP] 
+  [h: logMsg = strformat("%{logMsg}Gain %{pts} SP. Current SP is now <b>%{holdSP}</b>.<br>")]
+}]
+[h, if(prevHoldSP>holdSP), code:{
+  [h: pts = prevHoldSP - holdSP]
+  [h: logMsg = strformat("%{logMsg}Loose %{pts} SP. Current SP is now <b>%{holdSP}</b>.<br>")]
+}]
+[h, if(holdCP>prevHoldCP), code:{
+  [h: pts = holdCP - prevHoldCP] 
+  [h: logMsg = strformat("%{logMsg}Gain %{pts} CP. Current CP is now <b>%{holdCP}</b>.<br>")]
+}]
+[h, if(prevHoldCP>holdCP), code:{
+  [h: pts = prevHoldCP - holdCP]
+  [h: logMsg = strformat("%{logMsg}Loose %{pts} CP. Current CP is now <b>%{holdCP}</b>.<br>")]
+}]
+
+[h, if(holdOthers != prevHoldOthers), code:{
+  [h: logMsg = strformat("%{logMsg}Change Others Wealth from <i>%{prevHoldOthers}</i> to <b>%{holdOthers}</b>.<br>")]
+}]
+
 [h: hiddenGP = json.get(arguments,"hiddenGP")]
 [h: hiddenSP = json.get(arguments,"hiddenSP")]
 [h: hiddenCP = json.get(arguments,"hiddenCP")]
 [h: hiddenOthers = json.get(arguments,"hiddenOthers")]
+
+[h, if(hiddenGP != prevHiddenGP), code:{
+  [h: logMsg = strformat("%{logMsg}Change Hidden GP from <i>%{prevHiddenGP}</i> to <b>%{hiddenGP}</b>.<br>")]
+}]
+[h, if(hiddenSP != prevHiddenSP), code:{
+  [h: logMsg = strformat("%{logMsg}Change Hidden SP from <i>%{prevHiddenSP}</i> to <b>%{hiddenSP}</b>.<br>")]
+}]
+[h, if(hiddenCP != prevHiddenCP), code:{
+  [h: logMsg = strformat("%{logMsg}Change Hidden CP from <i>%{prevHiddenCP}</i> to <b>%{hiddenCP}</b>.<br>")]
+}]
+[h, if(hiddenOthers != prevHiddenOthers), code:{
+  [h: logMsg = strformat("%{logMsg}Change Hidden Others Wealth from <i>%{prevHiddenOthers}</i> to <b>%{hiddenOthers}</b>.<br>")]
+}]
 
 [h: wealth = getProperty("wealth", tokenId)]
 [h: holdValues = json.get(wealth,"hold")]
@@ -31,6 +87,13 @@
 
 [h: setProperty("wealth", wealth, tokenId)]
 
-<!-- Refresh edit Window for the new token -->
+[r: addTokenLogEntry(tokenId,"updateWealth",logMsg,"")]
+
+[h: "<!-- Refresh edit Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openEquipmentMgt@Lib:RQII"): macroParam]
+
+[h, if(srcWindow == "openHumCombatAttr"), code:{
+  [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+};{
+  [h, macro("openEquipmentMgt@Lib:RQII"): macroParam]
+}]

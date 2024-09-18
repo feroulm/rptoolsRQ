@@ -50,7 +50,7 @@
 			</li>
 			<li class="pure-menu-item">
 		      [h: macroParam = json.set("{}", "tokenId", tokenId)]
-              [h: lnkTxt = macroLinktext("openSheetMgt@Lib:RQII", "all",macroParam)]
+              [h: lnkTxt = macroLinktext("openHumCombatAttr@Lib:RQII", "all",macroParam)]
 	          <a class="pure-menu-link" href="[r: lnkTxt]">Edit Sheet</a>
 			</li>
       <li class="pure-menu-item pure-menu-selected">
@@ -95,6 +95,7 @@
 			<tr>
 			<th>logId</th>
 			<th>Session Name</th>
+      <th>Map Name</th>
 			<th>log Type</th>
 			<th>Event(s)</th>
 			<th>Comment</th>
@@ -104,11 +105,11 @@
 		<tbody>
 
 		[r, if(tLogTokenId != "none"), code:{
-			[h: logs = getProperty("tokenLog", tLogTokenId)]
+			[h: logs = getProperty("tokenLog", tLogTokenId,"_Main_AE")]
 			[h: logs = json.sort(logs,"d","logId")]
 			[r, foreach(logEntry, logs, ""), code: {
 				[h: logEntryKey = json.get(logEntry,"logId")]
-				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter,"tLogTokenId",tLogTokenId)]
+				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter,"tLogTokenId",tLogTokenId,"tokenId",tokenId)]
 				[r, macro("showFilteredTokenLogEntry@Lib:RQII"): macroParam]
 			}]
 		};{

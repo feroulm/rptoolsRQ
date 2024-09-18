@@ -11,7 +11,7 @@
 [h: logTokenName = "tokenLog_"+getName(tokenId)]
 
 [h, foreach(tLogTokenId, tLogTokens, ""), code:{
-  [h: tokenName = getName(tLogTokenId)]
+  [h: tokenName = getName(tLogTokenId,"_Main_AE")]
 	[h, if(tokenName == logTokenName), code:{
 		[h: CurrTokenLogTokenId = tLogTokenId]
 	};{}]	

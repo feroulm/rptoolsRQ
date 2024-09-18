@@ -1,0 +1,39 @@
+[h: "<!-- addTokenLogEntry - Function to add a log entry to the tokenLog which is on map _Main_AE -->"]
+[h: "<!-- Called by upadteAction that happens outside of a combat or that are not logged to the comabtLog when used during a combat  -->"]
+[h: "<!-- if no tokenLog is found, log is sent to the chat -->"]
+[h: "<!-- Reminder : actions that need to be logged in both logs are handle by addCombatLogEntry with logToToken param set to 1 -->"]
+
+[h: tokenId = arg(0)]
+[h: logType = arg(1)]
+[h: logMsg = arg(2)]
+[h: logComment = arg(3)]
+
+[h: timestamp = json.get(getInfo("server"),"timeDate")]
+
+[h:"<!-- get current tokenLog token for tokenId which is on map _Main_AE -->"]
+[h: tLogTokenId = findCurrentTokenLog(tokenId)]
+
+[h, if(tLogTokenId != "none"), code :{
+    [h: campainDescProp = getLibProperty("campainDesc", "Lib:RQII")]
+    [h: tokenLogProp = getProperty("tokenLog",tLogTokenId,"_Main_AE")]
+    [h: currentSessionName = json.get(campainDescProp,"currentSessionName")]
+    
+    [h: len = json.length(tokenLogProp)]
+    [h: nextId = len + 1]
+    
+    [h: newTokenLogValues = json.set("{}","logId",nextId,"tokenId",tokenId)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"logType",logType)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"logMsg",logMsg)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"logComment",logComment)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"serverTime",timestamp)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"sessionName",currentSessionName)]
+    [h: newTokenLogValues = json.set(newTokenLogValues,"mapName",getCurrentMapName())]
+}]
+
+[r, if(tLogTokenId == "none"), code :{
+  <b>[r: getName(tokenId)]</b> : [r: logMsg]
+  [r: logComment]
+};{
+  [h: tokenLogProp = json.append(tokenLogProp,newTokenLogValues)]   
+  [h: setProperty("tokenLog", tokenLogProp, tLogTokenId,"_Main_AE")]
+}]

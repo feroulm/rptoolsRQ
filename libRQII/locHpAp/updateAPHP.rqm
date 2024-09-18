@@ -7,9 +7,9 @@
 [h: dmgTarget = json.get(arguments, "dmgTarget")]
 [h: dmgAction = json.get(arguments, "dmgAction")]
 [h: pLocHP = getProperty("locHP",tokenId)]
-[h: locName = getStrProp(getProperty("locName",tokenId),strformat("loc%{locId}"))]
-[h: locHPorig = getStrProp(getProperty("locHPorig",tokenId),strformat("loc%{locId}"))]
-[h: locAPorig = getStrProp(getProperty("locAPorig",tokenId),strformat("loc%{locId}"))]
+[h: plocName = getStrProp(getProperty("locName",tokenId),strformat("loc%{locId}"))]
+[h: plocHPorig = getStrProp(getProperty("locHPorig",tokenId),strformat("loc%{locId}"))]
+[h: plocAPorig = getStrProp(getProperty("locAPorig",tokenId),strformat("loc%{locId}"))]
 [h: pLocAP = getProperty("locAP",tokenId)]
 [h: amount = json.get(arguments, "Amount")]
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
@@ -18,31 +18,31 @@
 [h: curAP = getStrProp(pLocAP,strformat("loc%{locId}"))]
 [h: locAction = concat(dmgAction,dmgTarget)]
 
-[h: logLongMsg = strformat("%{dmgAction} %{dmgTarget} : <b>%{amount}</b> pts in <b>%{locName}</b>.")]
+[h: logLongMsg = strformat("%{dmgAction} %{dmgTarget} : <b>%{amount}</b> pts in <b>%{plocName}</b>.")]
 
 [switch(locAction), code:
   case "HealHP": {
     [h: newLocH = curHP + amount]
-    [h, if(newLocH > locHPorig), code:{
-      [h: newLocH = locHPorig]
+    [h, if(newLocH > plocHPorig), code:{
+      [h: newLocH = plocHPorig]
       [h: logLongMsg = strformat("%{logLongMsg} Too many heal points. Location HP is fully restored.")]
     };{}]
     [h: logLongMsg = strformat("%{logLongMsg} Previous HP: %{curHP} , new HP: <b>%{newLocH}</b>")]
-    [h: logMsg = "healed HP: +"+amount+"pts in "+locName]
+    [h: logMsg = "healed HP: +"+amount+"pts in "+plocName]
   };
   case "DamageHP": {
     [h: newLocH = curHP - amount]
     [h: logLongMsg = strformat("%{logLongMsg} Previous HP: %{curHP} , new HP: <b>%{newLocH}</b>")]
-    [h: logMsg = "wounded HP: -"+amount+"pts in "+locName]
+    [h: logMsg = "wounded HP: -"+amount+"pts in "+plocName]
   };
   case "HealAP": {
     [h: newLocA = curAP + amount]
-    [h, if(newLocA > locAPorig), code:{
-      [h: newLocA = locAPorig]
+    [h, if(newLocA > plocAPorig), code:{
+      [h: newLocA = plocAPorig]
       [h: logLongMsg = strformat("%{logLongMsg} Too many heal points. Location AP is fully restored.")]
     };{}]
     [h: logLongMsg = strformat("%{logLongMsg} Previous AP: %{curAP} , new AP: <b>%{newLocA}</b>")]
-    [h: logMsg = "healed AP: +"+amount+"pts in "+locName]
+    [h: logMsg = "healed AP: +"+amount+"pts in "+plocName]
   };
   case "DamageAP": {
     [h: newLocA = curAP - amount)]
@@ -51,7 +51,7 @@
       [h: logLongMsg = strformat("%{logLongMsg} Too many damage points. Location AP is set to 0.")]
     };{}]
     [h: logLongMsg = strformat("%{logLongMsg} Previous AP: %{curAP} , new AP: <b>%{newLocA}</b>")]
-    [h: logMsg = "wounded AP: +"+amount+"pts in "+locName]
+    [h: logMsg = "wounded AP: +"+amount+"pts in "+plocName]
   };
   case "ResetHP": {
     [h: pLocHPorig = getProperty("locHPorig",tokenId)]
@@ -70,7 +70,7 @@
 [if((dmgTarget == "HP")&&(dmgAction != "Reset")), code: { 
   [h: newLocHP = setStrProp(pLocHP,strformat("loc%{locId}"),newLocH)]
   [h: setProperty("locHP", newLocHP, tokenId)]
-  [h, if((curHP >0)&&(newLocH <= 0)&&(locHPorig + newLocH)>0), code: { 
+  [h, if((curHP >0)&&(newLocH <= 0)&&(plocHPorig + newLocH)>0), code: { 
     [h: lostProCA = 1d3]
     [h: logLongMsg = strformat("%{logLongMsg}<br><span style='font-weight: bold;color:orange'>Serious Wound</span>: loose <b>%{lostProCA}</b> proCA")]
     [h: logMsg = logMsg+" -> Serious Wound: loose "+lostProCA+" proCA"]
@@ -78,7 +78,7 @@
     [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",currentLostProCA+lostProCA)]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]  
   };{}]
-  [h, if((locHPorig + newLocH) <= 0), code:{
+  [h, if((plocHPorig + newLocH) <= 0), code:{
     [h: logLongMsg = strformat("%{logLongMsg}<br><span style='font-weight: bold;color:red'>Major Wound</span>: can't fight anymore, run a persistence test.")]
   }]
 };{}]

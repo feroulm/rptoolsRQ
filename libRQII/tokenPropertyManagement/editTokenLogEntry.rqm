@@ -5,6 +5,7 @@
  };{
   [h: logId = json.get(arguments, "logId")]
   [h: tLogTokenId = json.get(arguments, "tLogTokenId")]
+  [h: tokenId = json.get(arguments, "tokenId")]
 }]
 
 [dialog5("Edit Token Log Entry"): {
@@ -17,7 +18,7 @@
 <body class="body-custom">
 
 
-[h: logs = getProperty("tokenLog", tLogTokenId)]
+[h: logs = getProperty("tokenLog", tLogTokenId,"_Main_AE")]
 
 [h: logIdEntry = json.get(json.path.read(logs, "[?(@.logId == '"+logId+"')]"), 0)]
 [h: logEntryIndex = json.indexOf(logs, logIdEntry)]
@@ -35,6 +36,7 @@
       <form class="pure-form" action="[r:link]" method="json">
 			<input type="hidden" name="logIdx" value="[r:logEntryIndex]">
       <input type="hidden" name="tLogTokenId" value="[r: tLogTokenId]">
+      <input type="hidden" name="tokenId" value="[r: tokenId]">
       <table class="content pure-table pure-table-striped">
       <tbody>
         <tr>

@@ -33,7 +33,7 @@
 			</li>
 			<li class="pure-menu-item">
 			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
-              [h: lnkTxt = macroLinktext("openSheetMgt@Lib:RQII", "all",macroParam)]
+              [h: lnkTxt = macroLinktext("openHumCombatAttr@Lib:RQII", "all",macroParam)]
 	          <a class="pure-menu-link" href="[r: lnkTxt]">Edit Sheet</a>
 			</li>
       <li class="pure-menu-item">
@@ -148,13 +148,15 @@
     , Unarmed [r: json.get(skillValues,"current")]%
     . <b>DMG :</b> <span style='color:red'>[r: json.get(propDamageMod, "current")]</span>
     </section>
-    [r, macro("viewMeleeWeapons@this"): tokenId]<br>
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow","openSheet")]
+    [r, macro("viewMeleeWeapons@this"): macroParam]<br>
   </div>
 </div>
 
 <div class="container pure-g">
   <div class="header pure-u-1">
-    [r, macro("viewRangedWeapons@this"): tokenId]<br>
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow","openSheet")]
+    [r, macro("viewRangedWeapons@this"): macroParam]<br>
   </div>
 </div>
 

@@ -10,15 +10,18 @@ Calling :
 - updateCcCA@Lib:RQII   (combatAction Group)
 - updateCharac@Lib:RQII (pnjSheet Group)
 -->
-[h: tokenId = macro.args]
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
 
-[h,macro("getWeaponNb@this"): tokenId]
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h,macro("getWeaponNb@Lib:RQII"): tokenId]
 [h: wpList = macro.return]
-[h: linkUpdateCcCA = macroLinkText("updateCcCA@Lib:RQII", "all")]
-[h: linkUpdateCharac = macroLinkText("updateCharac@Lib:RQII", "all")]
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
 [h: currentCharac = getProperty("Charac",tokenId)]
+[h: propOtherAttr = getProperty("otherAttr",tokenId)]
 [h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
 [h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
 [h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
@@ -26,127 +29,281 @@ Calling :
 [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
 [h: propDamageMod = getProperty("DamageMod",tokenId)]
 [h: propMagicPoint = getProperty("MagicPoint",tokenId)]
+[h: propDedicatedPow = getProperty("DedicatedPow",tokenId)]
 [h: propFatigue = getProperty("fatigue",tokenId)]
 [h: fatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
+[h: propHeroicSkills = getProperty("heroicSkills",tokenId)]
+[h: heroicDb = getLibProperty("heroicDb","Lib:RQII")]
+[h: propTraits = getProperty("traits",tokenId)]
+[h: traitsDb = getLibProperty("traitsDb","Lib:RQII")]
 
-<table>
- <tr>
+<div class="container pure-g">
+  <div class="pure-u-1">
+	<table class="content pure-table pure-table-striped table-striped-custom">
+	<tr>
    <td style="text-align:left;" valign="top">
-   <b>[r: getName(tokenId)]</b><br><br>
-   Armor Penalty : [r: json.get(propArmorPenalty, "current")]<br>
-   Current SR : [r: json.get(propStrikeRank, "current")]<br>
-   Current Damage Mod : [r: json.get(propDamageMod, "current")]<br>
-   Current PM : <b>[r: json.path.read(propMagicPoint,"MP.current")]</b> / [r: json.path.read(propMagicPoint,"MP.base")]<br>
-   <br>
-<!-- Manage Ca change -->
-<form action="[r:linkUpdateCcCA]" method="json">
-<table class = "oddRow">
-  <tr>   
-    <td style="text-align:left">Active weapon(s) :</td>
-    <td> 
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="action" value="weaponca">
-      <input type="text" name="newWeaponNb" value="[r:currWeaponNb]" size="2" align="right">
-    </td>
-    <td>
-      <input type="submit" name="edit_btn" value="U.">
-    </td> 
-  </tr>
-</table>
-</form>
-<!-- End Manage Ca change -->
+    <table class="content pure-table">
+    <tbody>
+      <tr>
+        <td><img src="[r: getTokenPortrait(50,tokenId,tokenMap)]"></img></td>
+        <td><h3>[r: getName(tokenId)]</h3>
+          [h: macroParam = json.set("{}", "tokenId", tokenId)]
+          ([r: macroLink("Refresh", "openHumCombatAttr@Lib:RQII", "all",macroParam)])
+        </td>
+      </tr>
+    </tbody>
+    </table>     
+	  <br><br>
+<!-- Manage other Attributes Change -->
+    [h: linkUpdate = macroLinkText("updateOtherAttr@Lib:RQII", "all")]
+    <form class="pure-form" action="[r:linkUpdate]" method="json">
+			<table class="content pure-table pure-table-striped">
+			<tbody>
+				 <tr>
+					 <td>Armor Penalty : </td><td>[r: json.get(propArmorPenalty, "current")]</td>
+				  </tr>
+				  <tr>
+					 <td>Strike Rank (SR) :</td><td>[r: json.get(propStrikeRank, "current")]</td>
+				  </tr>
+				  <tr>
+					  <td>Damage Modifier : </td><td>[r: json.get(propDamageMod, "current")]</td>
+				  </tr>
+				  <tr>
+						<td>Hero Pts / (Prev) :</td>
+				    <td>
+					    <input type="text" placeholder="currHeroPts" name="currHeroPts" value='[r: json.get(propOtherAttr,"currHeroPts")]' size="3" align="right"> / <i>[r: json.get(propOtherAttr,"prevHeroPts")]</i>
+				    </td>
+					</tr>
+					<tr class = "evenRow">
+						<td>Movement :</td>
+				    <td>
+					    [r: json.get(propOtherAttr,"movement")]
+				    </td>
+					</tr>					 
+					<tr>
+						 <td colspan="2">
+               <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+							 <input type="hidden" name="tokenId" value="[r:tokenId]">
+               <input type="hidden" name="improvementMod" value='[r: json.get(propOtherAttr,"improvementMod")]'>
+               <input type="hidden" name="healRate" value='[r: json.get(propOtherAttr,"healRate")]'>
+               <input type="hidden" name="travelEnc" value='[r: json.get(propOtherAttr,"travelEnc")]'>
+               <input type="hidden" name="currEnc" value='[r: json.get(propOtherAttr,"currEnc")]'>
+               <input type="hidden" name="movement" value='[r: json.get(propOtherAttr,"movement")]'>
+							 <button type="submit" class="pure-button pure-button-primary" value="change">Change</button>
+						 </td>
+					</tr>
+				</tbody>
+				</table>
+			</form>
+<!-- END - Manage other Attributes Change -->
 <!-- Manage Fatigue Change -->
-
-[h: linkUpdateFatigue = macroLinkText("updateFatigue@Lib:RQII", "all")]
-<form action="[r:linkUpdateFatigue]" method="json">
-<table cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    [h: currentLevel = json.get(propFatigue,"level")]
-    <td colspan="2">Fatigue level: <i><b>[r:currentLevel]</b></i></td>
-  </tr>
-  <tr>
-    <td>	  
-	  <select name="newLevel">
-	  [r, foreach(levelName, fatigueLevels, ""), code:{
-	    <option>[r:levelName]</option>
-	  }]
-	  </select>
-	</td>
-    <td>
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="submit" name="edit_btn" value="U.">
-    </td>
-  </tr>
-</table>
-</form>	
-
+      [h: linkUpdateFatigue = macroLinkText("updateFatigue@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:linkUpdateFatigue]" method="json">
+      <table class="content pure-table pure-table-striped">
+      <thead>
+        <tr>
+          [h: currentLevel = json.get(propFatigue,"level")]
+          <th>Fatigue : <i><b>[r:currentLevel]</b></i></th>	
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>	  
+      	  <select name="newLevel">
+      	  [r, foreach(levelName, fatigueLevels, ""), code:{
+      	    <option>[r:levelName]</option>
+      	  }]
+      	  </select>
+      	</td>
+        </tr>
+        <tr>
+          <td>
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+            <button type="submit" class="pure-button pure-button-primary" value="change">Change</button>
+          </td>
+        </tr>
+      <tbody>
+      </table>
+      </form>	
 <!-- End Manage Fatigue Change -->
     </td>
-    <td>
+    <td valign="top">
+   
 <!-- Manage Characteristics Change -->
 
-<form action="[r:linkUpdateCharac]" method="json">
-<table id="stats" cellpadding="2" cellspacing="0" border="0">
+    [h: linkUpdateCharac = macroLinkText("updateCharac@Lib:RQII", "all")]
+    <form class="pure-form" action="[r:linkUpdateCharac]" method="json">
+    <table class="content pure-table pure-table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="leftBorder"><b>BaseD</b></th>
+        <th class="leftBorder"><b>Current</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      [h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
+      [h: class = "oddRow"]
+      [h: basPropTotal = 0]
+      [h: tmpPropTotal = 0]
+      [foreach(characName, characNames, ""), code: {
+      	[h: basProp = "bas"+characName]
+        [h: tmpProp = "tmp"+characName]
+        [h: basPropValue = json.get(currentCharac,basProp)]
+        [h: basPropTotal = basPropTotal + number(basPropValue)]
+        [h: tmpPropValue = json.get(currentCharac,tmpProp)]
+        [h: tmpPropTotal = tmpPropTotal + number(tmpPropValue)]
+    	<tr>
+    	  <td>[r: characName]</td>
+    	  <td>[r: json.get(currentCharac,basProp)]</td>
+    	  <td>
+    	   <input type="text" placeholder="[r: characName]" name="[r: characName]" value="[r: json.get(currentCharac,tmpProp)]" size="2" align="right">
+    	  </td>
+    	</tr>
+    	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
+      }]
+      <tr>
+        <td><i>total</i></td>
+        <td><i>[r: basPropTotal]</i></td>
+        <td><i>[r: tmpPropTotal]</i></td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <input type="hidden" name="tokenId" value="[r:tokenId]">
+          <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+          <button type="submit" class="pure-button pure-button-primary" value="change">Change</button>
+        </td>
+      </tr>
+    </tbody>
+    </table>
+    </form>
+<!-- End Manage Charac Change -->
+
+    </td>
+    <td valign="top">
+
+    <table class="content pure-table pure-table-striped">
+		<thead>
+      <tr>
+       <th>Magic</th>
+       <th></th>
+      </tr>
+		</thead>
+		<tbody>
+      <tr>
+       <td>Magic Pt (MP) :</td><td><b>[r: json.path.read(propMagicPoint,"MP.current")]</b> / [r: json.path.read(propMagicPoint,"MP.base")]</td>
+     </tr>
+     <tr>
+       <td>Ded. POW : </td><td>[r: json.get(propMagicPoint, "dedPOW")]</td>
+     </tr>
+		</tbody>
+   </table>
+<br>   
+
+      [h: link = macroLinkText("updateMP@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:link]" method="json">
+      <table class="content pure-table">
+      <tbody>
+        <tr>
+          <td style="text-align:left">Curr. MP </td>
+          <td> 
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <input type="hidden" name="action" value="currMP">
+            <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+            <input type="text" name="newCurrMP" value='[r: json.path.read(propMagicPoint,"MP.current")]' size="2" align="right">
+          </td>
+          <td><button type="submit" class="pure-button pure-button-primary">U.</button></td>
+        </tr>
+      </tbody>
+      </table>
+      </form>
+
+      [h: link = macroLinkText("updateCcCA@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:link]" method="json">
+      <table class="content pure-table">
+      <tbody>
+        <tr>
+          <td style="text-align:left">Magic CA </td>
+          <td> 
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <input type="hidden" name="action" value="magicca">
+            <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+            <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
+          </td>
+          <td><button type="submit" class="pure-button pure-button-primary" value="U.">U.</button></td>
+        </tr>
+      </tbody>
+      </table>
+      </form>
+
+    [h: "<!-- Wealth / Gold - Update Section - START -->"]
+      [h: propWealth = getProperty("wealth", tokenId)]
+	    [h: wealthHold = json.get(propWealth,"hold")]
+	    [h: holdGP = json.get(wealthHold,"gp")]
+	    [h: holdSP = json.get(wealthHold,"sp")]
+	    [h: holdCP = json.get(wealthHold,"cp")]
+	    [h: holdOthers = json.get(wealthHold,"others")]
+	    [h: wealthHidden = json.get(propWealth,"hidden")]
+	    [h: hiddenGP = json.get(wealthHidden,"gp")]
+	    [h: hiddenSP = json.get(wealthHidden,"sp")]
+	    [h: hiddenCP = json.get(wealthHidden,"cp")]
+	    [h: hiddenOthers = json.get(wealthHidden,"others")]
+      
+      [h: link = macroLinkText("updateWealth@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:link]" method="json">
+      <table class="content pure-table pure-table-striped">
+      <thead>
+        <th>GP</th>
+        <th>SP</th>
+        <th>CP</th>
+        <th></th>
+      </thead>
+      <tbody>
+        <tr>
+          <td> 
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+            <input type="hidden" name="holdOthers" value="[r: holdOthers]">
+            <input type="hidden" name="hiddenGP" value="[r: hiddenGP]">
+            <input type="hidden" name="hiddenSP" value="[r: hiddenSP]">
+            <input type="hidden" name="hiddenCP" value="[r: hiddenCP]">
+            <input type="hidden" name="hiddenOthers" value="[r: hiddenOthers]">
+            
+            <input type="text" name="holdGP" value="[r: holdGP]" size="4" align="right"></td>
+			    <td><input type="text" name="holdSP" value="[r: holdSP]" size="4" align="right"></td>
+			    <td><input type="text" name="holdCP" value="[r: holdCP]" size="4" align="right"></td>
+          <td><button type="submit" class="pure-button pure-button-primary" value="U.">U.</button></td>
+        </tr>
+      </tbody>
+      </table>
+      </form>
+    [h: "<!-- Wealth / Gold - Update Section - END -->"]
+    
+      [h: macroParam = json.set("{}", "tokenId", tokenId)]
+			[h: link = macroLinkText("openEquipmentMgt@Lib:RQII", "all",macroParam)]
+			<a class="button-secondary pure-button" href="[r: link]">Equipement & Magic items</a>
+			<br><br>
+      [h: link = macroLinkText("openSheetMgt@Lib:RQII", "all",macroParam)]
+			<a class="button-warning pure-button" href="[r: link]">Full Edit (Skills, Spells,...)</a>
+			<br><br>
+    </td>
+  </tr>
   <tr>
-    <td></td>
-    <td class="leftBorder"><b>Base</b></td>
-    <td class="leftBorder"><b>Current</b></td>
-  </r>
-  [h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
-  [h: class = "oddRow"]
-  [foreach(characName, characNames, ""), code: {
-  	[h: basProp = "bas"+characName]
-    [h: tmpProp = "tmp"+characName]
-	<tr class="[r:class]">
-	  <td>[r: characName]</td>
-	  <td class="leftBorder">[r: json.get(currentCharac,basProp)]</td>
-	  <td class="leftBorder">
-	   <input type="text" name="[r: characName]" value="[r: json.get(currentCharac,tmpProp)]" size="2" align="right">
-	  </td>
-	</tr>
-	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
-  }]
-  <tr>
-    <td colspan="3">
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="submit" name="edit_btn" value="change">
-    </td>
-  </tr>
-</table>
-</form>
-    </td>
-    <td>
-<!-- Start Manage magic Change -->
-[h: link = macroLinkText("updateCcCA@Lib:RQII", "all")]
-<form action="[r:link]" method="json">
-<table valign="middle">
-  <tr class = "oddRow">
-    <td style="text-align:left">Magic CA </td>
-    <td> 
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="action" value="magicca">
-      <input type="hidden" name="srcWindow" value="openLightSheetMgt">
-      <input type="text" name="newMagicCA" value="[r:currMagicCA]" size="2" align="right">
-    </td>
-    <td><input type="submit" name="edit_btn" value="U."></td>
-  </tr>
-</table>
-</form>
-[h: link = macroLinkText("updateMP@Lib:RQII", "all")]
-<form action="[r:link]" method="json">
-<table valign="middle">
-  <tr class = "oddRow">
-    <td style="text-align:left">Curr. MP </td>
-    <td> 
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="action" value="currMP">
-      <input type="hidden" name="srcWindow" value="openLightSheetMgt">
-      <input type="text" name="newCurrMP" value='[r: json.path.read(propMagicPoint,"MP.current")]' size="2" align="right">
-    </td>
-    <td><input type="submit" name="edit_btn" value="U."></td>
-  </tr>
-</table>
-</form>
-    </td>
+    <td valign="top" colspan="3">
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow","openHumCombatAttr")]
+	  [r, macro("viewMeleeWeapons@Lib:RQII"): macroParam]
+    <br>
+    [r, macro("viewRangedWeapons@Lib:RQII"): macroParam]
+	</td>
+
   </tr>
 </table> <!-- Global window table -->
+
+
+
+    </td>
+  </tr>
+</table>
+</div>
+</div>

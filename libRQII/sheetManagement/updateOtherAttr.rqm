@@ -1,4 +1,5 @@
 [h: arguments = macro.args] 
+[h: srcWindow = json.get(arguments, "srcWindow")]
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: currHeroPts = json.get(arguments, "currHeroPts")]
 [h: currEnc = json.get(arguments, "currEnc")]
@@ -17,4 +18,9 @@
 
 <!-- Refresh edit Window for the new token -->
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openSheetMgt@Lib:RQII"): macroParam]
+
+[h, if(srcWindow == "openSheetMgt"), code:{
+  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+};{
+  [h, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+}]

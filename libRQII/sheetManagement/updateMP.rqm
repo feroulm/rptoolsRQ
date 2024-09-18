@@ -15,10 +15,20 @@
   [h: abort(0)]
 }]
 
+[h:"<!-- get current combat token -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
+
+[h, if(cLogTokenId != "none"), code:{
+  [h: msgAssert = strformat("Warning, there is an active combat, this action will not be logged, nor taken into account in the combat.<br>If the token is involved in the combat you should use the <i>firstCast</i> action in the combat Action Window in order to launch the spell. <br><br>Otherwise, click OK to still apply the update.")]
+  [h: res = input("junk|<html>"+msgAssert+"</html>|ignored|LABEL|SPAN=true")]
+  [h: abort(res)]
+}]
+
 [h, if(newCurrMP>currMP), code:{
   [h: ptsMP = newCurrMP - currMP] 
   [h: logMsg = strformat("Regain %{ptsMP} magic points. Current MP is now <b>%{newCurrMP}</b>/%{baseMP}.")]
-};{
+}]
+[h, if(currMP>newCurrMP), code:{
   [h: ptsMP = currMP - newCurrMP]
   [h: logMsg = strformat("Loose %{ptsMP} magic points. Current MP is now <b>%{newCurrMP}</b>/%{baseMP}.")]
 }]
@@ -26,7 +36,10 @@
 
 [h: setProperty("MagicPoint",newPropMagicPoint,tokenId)]
 
-[r: addCombatLogEntry(tokenId,"updateHPAP",logMsg,"")]
+[h: logComment = ""]
+[h: res = input("logComment|1|Comment regarding MP udate|TEXT")]
+
+[r: addTokenLogEntry(tokenId,"updateMP",logMsg,logComment)]
 
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 

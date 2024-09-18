@@ -31,6 +31,7 @@
 
 [h: "<!-- Token Property Management UDFs -->"]
 [h: defineFunction("findCurrentTokenLog","findCurrentTokenLog@Lib:RQII")]
+[h: defineFunction("addTokenLogEntry","addTokenLogEntry@Lib:RQII")]
 
 [h: "<!-- Generic UDFs -->"]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]

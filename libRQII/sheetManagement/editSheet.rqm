@@ -86,6 +86,7 @@
 					 </tr>
 					<tr>
 						 <td colspan="2">
+               <input type="hidden" name="srcWindow" value="editSheet">
 							 <input type="hidden" name="tokenId" value="[r:tokenId]">
 							 <button type="submit" class="pure-button pure-button-primary" value="change">Change</button>
 						 </td>
@@ -113,9 +114,15 @@
 <tbody>
   [h: characNames = "STR, CON, SIZ, INT, POW, DEX, CHA"]
   [h: class = "oddRow"]
+  [h: basPropTotal = 0]
+  [h: tmpPropTotal = 0]
   [foreach(characName, characNames, ""), code: {
   	[h: basProp = "bas"+characName]
     [h: tmpProp = "tmp"+characName]
+    [h: basPropValue = json.get(currentCharac,basProp)]
+    [h: basPropTotal = basPropTotal + number(basPropValue)]
+    [h: tmpPropValue = json.get(currentCharac,tmpProp)]
+    [h: tmpPropTotal = tmpPropTotal + number(tmpPropValue)]
 	<tr>
 	  <td>[r: characName]</td>
 	  <td>[r: json.get(currentCharac,basProp)]</td>
@@ -125,6 +132,11 @@
 	</tr>
 	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
   }]
+  <tr>
+    <td><i>total</i></td>
+    <td><i>[r: basPropTotal]</i></td>
+    <td><i>[r: tmpPropTotal]</i></td>
+  </tr>
   <tr>
     <td colspan="3">
       <input type="hidden" name="tokenId" value="[r:tokenId]">
@@ -300,7 +312,7 @@
 
 <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
 <thead>
-<tr>
+   <tr>
     <th>Common Skill</th>
     <th>Subtype</th>
     <th>Current</th>
@@ -311,15 +323,29 @@
     <th>Current New</th>
     <th>Experience New</th>
     <th></th>
-  </tr>
+  </tr>     
 </thead>
 <tbody>
   [h: aSkills = getProperty("commonSkills", tokenId)]
-
+  
+  [h: currentSkillTotal = 0]
+  [h: baseSkillTotal = 0]
+  [h: cultureSkillTotal = 0]
+  [h: professionSkillTotal = 0]
+  [h: experienceSkillTotal = 0]
+  [h: experienceAllSkillsTotal = 0]
+  
   [foreach(skill, aSkills, ""), code: {
   	[h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	[h: skillValues = json.get(aSkills,skill)]
   	[h: skillSubtype = json.get(skillValues,"subtype")]
+    
+    [h: currentSkillTotal = currentSkillTotal + number(json.get(skillValues,"current"))]
+    [h: baseSkillTotal = baseSkillTotal + number(json.get(skillValues,"base"))]
+    [h: cultureSkillTotal = cultureSkillTotal + number(json.get(skillValues,"culture"))]
+    [h: professionSkillTotal = professionSkillTotal + number(json.get(skillValues,"profession"))]
+    [h: experienceSkillTotal = experienceSkillTotal + number(json.get(skillValues,"experience"))]
+    
     <tr>
       <td>[r: skill] ([r: json.get(skillValues,"code")])</td>
       <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
@@ -334,6 +360,19 @@
       <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
     </tr>
   }]
+  <tr>
+    <td></td>
+    <td></td>
+    <td><i>[r: currentSkillTotal]</i></td>
+    <td><i>[r: baseSkillTotal]</i></td>
+    <td><i>[r: cultureSkillTotal]</i></td>
+    <td><i>[r: professionSkillTotal]</i></td>
+    <td><i>[r: experienceSkillTotal]</i></td>
+    [h: experienceAllSkillsTotal = experienceAllSkillsTotal + experienceSkillTotal]
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr> 
 	<tr>
 		<td colspan="10">
 			[h: macroParam = json.set("{}", "tokenId", tokenId, "skType", "common")]
@@ -370,11 +409,24 @@
 </thead>
 <tbody>
   [h: aSkills = getProperty("magicSkills", tokenId)]
+  
+  [h: currentSkillTotal = 0]
+  [h: baseSkillTotal = 0]
+  [h: cultureSkillTotal = 0]
+  [h: professionSkillTotal = 0]
+  [h: experienceSkillTotal = 0]
 
   [foreach(skill, aSkills, ""), code: {
   	[h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	[h: skillValues = json.get(aSkills,skill)]
   	[h: skillSubtype = json.get(skillValues,"subtype")]
+    
+    [h: currentSkillTotal = currentSkillTotal + number(json.get(skillValues,"current"))]
+    [h: baseSkillTotal = baseSkillTotal + number(json.get(skillValues,"base"))]
+    [h: cultureSkillTotal = cultureSkillTotal + number(json.get(skillValues,"culture"))]
+    [h: professionSkillTotal = professionSkillTotal + number(json.get(skillValues,"profession"))]
+    [h: experienceSkillTotal = experienceSkillTotal + number(json.get(skillValues,"experience"))]
+    
     <tr>
       <td>[r: skill] ([r: json.get(skillValues,"code")])</td>
       <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
@@ -389,6 +441,19 @@
       <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
     </tr>
   }]
+  <tr>
+    <td></td>
+    <td></td>
+    <td><i>[r: currentSkillTotal]</i></td>
+    <td><i>[r: baseSkillTotal]</i></td>
+    <td><i>[r: cultureSkillTotal]</i></td>
+    <td><i>[r: professionSkillTotal]</i></td>
+    <td><i>[r: experienceSkillTotal]</i></td>
+    [h: experienceAllSkillsTotal = experienceAllSkillsTotal + experienceSkillTotal]
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 	<tr>
 		<td colspan="10">
 			[h: macroParam = json.set("{}", "tokenId", tokenId, "skType", "magic")]
@@ -423,11 +488,24 @@
 </thead>
 <tbody>
   [h: aSkills = getProperty("combatSkills", tokenId)]
+  
+  [h: currentSkillTotal = 0]
+  [h: baseSkillTotal = 0]
+  [h: cultureSkillTotal = 0]
+  [h: professionSkillTotal = 0]
+  [h: experienceSkillTotal = 0]
 
   [foreach(skill, aSkills, ""), code: {
   	[h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	[h: skillValues = json.get(aSkills,skill)]
   	[h: skillSubtype = json.get(skillValues,"subtype")]
+    
+    [h: currentSkillTotal = currentSkillTotal + number(json.get(skillValues,"current"))]
+    [h: baseSkillTotal = baseSkillTotal + number(json.get(skillValues,"base"))]
+    [h: cultureSkillTotal = cultureSkillTotal + number(json.get(skillValues,"culture"))]
+    [h: professionSkillTotal = professionSkillTotal + number(json.get(skillValues,"profession"))]
+    [h: experienceSkillTotal = experienceSkillTotal + number(json.get(skillValues,"experience"))]
+
     <tr>
       <td>[r: skill] ([r: json.get(skillValues,"code")])</td>
       <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
@@ -443,6 +521,19 @@
     </tr>
     [h: class = if(class=="oddRow", "evenRow", "oddRow")]
   }]
+  <tr>
+    <td></td>
+    <td></td>
+    <td><i>[r: currentSkillTotal]</i></td>
+    <td><i>[r: baseSkillTotal]</i></td>
+    <td><i>[r: cultureSkillTotal]</i></td>
+    <td><i>[r: professionSkillTotal]</i></td>
+    <td><i>[r: experienceSkillTotal]</i></td>
+    [h: experienceAllSkillsTotal = experienceAllSkillsTotal + experienceSkillTotal]
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 	<tr>
 		<td colspan="10">
 			[h: macroParam = json.set("{}", "tokenId", tokenId, "skType", "combat")]
@@ -480,10 +571,23 @@
 <tbody>
   [h: aSkills = getProperty("advSkills", tokenId)]
 
+  [h: currentSkillTotal = 0]
+  [h: baseSkillTotal = 0]
+  [h: cultureSkillTotal = 0]
+  [h: professionSkillTotal = 0]
+  [h: experienceSkillTotal = 0]
+
   [foreach(skill, aSkills, ""), code: {
   	[h: skillName = replace(lower(skill),"[^a-zA-Z0-9_.]","")]
   	[h: skillValues = json.get(aSkills,skill)]
   	[h: skillSubtype = json.get(skillValues,"subtype")]
+
+    [h: currentSkillTotal = currentSkillTotal + number(json.get(skillValues,"current"))]
+    [h: baseSkillTotal = baseSkillTotal + number(json.get(skillValues,"base"))]
+    [h: cultureSkillTotal = cultureSkillTotal + number(json.get(skillValues,"culture"))]
+    [h: professionSkillTotal = professionSkillTotal + number(json.get(skillValues,"profession"))]
+    [h: experienceSkillTotal = experienceSkillTotal + number(json.get(skillValues,"experience"))]
+
     <tr>
       <td>[r: skill] ([r: json.get(skillValues,"code")])</td>
       <td><input type="text" name="[r: strformat('%{skillName}Subtype')]" value="[r: skillSubtype]" size="10" align="right"></td>
@@ -498,6 +602,19 @@
       <td>[r: macroLink("Del", "delTokenSkill@Lib:RQII", "all",macroParam)]</td>
     </tr>
   }]
+  <tr>
+    <td></td>
+    <td></td>
+    <td><i>[r: currentSkillTotal]</i></td>
+    <td><i>[r: baseSkillTotal]</i></td>
+    <td><i>[r: cultureSkillTotal]</i></td>
+    <td><i>[r: professionSkillTotal]</i></td>
+    <td><i>[r: experienceSkillTotal]</i></td>
+    [h: experienceAllSkillsTotal = experienceAllSkillsTotal + experienceSkillTotal]
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 	<tr>
 		<td colspan="10">
 			[h: macroParam = json.set("{}", "tokenId", tokenId, "skType", "advanced")]
@@ -509,7 +626,7 @@
 </tbody>
 </table>
 </form>
-
+<i>Experience total points [r: experienceAllSkillsTotal]</i><br>
 <!-- heroic Skills -->
 
 <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
