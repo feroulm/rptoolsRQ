@@ -190,8 +190,12 @@
              <option selected="selected">Attack</option>
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
+             <option>Move</option>
              [r, if(weaponReach != "ok"): "<option>"+changeRangeAction+"</option>"]
-             <option>delay</option>
+             <option>Delay</option>
+             <option>Dither</option>
+             <option>Ready Weapon</option>
+             <option>Others</option>
              <option>Outmanoeuvre</option>
              [r, if(chargeStatus == "none"): "<option>Charging</option>"]
              [r, if(chargeStatus == "prepareCharge"): "<option>"+chargeAction+"</option>"]
@@ -214,8 +218,12 @@
              <option selected="selected">Attack</option>
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
+             <option>Move</option>
              [r, if(weaponReach != "ok"): "<option>"+changeRangeAction+"</option>"]
-             <option>delay</option>
+             <option>Delay</option>
+             <option>Dither</option>
+             <option>Ready Weapon</option>
+             <option>Others</option>
              <option>Outmanoeuvre</option>
              [r, if(chargeStatus == "none"): "<option>Charging</option>"]
              [r, if(chargeStatus == "prepareCharge"): "<option>"+chargeAction+"</option>"]

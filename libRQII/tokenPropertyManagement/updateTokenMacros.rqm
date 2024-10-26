@@ -1,0 +1,20 @@
+[h: "<!-- updateTokenMacros - Update the content or other props of some macros on a specified or selected token -->"]
+
+[h: arguments = macro.args] 
+[h, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>updateTokenMacros</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: tokenId = json.get(arguments, "tokenId")]
+  [h: mapName = json.get(arguments, "mapName")]
+
+  [h, if(tokenId == "") : assert(0,"<i>updateTokenMacros</i> : this macro can't be called with an empty tokenId",0) )]
+  [h, if(mapName == "") : mapName = getCurrentMapName()]
+}]
+
+[h:cmdCommon=encode("[h: tokenId = currentToken()]")]
+[h:cmdCommon=cmdCommon+encode('[h: macroParam = json.set("{}", "tokenId", tokenId)]')]
+[h:command=cmdCommon+encode('[r, macro("openHumCombatAttr@Lib:RQII"): macroParam]')]
+
+[h: myProps = setStrProp("", "command", decode(command))]
+
+[h: setMacroProps("editSheet", myprops, ";", tokenId)]

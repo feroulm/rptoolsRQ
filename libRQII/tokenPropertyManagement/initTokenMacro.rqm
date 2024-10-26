@@ -16,7 +16,7 @@
 [h:macroProps=setStrProp(macroProps,"sortBy ","01")]
 [h:createMacro("viewSheet", decode(command), macroProps)]
 
-[h:command=cmdCommon+encode('[r, macro("openSheetMgt@Lib:RQII"): macroParam]')]
+[h:command=cmdCommon+encode('[r, macro("openHumCombatAttr@Lib:RQII"): macroParam]')]
 [h:macroProps=setStrProp(macroProps,"sortBy ","02")]
 [h:createMacro("editSheet", decode(command), macroProps)]
 

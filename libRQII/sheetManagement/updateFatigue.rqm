@@ -9,7 +9,7 @@
 [h: setProperty("fatigue",newFatigue,tokenId)]
 
 [h: logMsg = strformat("Fatigue level set to <b>%{newLevel}</b>")]
-[r: addCombatLogEntry(tokenId,"updateCharac",logMsg,"")]
+[r: addCombatLogEntry(tokenId,"updateCharac",logMsg,"","1")]
 
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 

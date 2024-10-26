@@ -1,0 +1,6 @@
+[h: "<!-- - This macro must have the property : Apply to all selected token in the details tab -->"]
+[h: tokenId = getSelected()]
+[h: mapName = getCurrentMapName()]
+<br>[r: getName(tokenId, mapName)] is going to be updated 
+[h: macroParam = json.set("{}", "tokenId", tokenId,"mapName",mapName)]
+[r, macro("updateTokenMacros@Lib:RQII"): macroParam] 

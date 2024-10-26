@@ -111,7 +111,11 @@ Calling :
           <td>	  
       	  <select name="newLevel">
       	  [r, foreach(levelName, fatigueLevels, ""), code:{
-      	    <option>[r:levelName]</option>
+            [r, if(levelName == currentLevel), code:{ 
+      	      <option selected="selected">[r:levelName]</option>
+            };{
+              <option>[r:levelName]</option>
+            }]
       	  }]
       	  </select>
       	</td>

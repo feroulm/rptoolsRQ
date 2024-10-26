@@ -1,0 +1,14 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): mapName = getCurrentMapName(); mapName = json.get(arguments,"mapName")]
+
+[h: cond = json.set("{}","propertyType" ,"RQ_Human","mapName",mapName)]
+[h: rqHumanTokens = getTokens("json", cond)]
+
+<h3>Map :: [r: mapName]</h3><br>
+<b>Start macros updating </b>
+<hr>
+[r, foreach(tokenId, rqHumanTokens, ""), code:{
+  <br>[r: getName(tokenId, mapName)] is going to be updated 
+	[h: macroParam = json.set("{}", "tokenId", tokenId,"mapName",mapName)]
+  [r, macro("updateTokenMacros@Lib:RQII"): macroParam]  
+}]

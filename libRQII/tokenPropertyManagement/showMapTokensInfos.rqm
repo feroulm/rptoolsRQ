@@ -5,9 +5,11 @@
 [h: rqHumanTokens = getTokens("json", cond)]
 Show map tokens infos
 <br><br>
-<b>combatStatus property patching</b>
+<b>Tech. info</b>
 <hr>
 [r, foreach(tokenId, rqHumanTokens, ""), code:{
+  tokenName : [r: getName(tokenId)] ([r: tokenId])<br>
+
 	[h: currentCombatStatus = getProperty("combatStatus",tokenId, mapName)]
 	[r, if(json.isEmpty(currentCombatStatus)), code:{
 		<br><br><b>[r: getName(tokenId, mapName)] have no combatStatus prop !</b><br>

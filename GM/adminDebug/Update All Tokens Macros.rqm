@@ -1,0 +1,3 @@
+[h: mapName = getCurrentMapName()]
+[h: macroParam = json.set("{}","mapName",mapName)]
+[r, macro("updateAllTokensMacros@Lib:RQII"): macroParam]  

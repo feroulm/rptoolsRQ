@@ -5,13 +5,19 @@ Called from :
 ```
 Logic - Mermaid Diagram
 graph LR
-    A1(openSheet) -->|tokenId| B1(viewSheet)
-    B1 -->|tokenId, params| C[updateOtherAttr]
-    C -->|tokenId|Z1
-	Z1(openSheetMgt - callback)
+  A1(openSheet) -->|tab| B{Display Tab}
+  B -->|main, tokenId| C[viewSheet]
+  B -->|magic, tokenId| D[viewSheetMagic]
+  B -->|skills, tokenId| E[viewSheetSkills]
+  B -->|logs, logTypeFilter, logSessionNameFilter, tokenId| F[viewSheetLogs]
+  C -->|tokenId|Z1
+  D -->|tokenId|Z1
+  E -->|tokenId|Z1
+  F -->|tokenId|Z1
+	Z1(openSheet - callback)
 ```
 
-![other Attribute Mgt flow](../../assets/doc/otherAttrMgtFlow.png?raw=true)
+![other Attribute Mgt flow](../../assets/doc/sheetViewFlow.png?raw=true)
 
 ## Window Logic
 Cf #73 for more details.

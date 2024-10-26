@@ -153,38 +153,39 @@
   <br><br>
 <!-- Manage Fatigue Change -->
 
-[h: linkUpdateFatigue = macroLinkText("updateFatigue@Lib:RQII", "all")]
-<form class="pure-form" action="[r:linkUpdateFatigue]" method="json">
-<table class="content pure-table pure-table-striped">
-<thead>
-  <tr>
-    <th>Fatigue level</th>	
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    [h: currentLevel = json.get(propFatigue,"level")]
-    <td><i><b>[r:currentLevel]</b></i></td>
-  </tr>
-  <tr>
-    <td>	  
-	  <select name="newLevel">
-	  [r, foreach(levelName, fatigueLevels, ""), code:{
-	    <option>[r:levelName]</option>
-	  }]
-	  </select>
-	</td>
-  </tr>
-  <tr>
-    <td>
-      <input type="hidden" name="tokenId" value="[r:tokenId]">
-      <input type="hidden" name="srcWindow" value="openSheetMgt">
-      <button type="submit" class="pure-button pure-button-primary" value="change">Change</button>
-    </td>
-  </tr>
-<tbody>
-</table>
-</form>	
+      [h: linkUpdateFatigue = macroLinkText("updateFatigue@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:linkUpdateFatigue]" method="json">
+      <table class="content pure-table pure-table-striped">
+      <thead>
+        <tr>
+          [h: currentLevel = json.get(propFatigue,"level")]
+          <th>Fatigue : <i><b>[r:currentLevel]</b></i></th>	
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>	  
+      	  <select name="newLevel">
+      	  [r, foreach(levelName, fatigueLevels, ""), code:{
+            [r, if(levelName == currentLevel), code:{ 
+      	      <option selected="selected">[r:levelName]</option>
+            };{
+              <option>[r:levelName]</option>
+            }]
+      	  }]
+      	  </select>
+      	</td>
+        </tr>
+        <tr>
+          <td>
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+            <button type="submit" class="pure-button pure-button-primary" value="change">Change</button>
+          </td>
+        </tr>
+      <tbody>
+      </table>
+      </form>	
 
 <!-- End Manage Fatigue Change -->
     </td>
