@@ -21,10 +21,35 @@
 [h: reactiveCA = json.get(currentCombatStatus,"reactiveCA")]
 [h: lostProCA = json.get(currentCombatStatus,"lostProCA")]
 
+[h: castCA = json.get(currentCombatStatus,"castCA")]
+[h: spellReady = json.get(currentCombatStatus,"spellReady")]
+
 [h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
 
 [h: switchToNextToken = 1]
+
+[h: "<!-- Check and Warn if the chosen action is breaking a current spell casting"]
+[h: warnCast = if((action == "pursueCast" || action == "delay"),0,1)]
+[h, if (castCA > 0 && warnCast == 1), code:{
+  [h: res = input("junk|<html>You are currently casting a spell, normally you should use <b>pursueCast</b> but you choose a different action.<br><b>Your spell (and the MP you spent) will be loose.</b> Are you sure ?<br>Click <i>OK</i> to confirm, or click <i>Cancel</i> and then choose <i>pursueCast</i> to finish your spell</html>|ignored|LABEL|SPAN=true")]
+  [h: abort(res)]
+  [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+  [h: setState("Casting", 0, tokenId)]
+  [h: spellMsg = "Another action has been selected instead of pursueCast, Spell has been lost (castCA is set back to 0)."]
+  [h: addCombatLogEntry(tokenId,"proactiveAction",spellMsg,"","1")]
+}]
+
+[h: "<!-- Check and Warn if the chosen action is breaking a current spell which is hold"]
+[h: warnCast = if((action == "holdMagic" || action == "delay"),0,1)]
+[h, if (spellReady > 0 && warnCast == 1), code:{
+  [h: res = input("junk|<html>You are currently holding a spell, but you don't choose the <i>holdMagic</i>action.<br><b>Your spell will be released now automatically.</b> Are you sure ?<br>Click <i>OK</i> to confirm, or click <i>Cancel</i> and then choose <i>holdMagic</i> to continue holding your spell</html>|ignored|LABEL|SPAN=true")]
+  [h: abort(res)]
+  [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    [h: spellMsg = "Another action has been selected instead of holdmagic, Spell has been released automatically (at no CA cost)!"]
+    [h: addCombatLogEntry(tokenId,"proactiveAction",spellMsg,"","1")]
+}]
 
 [h, switch(action), code:
   case "parrydelayed" : {

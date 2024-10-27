@@ -258,11 +258,17 @@
         <a class="button-small pure-button" href="[r: link]">Delay</a>
       </td>      
       <td>
-        [h, if(castCA == 0): castAction = "firstCast"]
-        [h, if(castCA > 0): castAction = "pursueCast"]
+        [h, if(castCA == 0), code:{
+          [h: castAction = "firstCast"]
+          [h: buttonClass = "button-small pure-button"]
+        }]
+        [h, if(castCA > 0), code:{
+          [h: castAction = "pursueCast"]
+          [h: buttonClass = "button-small pure-button pure-button-primary"]
+        }]
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action",castAction,"actionLabel",castAction)]
         [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">[r:castAction]</a>
+        <a class="[r: buttonClass]" href="[r: link]">[r:castAction]</a>
       </td>
       <td>
         [h, if(reloadCA == 0): rangeAction = "Shoot"]
@@ -301,12 +307,14 @@
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Brace")]
         [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
         <a class="button-small pure-button" href="[r: link]">Brace</a>
-      </td>     
-      <td>
+      </td> 
+      [r, if(spellReady >0), code:{
+      <td>  
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","holdMagic","actionLabel","Hold Magic")]
         [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">Hold Magic</a>
+        <a class="button-small pure-button pure-button-primary" href="[r: link]">Hold Magic</a>
       </td>
+      }]
       <td>
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Move")]
         [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]

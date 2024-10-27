@@ -5,16 +5,20 @@ Called from :
 ```
 Logic - Mermaid Diagram
 graph LR
+  subgraph Menu
+    Z1(openSheet - callback)
+    Z2(openAPHP)
+    Z3(openHumCombatAttr)
+    Z4@{ shape: braces, label: "Idem pour chaque tab (mais non représenté)" }
+  end
   A1(openSheet) -->|tab| B{Display Tab}
   B -->|main, tokenId| C[viewSheet]
   B -->|magic, tokenId| D[viewSheetMagic]
   B -->|skills, tokenId| E[viewSheetSkills]
   B -->|logs, logTypeFilter, logSessionNameFilter, tokenId| F[viewSheetLogs]
-  C -->|tokenId|Z1
-  D -->|tokenId|Z1
-  E -->|tokenId|Z1
-  F -->|tokenId|Z1
-	Z1(openSheet - callback)
+  C -->|tokenId|Menu
+
+	
 ```
 
 ![other Attribute Mgt flow](../../assets/doc/sheetViewFlow.png?raw=true)
