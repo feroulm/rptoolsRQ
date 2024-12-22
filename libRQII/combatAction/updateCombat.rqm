@@ -36,19 +36,31 @@
     [h: setInitiativeHold(initiative, tokenId)]
 
     [h: msg = "Token is disabled."]
+ 
+    [h: res = input("junk|<html>Token will be removed from the Initiative List. Choose <i>Cancel</i> if you want to keep it</html>|ignored|LABEL|SPAN=true")]
+    [h, if (res != 0), code:{
+      [h: removeFromInitiative(tokenId)]
+      [h: msg = "Token is disabled and removed from combat."]
+    }]
 		[h: logMsg = msg]
   };
   case "enable" : {
-  	[h: "<!-- when disabled, token always came back into fight as out and can act only after next mr event-->"]
+  	[h: "<!-- when joining a combat, token always came back into fight as out and can act only after next mr event-->"]
     [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
     [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out")]
+    
+    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",0)]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+    
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
     
     [h: setState("Disabled", 0, tokenId)]
     [h: setState("Out", 1, tokenId)]
     [h: setInitiativeHold(0,tokenId)]
 
-    [h: msg = "Token is re-enabled."]
+    [h: msg = "Token join the combat."]
 		[h: logMsg = msg]
   };
   case "nxtturn" : {

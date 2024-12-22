@@ -534,28 +534,14 @@
           [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
           <a class="button-small pure-button" href="[r: link]">Outranged</a>
         </td>
-      }]
-      [r, if(weaponReach != "closed"), code:{
-        <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","closed")]
-          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Closed</a>
-        </td>
-      }]
-        <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","disable")]
-          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Disable</a>
-        </td>
+      }]            
       </tr>
       <tr>
-      [r, if(weaponReach != "ok"), code:{
         <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delreachmalus")]
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","dismissMagic")]
           [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Remove reach malus</a>
+          <a class="button-small pure-button" href="[r: link]">Dismiss Magic</a>
         </td>
-      }]
       [r, if(situationMod == "prone"), code:{
         <td>
           [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delprone")]
@@ -570,6 +556,29 @@
           <a class="button-small pure-button" href="[r: link]">Prone</a>
         </td>
       }]
+      [r, if(turnStatus != "disabled"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","disable")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Disable</a>
+        </td>
+      }]
+      [r, if(turnStatus == "disabled"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","enable")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Enable</a>
+        </td>
+      }]
+      [r, if(weaponReach != "closed"), code:{
+        <td>
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","closed")]
+          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
+          <a class="button-small pure-button" href="[r: link]">Closed</a>
+        </td>
+      }]     
+      </tr>
+      <tr>
       [r, if(spellReady>0), code:{
         <td>
           [h: macroParam = json.set("{}", "tokenId", tokenId,"action","releaseSpell")]
@@ -577,11 +586,13 @@
           <a class="button-small pure-button" href="[r: link]">Release Spell</a>
         </td>
       }]
+      [r, if(weaponReach != "ok"), code:{
         <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","dismissMagic")]
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delreachmalus")]
           [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Dismiss Magic</a>
+          <a class="button-small pure-button" href="[r: link]">Remove reach malus</a>
         </td>
+      }]
       </tr>
     </table>
   </div>
@@ -667,7 +678,7 @@
       </tr>
       <tr>
         <td colspan="5">
-          [h: macroParam = json.set("{}", "tokenId", tokenId)]
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow","openCombatAction")]
           [h: link = macroLinkText("setTokenCombatStatus@Lib:RQII", "all",macroParam)]
           <a class="pure-button" href="[r: link]">Edit Combat Status</a>
         </td>

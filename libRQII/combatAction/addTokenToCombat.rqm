@@ -1,0 +1,95 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)), code:{
+	[assert(0,"<i>xDocumentation::listTokenMacros</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+};
+{
+	[h: tokenId = json.get(arguments,"tokenId")]
+  [h: tokenType = getPropertyType(tokenId)]
+  [h: tokenName = getName(tokenId)]
+    
+  [h: msgWrongTokenType = strformat("Token %{tokenName} must be of type RQ_Human to be added to a combat")]
+  [h: assert((tokenType == "RQ_Human"),msgWrongTokenType,0)]
+}]
+
+[h:"<!-- Don't add token if it is already in -->"]
+[h: isInCombat = isNumber(getInitiative(tokenId))]
+[h: msgAlreadyExist = strformat("Token %{tokenName} is already in the combat")]
+[h: assert((!isInCombat),msgAlreadyExist,0)]
+
+[h:"<!-- get current combat token -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
+[h: logMsgDbg = strformat("<i>combatAction::logCombatAction</i> : current Combat Token - cLogTokenId=%{cLogTokenId})")]
+[h: log.debug(logMsgDbg)]
+
+[r, if(cLogTokenId == "none"), code :{
+  [h: "<!-- No combat token found - log is sent to chat window -->"]
+  No combat found, token [r: getName(tokenId)] cannot be added.
+};{
+  [h: combatProp = getProperty("combat",cLogTokenId)]
+  
+  [r: logMsg = ""+getName(tokenId)+" join combat "+json.get(combatProp,"desc")+"<br>"]
+  
+  [h: addToInitiative(0,10,tokenId)]
+  
+  [h: "<!-- Reset currentCombatStatus -->"]
+  [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+  
+	[h: "<!-- 1st, bind it to new combatLog token -->"]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"cLogTokenId",cLogTokenId)]
+
+	[h: "<!-- then set everything to default / 0 before recomputing some values -->"]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"lostCA",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
+	
+	[h: "<!-- reset weapon CA-->"]
+	[h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",defWeaponNb)]
+	[h: newWeaponCA = defWeaponNb - 1]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
+	
+	[h: "<!-- recompute ccA -->"]
+	[h: baseCA = json.get(currentCombatStatus,"baseCA")]
+	[h: bonusCA = json.get(currentCombatStatus,"bonusCA")]
+	[h: magicCA = json.get(currentCombatStatus,"magicCA")]
+		
+	[h: ccCA = baseCA + bonusCA + newWeaponCA + magicCA]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",ccCA)]
+
+	[h: setProperty("combatStatus",currentCombatStatus,tokenId)]	
+	
+	[h: "<!-- reset All Token Log -->"]
+	[h: logCombatAction(tokenId,"reset","")]
+	
+	[h: "<!-- reset All States -->"]
+	[h: setAllStates(0, tokenId)]
+	[h: setInitiativeHold(0,tokenId)]
+	
+	[h: "<!-- roll Initiative -->"]
+	[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+	[h: currentSR = json.get(propStrikeRank, "current")]
+	[h:status=input(
+	"junk|<html>Select bonus / malus for :<b>"+getName(tokenId)+"</b><br></html>|-|LABEL|SPAN=TRUE",
+	"SRbonus|0|SR Bonus",
+	"SRmalus|0|SR Malus")]
+	[h:abort(status)]
+	[h: diceRoll = roll(1,1d10)]
+	[h: initiative = diceRoll+SRbonus+currentSR-SRmalus]
+	
+	[h: logMsg = strformat("%{logMsg} Rolled Initiative = <b>%{initiative}</b> : diceRoll (%{diceRoll}) + SRbonus(%{SRbonus}) + currentSR(%{currentSR}) - SRmalus(%{SRmalus})<br>")]
+	[h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
+	
+	[h: setInitiative(initiative,tokenId)]
+	[h: sortInitiative()]
+}]

@@ -1,0 +1,25 @@
+[h: tokenId = json.get(macro.args, "tokenId")]
+[h: srcWindow = json.get(macro.args, "srcWindow")]
+[h, if(json.isEmpty(srcWindow)): srcWindow = "none"]
+[h: logMsg = json.get(macro.args, "logMsg")]
+[h: logComment = json.get(macro.args, "logComment")]
+[h: cLogTokenId = json.get(macro.args, "cLogTokenId")]
+[h, if(json.isEmpty(cLogTokenId)): cLogTokenId = "none"]
+
+[r: addCombatLogEntry(tokenId,"specificEvent",logMsg,logComment,1)]
+ 
+[h, switch(srcWindow), code:
+   case "openSheet" : {
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"tab","logs")]
+    [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
+   };
+   case "openCombatSheets" : {
+    [h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId,"tab","log")]
+    [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
+   };
+   default:{
+    [h: "<!-- Do nothing -->"]
+   }
+]

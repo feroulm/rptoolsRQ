@@ -1,4 +1,6 @@
 [h: tokenId = json.get(macro.args, "tokenId")]
+[h: srcWindow = json.get(macro.args, "srcWindow")]
+[h, if(json.isEmpty(srcWindow)): srcWindow = "none"]
 
 [h: combatStatus = getProperty("combatStatus",tokenId)]
 [h: propList = ""]
@@ -31,5 +33,13 @@
 [h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
  
 [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",logMsg)]
-[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")]
+
+[h, switch(srcWindow), code:
+   case "openCombatAction" : {
+    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
+   };
+   default:{
+    [h: "<!-- Do nothing -->"]
+   }
+]

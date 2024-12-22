@@ -85,7 +85,31 @@
         <button type="submit" class="pure-button pure-button-primary">Filter</button>
     </fieldset>
 		</form>
-		</div>
+	</div>
+  </div>
+  <div class="pure-u-md-5-24">
+  <div class="section">
+    [h: linkAddLog = macroLinkText("addCombatLogManualEntry@Lib:RQII", "all")]
+		<form class="pure-form pure-form-stacked" action="[r:linkAddLog]" method="json">
+      <input type="hidden" name="tab" value="logs">
+			<input type="hidden" name="tokenId" value="[r: tokenId]">
+      <input type="hidden" name="srcWindow" value="openSheet">
+			<fieldset>
+        <legend>Add a global log line</legend>
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-4">
+                <label for="logMsg">log Message</label>
+                <input type="text" id="logMsg" name="logMsg" class="pure-u-24-24" />
+            </div>
+						<div class="pure-u-1 pure-u-md-1-4">
+                <label for="logMsg">log Comment</label>
+                <input type="text" id="logComment" name="logComment" class="pure-u-24-24" />
+            </div>
+        </div>
+        <button type="submit" class="pure-button pure-button-primary">Add log</button>
+    </fieldset>
+		</form>
+	</div>
 	</div>
 </div>
 <div class="container pure-g">
