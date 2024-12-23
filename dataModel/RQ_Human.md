@@ -43,8 +43,10 @@ ArmorPenalty = {"base":2,"current":2,"desc":"leather, Helmet"}
 
 ### StrikeRank
 ```
-StrikeRank = {"base":2,"current":2}
+StrikeRank = {"base":2,"current":2,"bonus":0,"malus":0}
 ```
+- Cf issue #68 for a list of all macros involved with this property
+
 ### DamageMod
 ```
 DamageMod = {"base":"+0+,"current":"+0"}

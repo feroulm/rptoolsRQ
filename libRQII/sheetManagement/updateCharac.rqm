@@ -60,19 +60,8 @@
 
 [h: logCombatAction(tokenId,"change",logMsg)]
 
-[h: "<!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->"]
-[h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
-[h: currentSR = json.get(propStrikeRank, "current")]
-
-[h: "<!-- update base value in case DEX or INT changed -->"]
-[h: newBaseSR = floor((newINT + newDEX)/2)]
-[h: newSR = floor((newINT + newDEX)/2) - currentArmorPenalty]<br>
-[h, if(newSR != currentSR), code:{
-  [h: strformat("%{logLongMsg} <i>SR</i> has changed from %{currentSR} to <b>%{newSR}</b>, reroll initiative for next mr.<br>")]
-};{}]
-[h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
-[h: newStrikeRank = json.set(newStrikeRank,"base",newBaseSR)]
-[h: setProperty("StrikeRank",newStrikeRank,tokenId)]
+[h: "<!-- recompute SR based after changes on INT & DEX -->"]
+[h: computeSR(tokenId)]
 
 [h: "<!-- recompute base CA roundup (=ceil) (DEX+INT)/12 -->"]
 [h: currentBaseCA = json.get(propCombatStatus,"baseCA")]

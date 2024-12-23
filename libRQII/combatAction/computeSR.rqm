@@ -1,0 +1,36 @@
+[h: "<!-- Function to recompute StrikeRank (SR) -->"]
+[h: "<!-- return a logMsg, which can be empty if no changes are made -->"]
+[h: tokenId = arg(0)] 
+
+<!-- recompute SR rounded down (=floor) (INT + DEX) / 2 - Armor Penalty + SRbonus - SRmalus -->
+[h: propCharac = getProperty("Charac",tokenId)]
+[h: currDEX = json.get(propCharac,"tmpDEX")]
+[h: currINT = json.get(propCharac,"tmpINT")]
+[h: propArmorPenalty = getProperty("ArmorPenalty", tokenId)]
+[h: currentArmorPenalty = json.get(propArmorPenalty, "current")]
+[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+[h: currentSRbonus = json.get(propStrikeRank, "bonus")]
+[h, if(json.isEmpty(currentSRbonus)): currentSRbonus = 0]
+[h: currentSRmalus = json.get(propStrikeRank, "malus")]
+[h, if(json.isEmpty(currentSRmalus)): currentSRmalus = 0]
+[h: currentSR = json.get(propStrikeRank, "current")]
+[h: baseSR = json.get(propStrikeRank, "base")]
+[h: logMsg = ""]
+
+[h: newCurrentSR = floor((currINT + currDEX)/2) - currentArmorPenalty + currentSRbonus - currentSRmalus]
+[h: newBaseSR = floor((currINT + currDEX)/2)]
+
+[h: propStrikeRank = json.set(propStrikeRank,"current",newCurrentSR)]
+[h: propStrikeRank = json.set(propStrikeRank,"base",newBaseSR)]
+[h: propStrikeRank = json.set(propStrikeRank,"bonus",currentSRbonus)]
+[h: propStrikeRank = json.set(propStrikeRank,"malus",currentSRmalus)]
+[h: setProperty("StrikeRank",propStrikeRank,tokenId)]
+
+[r, if(newCurrentSR != currentSR), code:{
+  [h: logMsg = strformat("%{logMsg}Current SR Change from %{currentSR} to %{newCurrentSR}, you should reroll initiative for next mr<br>")] 
+};{}]
+[r, if(newBaseSR != baseSR), code:{
+  [h: logMsg = strformat("%{logMsg}Base SR Change from %{baseSR} to %{newBaseSR}<br>")] 
+};{}]
+
+[r: logMsg]

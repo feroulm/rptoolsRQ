@@ -79,15 +79,10 @@
 	[h: "<!-- roll Initiative -->"]
 	[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
 	[h: currentSR = json.get(propStrikeRank, "current")]
-	[h:status=input(
-	"junk|<html>Select bonus / malus for :<b>"+getName(tokenId)+"</b><br></html>|-|LABEL|SPAN=TRUE",
-	"SRbonus|0|SR Bonus",
-	"SRmalus|0|SR Malus")]
-	[h:abort(status)]
 	[h: diceRoll = roll(1,1d10)]
-	[h: initiative = diceRoll+SRbonus+currentSR-SRmalus]
+	[h: initiative = diceRoll+currentSR]
 	
-	[h: logMsg = strformat("%{logMsg} Rolled Initiative = <b>%{initiative}</b> : diceRoll (%{diceRoll}) + SRbonus(%{SRbonus}) + currentSR(%{currentSR}) - SRmalus(%{SRmalus})<br>")]
+	[h: logMsg = strformat("%{logMsg} Rolled Initiative = <b>%{initiative}</b> : diceRoll (%{diceRoll}) + currentSR(%{currentSR})<br>")]
 	[h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
 	
 	[h: setInitiative(initiative,tokenId)]

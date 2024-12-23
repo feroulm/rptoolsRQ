@@ -11,6 +11,10 @@
 [h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
 [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
 [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+[h: currentSRbonus = json.get(propStrikeRank, "bonus")]
+[h, if(json.isEmpty(currentSRbonus)): currentSRbonus = 0]
+[h: currentSRmalus = json.get(propStrikeRank, "malus")]
+[h, if(json.isEmpty(currentSRmalus)): currentSRmalus = 0]
 [h: propDamageMod = getProperty("DamageMod",tokenId)]
 [h: propMagicPoint = getProperty("MagicPoint",tokenId)]
 [h: propDedicatedPow = getProperty("DedicatedPow",tokenId)]
@@ -37,7 +41,19 @@
 					 <td>Armor Penalty : </td><td>[r: json.get(propArmorPenalty, "current")]</td>
 				 </tr>
 				 <tr>
-					 <td>Strike Rank (SR) :</td><td>[r: json.get(propStrikeRank, "current")]</td>
+					 <td>Strike Rank (SR) :</td><td>[r: json.get(propStrikeRank, "current")] / <i>[r: json.get(propStrikeRank, "base")]</i></td>
+				  </tr>
+         <tr>
+				   <td>SR Bonus :</td>
+				   <td>
+					    <input type="text" placeholder="SRbonus" name="SRbonus" value='[r: currentSRbonus]' size="3" align="right">
+				   </td>
+				 </tr>
+         <tr>
+					 <td>SR Malus :</td>
+				   <td>
+					    <input type="text" placeholder="SRmalus" name="SRmalus" value='[r: currentSRmalus]' size="3" align="right">
+				   </td>
 				 </tr>
 				 <tr>
 					 <td>Damage Modifier : </td><td>[r: json.get(propDamageMod, "current")]</td>

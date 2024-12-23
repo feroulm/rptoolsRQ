@@ -5,6 +5,7 @@
 [h: defineFunction("showReactiveAction", "showReactiveAction@Lib:RQII")]
 [h: defineFunction("computeCcCA", "computeCcCA@Lib:RQII")]
 [h: defineFunction("computeCombatStatus", "computeCombatStatus@Lib:RQII")]
+[h: defineFunction("computeSR", "computeSR@Lib:RQII")]
 [h: defineFunction("getInitiativeTokenOffset","getInitiativeTokenOffset@Lib:RQII")]
 [h: defineFunction("logCombatAction","logCombatAction@Lib:RQII")]
 [h: defineFunction("htmlSelectCombatToken","htmlSelectCombatToken@Lib:RQII")]

@@ -96,6 +96,15 @@ If lostProCA>0 the player can't take any proactive action :
 	- cf *updateGlobalCombat* for this implementation.
 - Note : after choosing *delay*, the token may still use reactive ation which will also decrement "lostProCA*. If he use all its CA its status will became *out* instead of *delay*, so *resetDelayTuen* will no be triggered (otherwise it would have created an issue by removing an extra *lostProCA* without having any Ca left !)
 
+## StrikeRank
+
+Used when rolling initiative in a combat.
+Modified :
+- when INT or DEX change
+- when armor penalty change
+- when SR Bonuy or Malus change
+
+- Cf issue #68 for a list of all macro involved with this property
 
 ## openCombat.rqm
 - open the combat window and put all the token that are in the initiative list / window in a table

@@ -14,21 +14,9 @@
 
 [h: setProperty("ArmorPenalty", propArmorPenalty, tokenId)]
 
-<!-- Recompute SR -->
-<!-- recompute SR  rounded down (=floor) (INT + DEX) / 2 - Armor Penalty -->
-[h: propCharac = getProperty("Charac",tokenId)]
-[h: currDEX = json.get(propCharac,"tmpDEX")]
-[h: currINT = json.get(propCharac,"tmpINT")]
-[h: propStrikeRank = getProperty("StrikeRank",tokenId)]
+[h: "<!-- Recompute SR based on armorPenalty change -->"]
+[h: computeSR(tokenId)]
 
-[h: currentSR = json.get(propStrikeRank, "current")]
-[h: newSR = floor((currINT + currDEX)/2) - newCurrent]<br>
-[r, if(newSR != currentSR), code:{
-  SR Change from [r: currentSR] to [r: newSR], you should reroll initiative for next mr<br>
-  [h: newStrikeRank = json.set(propStrikeRank,"current",newSR)]
-  [h: setProperty("StrikeRank",newStrikeRank,tokenId)]
-};{}]
-  
-<!-- Refresh edit Window for the new token -->
+[h: "<!-- Refresh edit Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
-[r, macro("openEquipmentMgt@Lib:RQII"): macroParam]
+[h, macro("openEquipmentMgt@Lib:RQII"): macroParam]
