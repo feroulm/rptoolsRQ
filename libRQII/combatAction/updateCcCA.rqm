@@ -2,7 +2,7 @@
 [h:"<!-- - lose / grap a weapon -->"]
 [h:"<!-- - increase nb of CA because of magic -->"]
 
-[h:"<!-- Called by :  editHumCombatAttr@Lib:RQII -->"]
+[h:"<!-- Called by :  editHumCombatAttr, editSheet, updateHoldWeapon, updateMeleeWeapon, updateRangeWeapon -->"]
 [h:"<!-- Calling :  -->"]
 [h:"<!-- - UDF computeCcCA a.k.a computeCcCA@Lib:RQII (combatAction Group) -->"]
 [h:"<!-- - openHumCombatAttr@Lib:RQII   (sheetManagement Group) -->"]
@@ -12,6 +12,7 @@
 [h: newWeaponNb = json.get(macro.args, "newWeaponNb")]
 [h: weaponName = json.get(macro.args, "weaponName")]
 [h: newMagicCA = json.get(macro.args, "newMagicCA")]
+[h: newBonusCA = json.get(macro.args, "newBonusCA")]
 [h: srcWindow = json.get(macro.args, "srcWindow")]
 
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
@@ -19,6 +20,7 @@
 [h: currCcCA = json.get(currentCombatStatus,"ccCA")]
 [h: currWeaponCA = json.get(currentCombatStatus,"weaponCA")]
 [h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
+[h: currBonusCA = json.get(currentCombatStatus,"bonusCA")]
 [h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
 
 [h: logLongMsg =""]
@@ -72,6 +74,27 @@
       [h: logLongMsg = strformat("%{logMsg}<br>magicCA bonus is unchanged, ccCA and activeCA are unchanged")]
     };{
       [h: logLongMsg = strformat("%{logMsg} <i>magicCA</i> switch from %{currMagicCA} to <b>%{newMagicCA}</b>")]
+      [h: logLongMsg = strformat("%{logLongMsg}<br><i>ccCA</i> switch from %{currCcCA} to <b>%{newCcCA}</b>.")]
+      [h: logLongMsg = strformat("%{logLongMsg} <i>activeCA</i> switch from %{currActiveCA} to <b>%{newActiveCA}</b>")]
+    }]     
+  };
+  case "bonusca" : {
+    [h, if (newBonusCA < 0): newBonusCA = 0]
+    [h: currentCombatStatus = json.set(currentCombatStatus,"bonusCA",newBonusCA)]
+    
+    [h: "<!-- recompute ccCA, may impact current CA status -->"]
+    [h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus)] 
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+
+    [h: newCcCA = json.get(currentCombatStatus,"ccCA")]
+    [h: newActiveCA = json.get(currentCombatStatus,"activeCA")]
+    
+    [h: logMsg = "Change bonusCA."] 
+    
+    [h, if(currBonusCA == newBonusCA), code: {  
+      [h: logLongMsg = strformat("%{logMsg}<br>bonusCA bonus is unchanged, ccCA and activeCA are unchanged")]
+    };{
+      [h: logLongMsg = strformat("%{logMsg} <i>bonusCA</i> switch from %{currBonusCA} to <b>%{newBonusCA}</b>")]
       [h: logLongMsg = strformat("%{logLongMsg}<br><i>ccCA</i> switch from %{currCcCA} to <b>%{newCcCA}</b>.")]
       [h: logLongMsg = strformat("%{logLongMsg} <i>activeCA</i> switch from %{currActiveCA} to <b>%{newActiveCA}</b>")]
     }]     

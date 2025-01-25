@@ -8,6 +8,7 @@
 [h: propOtherAttr = getProperty("otherAttr",tokenId)]
 [h: currWeaponNb = json.get(currentCombatStatus,"currWeaponNb")]
 [h: currMagicCA = json.get(currentCombatStatus,"magicCA")]
+[h: currBonusCA = json.get(currentCombatStatus,"bonusCA")]
 [h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
 [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
 [h: propStrikeRank = getProperty("StrikeRank",tokenId)]
@@ -270,6 +271,24 @@
 </tbody>
 </table>
 </form>
+
+<form class="pure-form" action="[r:link]" method="json">
+<table class="content pure-table">
+<tbody>
+  <tr>
+    <td style="text-align:left">Bonus CA </td>
+    <td> 
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="action" value="bonusca">
+      <input type="hidden" name="srcWindow" value="openSheetMgt">
+      <input type="text" name="newBonusCA" value="[r:currBonusCA]" size="2" align="right">
+    </td>
+    <td><button type="submit" class="pure-button pure-button-primary" value="U.">U.</button></td>
+  </tr>
+</tbody>
+</table>
+</form>
+
 [h: link = macroLinkText("updateMP@Lib:RQII", "all")]
 <form class="pure-form" action="[r:link]" method="json">
 <table class="content pure-table">

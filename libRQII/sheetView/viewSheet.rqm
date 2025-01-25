@@ -81,6 +81,7 @@
     [h: propCombatStatus = getProperty("combatStatus",tokenId,tokenMap)]
     [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
     [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+    [h: propCombatStatus = getProperty("combatStatus",tokenId)]
 	  <p>
       <b>SR :</b> [r: json.get(propStrikeRank, "current")]([r: json.get(propStrikeRank, "base")]), <b>CA :</b> [r: json.get(propCombatStatus,"baseCA")], 
       <b>MP :</b> [r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")] (<i>dedPOW : [r: json.get(propMagicPoint, "dedPOW")]</i>),
@@ -94,34 +95,42 @@
     [h: propOtherAttr = getProperty("otherAttr",tokenId)]
     <table class="content pure-table pure-table-striped">
 	  <tbody>
-         <tr>
-           <td>Hero Pts</td>
+     <tr>
+       <td>Hero Pts</td>
 		   <td>[r: json.get(propOtherAttr,"currHeroPts")]</td>
-         </tr>
+     </tr>
 		 <tr>
-           <td>Hero Pts (prev)</td>
+       <td>Hero Pts (prev)</td>
 		   <td><i>[r: json.get(propOtherAttr,"prevHeroPts")]</i></td>
-         </tr>
-         <tr>
-           <td>Movement</td>
+     </tr>
+     <tr>
+       <td>Movement</td>
 		   <td>[r: json.get(propOtherAttr,"movement")]</td>
-         </tr>
-         <tr>
-           <td>Enc</td>
+     </tr>
+     <tr>
+       <td>Enc</td>
 		   <td>[r: json.get(propOtherAttr,"currEnc")]</td>
-         </tr>
+     </tr>
 		 <tr>
-           <td>Enc (travel)</td>
+       <td>Enc (travel)</td>
 		   <td>[r: json.get(propOtherAttr,"travelEnc")]</td>
-         </tr>
-         <tr>
-           <td>Healing Rate</td>
+     </tr>
+     <tr>
+       <td>Healing Rate</td>
 		   <td>[r: json.get(propOtherAttr,"healRate")]</td>
-         </tr>
-         <tr>
-           <td>ImprovementMod</td>
+     </tr>
+     <tr>
+       <td>ImprovementMod</td>
 		   <td>[r: json.get(propOtherAttr,"improvementMod")]</td>
-         </tr>
+     </tr>
+     <tr>
+       <td>Magic CA</td>
+		   <td>[r: json.get(propCombatStatus,"magicCA")]</td>
+     </tr>
+          <tr>
+       <td>Bonus CA</td>
+		   <td>[r: json.get(propCombatStatus,"bonusCA")]</td>
+     </tr>
 	  </tbody>
     </table>
 	<p class="section">

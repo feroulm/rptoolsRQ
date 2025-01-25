@@ -65,7 +65,10 @@
 <br>
 [h: propFatigue = getProperty("fatigue",tokenId)]
 [r: json.get(propFatigue,"level")]
-<br>
+<br><br>
+[h: propCombatStatus = getProperty("combatStatus",tokenId)]
+Magic CA : [r: json.get(propCombatStatus,"magicCA")]<br>
+Bonus CA : [r: json.get(propCombatStatus,"bonusCA")]
 )))
 <br><br>
 == Armures & Points de vie ==

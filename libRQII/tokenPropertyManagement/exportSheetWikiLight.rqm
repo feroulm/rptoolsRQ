@@ -261,6 +261,8 @@ Spirit Binding [r: json.get(bindingValue,"current")]% :
 <br>
 &#91;&#91;Rune Touched>>Rq.RunicPowerRule&#93;&#93; :
 <br>
+[h: propCombatStatus = getProperty("combatStatus",tokenId)]
+Magic CA : [r: json.get(propCombatStatus,"magicCA")], Bonus CA : [r: json.get(propCombatStatus,"bonusCA")]<br>
 (% style="border:1px solid white; margin:0px" %)|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
 **Magic items** <br>
 [h: propMagicItemDesc = getProperty("magicItemDesc", tokenId)]
