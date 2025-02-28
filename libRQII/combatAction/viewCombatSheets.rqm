@@ -103,7 +103,6 @@
   [h: activeTurn = json.get(currentCombatStatus,"activeTurn")]
   [h: situationMod = json.get(currentCombatStatus,"situationMod")]
   [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
-  [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
   
   [h: macroParam = json.set("{}", "tokenId",tokenId)]
   [h: linkEditLabel = macroLinkText("editTokenLabelAndNotes@Lib:RQII", "all",macroParam)]

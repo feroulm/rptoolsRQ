@@ -4,7 +4,10 @@
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
-[frame5("locAPHP"): {
+
+[h: dialogName = "locAPHP"]
+
+[dialog5(dialogName,"width=490; height=575; temporary=0"): {
 <html>
 <head>
   <link rel="onChangeSelection" type="macro" href="[r:link]">

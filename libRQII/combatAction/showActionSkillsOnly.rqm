@@ -1,7 +1,6 @@
 [h: "<!-- Function to display a reduce set of skills during combat -->"]
 [h: tokenId = arg(0)]
 [h: tokenMap = getCurrentMapName()]
-[h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
 
 [h: malusInfo = ""]
 

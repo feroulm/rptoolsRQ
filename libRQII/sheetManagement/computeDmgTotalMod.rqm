@@ -1,0 +1,31 @@
+[h: "<!-- Function to recompute total Damage Modifier -->"]
+[h: "<!-- return a string representing the full DMG modifier : Current, based on STR&SIZ is in red, MagicMod is in blue and specialMod is n gray) -->"]
+[h: "<!-- noFormat is an optionnal param, if set to 1 it return a non formatted value-->"]
+[h: tokenId = arg(0)] 
+[h: tokenMap = arg(1)] 
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h: numArgs = argCount()]
+[h, if(numArgs == 3), code:{
+	[h: noFormat = arg(2)]
+  [h, if(noFormat == "") : noFormat = "0"]
+};{
+	[h: noFormat = "0"]
+}]
+
+
+
+[h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+
+[h: currentMod = json.get(propDamageMod, "current")]
+[h: currMagicMod = json.get(propDamageMod, "magicMod")]
+[h: currSpecialMod = json.get(propDamageMod, "specialMod")]
+
+[h: totalMod = ""]
+[h, if(currentMod == "" || currentMod == "0"): totalMod = ""; totalMod = "<span class='current-mod''>"+currentMod+"</span>"]
+[h, if(currMagicMod == "" || currMagicMod == "0"): currMagicMod = ""; totalMod = totalMod+"<span class='magic-mod''>"+currMagicMod+"</span>"]
+[h, if(currSpecialMod == "" || currSpecialMod == "0"): currSpecialMod = ""; totalMod = totalMod+"<span class='special-mod'>"+currSpecialMod+"</span>"]
+
+[h: nonFormatTotalMod = currentMod+currMagicMod+currSpecialMod]
+
+[r, if(noFormat == "1"):  nonFormatTotalMod; totalMod]

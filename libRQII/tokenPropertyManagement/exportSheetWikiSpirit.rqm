@@ -68,7 +68,7 @@ Common Magic [r: json.get(skillValues,"current")]% :
       [r: skill] [r: json.get(skillValues,"current")]%
 }]
 <br><br>
-**CA:** [r: json.get(propCombatStatus,"baseCA")], **SR:** [r: json.get(propStrikeRank, "current")], **HP**(//MP//)**:** [r: getProperty("POW", tokenId, tokenMap)] 
+**CA:** [r: json.get(propCombatStatus,"ccCA")], **SR:** [r: json.get(propStrikeRank, "current")], **HP**(//MP//)**:** [r: getProperty("POW", tokenId, tokenMap)] 
 ))) | (((
 [h,macro("getWeaponNb@this"): tokenId]
 [h: wpList = macro.return]
@@ -80,3 +80,15 @@ Common Magic [r: json.get(skillValues,"current")]% :
 }]
 
 )))
+<br><br>
+[h: currentSRbonus = json.get(propStrikeRank, "bonus")]
+[h, if(json.isEmpty(currentSRbonus)): currentSRbonus = 0]
+[h: currentSRmalus = json.get(propStrikeRank, "malus")]
+[h, if(json.isEmpty(currentSRmalus)): currentSRmalus = 0]
+CA Base : [r: json.get(propCombatStatus,"baseCA")], //CA Magic// : [r: json.get(propCombatStatus,"magicCA")], //CA Mod// : [r: json.get(propCombatStatus,"bonusCA")]<br>
+SR Base : [r: json.get(propStrikeRank, "base")], //SR Bonus// : [r: currentSRbonus], //SR Malus// : [r: currentSRmalus]<br>
+<br>
+Damage Mod : [r: json.get(propDamageMod, "current")]<br>
+//Damage Magic Mod// : [r: json.get(propDamageMod, "magicMod")] ((% style="color: #A5ACAF;" %)[r: json.get(propDamageMod, "magicDesc")](%%))<br>
+//Damage Special Mod//: [r: json.get(propDamageMod, "specialMod")] ((% style="color: #A5ACAF;" %)[r: json.get(propDamageMod, "specialDesc")](%%))
+<br>

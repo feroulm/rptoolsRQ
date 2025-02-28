@@ -217,7 +217,7 @@
 	Damage Mod when STR + SIZ is above 130 is not implemented...continue the progession<br>
 }]
 [h: newDamageMod = json.get(damageModTbl,newDamageModIndex)]
-[h: newPropDamageMod = '{"base":"+0","current":"+0"}']
+[h: newPropDamageMod = '{"base":"+0","current":"+0","magicMod":"0","magicDesc":"-","specialMod":"0","specialDesc":"-"}']
 [h: newPropDamageMod = json.set(newPropDamageMod,"current",newDamageMod)]
 [h: newPropDamageMod = json.set(newPropDamageMod,"base",newDamageMod)]
 [h: setProperty("damageMod",newPropDamageMod,tokenId)]

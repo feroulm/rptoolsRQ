@@ -1,0 +1,35 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
+[h: dmgMagicMod = json.get(arguments, "dmgMagicMod")]
+[h: dmgMagicDesc = json.get(arguments, "dmgMagicDesc")]
+[h: dmgSpecialMod = json.get(arguments, "dmgSpecialMod")]
+[h: dmgSpecialDesc = json.get(arguments, "dmgSpecialDesc")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
+
+[h: propDamageMod = getProperty("DamageMod",tokenId)]
+
+[h: currDamageMod = computeDmgTotalMod(tokenId,tokenMap)]
+
+[h: newPropDamageMod = json.set(propDamageMod,"magicMod",dmgMagicMod)]
+[h: newPropDamageMod = json.set(newPropDamageMod,"magicDesc",dmgMagicDesc)]
+[h: newPropDamageMod = json.set(newPropDamageMod,"specialMod",dmgSpecialMod)]
+[h: newPropDamageMod = json.set(newPropDamageMod,"specialDesc",dmgSpecialDesc)]
+
+[h: setProperty("DamageMod",newPropDamageMod,tokenId)]
+
+[h: updatedDamageMod = computeDmgTotalMod(tokenId,tokenMap)]
+
+[h, if(currDamageMod != updatedDamageMod), code:{
+[h: logMsg = strformat("Damaged Mod. has been changed from  <i>%{currDamageMod}</i> to <b>%{updatedDamageMod}</b>")]
+[r: addCombatLogEntry(tokenId,"updateCharac",logMsg,"","1")]
+};{}]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId)]
+
+[h, if(srcWindow == "openSheetMgt"), code:{
+  [r, macro("openSheetMgt@Lib:RQII"): macroParam]
+};{
+  [r, macro("openHumCombatAttr@Lib:RQII"): macroParam]
+}]

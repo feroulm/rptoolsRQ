@@ -14,7 +14,10 @@
 }]
 
 [h: param = json.set("{}", "tokenId", tokenId, "msg", msg)]
-[frame5("Combat Action"): {
+
+[h: dialogName = "Combat Action"]
+
+[dialog5(dialogName,"width=715; height=900; temporary=1"): {
 <html>
 <head>
   <link rel="onChangeSelection" type="macro" href="[r:link]">

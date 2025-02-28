@@ -25,7 +25,7 @@
 [h: propStrikeRank = getProperty("StrikeRank",tokenId,tokenMap)]
 [h: propCombatStatus = getProperty("combatStatus",tokenId,tokenMap)]
 [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
-|[r: json.get(propCombatStatus,"baseCA")]|[r: json.get(propStrikeRank, "current")]([r: json.get(propStrikeRank, "base")])|[r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")]
+|[r: json.get(propCombatStatus,"ccCA")]|[r: json.get(propStrikeRank, "current")]|[r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")]
 <br>
 )))|(% style="border: 2px solid white;" %) |(% style="border: 2px solid white;" %)(((
 <br>
@@ -36,6 +36,9 @@
 <br>
 &#91;&#91;Improvement Mod.>>Rq.PersoCreation||anchor="HImprovementrules"]] : **[r: json.get(propOtherAttr,"improvementMod")]**
 <br>
+**&#91;&#91;Fatigue>>Rq.FatigueRules&#93;&#93;** : 
+[h: propFatigue = getProperty("fatigue",tokenId)]
+[r: json.get(propFatigue,"level")]
 )))
 <br>
 (% style="border: 2px solid white;" %)|(% style="border: 2px solid white;" %)(((
@@ -43,10 +46,9 @@
 [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
 |Movement |**[r: json.get(propOtherAttr,"movement")]** |Armor Penalty  |**-[r: json.get(propArmorPenalty, "current")]**
 <br>
-[h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
-|Damage Mod.    |**[r: json.get(propDamageMod, "current")]**|Ded. POU |**[r: json.get(propMagicPoint, "dedPOW")]**
+|Enc   |**[r: json.get(propOtherAttr,"currEnc")]** / [r: json.get(propOtherAttr,"travelEnc")]|Ded. POU |**[r: json.get(propMagicPoint, "dedPOW")]**
 <br>
-|Hero Points |**[r: json.get(propOtherAttr,"currHeroPts")]**|Enc |**[r: json.get(propOtherAttr,"currEnc")]** / [r: json.get(propOtherAttr,"travelEnc")]
+|Hero Points |**[r: json.get(propOtherAttr,"currHeroPts")]**| |
 <br>
 )))|(% style="border: 2px solid white;" %) |(% style="border: 2px solid white;" %)(((
 <br>
@@ -60,15 +62,19 @@
 |[r: json.get(wealthHold,"gp")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"gp")]//)(%%) |[r: json.get(wealthHold,"sp")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"sp")]//)(%%)|[r: json.get(wealthHold,"cp")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"cp")]//)(%%)|[r: json.get(wealthHold,"others")]<br>(% style="color: #A5ACAF;" %)(//[r: json.get(wealthHidden,"others")]//)(%%)
 <br>
 )))|(% style="border: 2px solid white;" %) |(% style="border: 2px solid white;" %)(((
-<br>
-**&#91;&#91;Fatigue>>Rq.FatigueRules&#93;&#93;**
-<br>
-[h: propFatigue = getProperty("fatigue",tokenId)]
-[r: json.get(propFatigue,"level")]
-<br><br>
 [h: propCombatStatus = getProperty("combatStatus",tokenId)]
-Magic CA : [r: json.get(propCombatStatus,"magicCA")]<br>
-Bonus CA : [r: json.get(propCombatStatus,"bonusCA")]
+[h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
+[h: currentSRbonus = json.get(propStrikeRank, "bonus")]
+[h, if(json.isEmpty(currentSRbonus)): currentSRbonus = 0]
+[h: currentSRmalus = json.get(propStrikeRank, "malus")]
+[h, if(json.isEmpty(currentSRmalus)): currentSRmalus = 0]
+    
+CA Base : [r: json.get(propCombatStatus,"baseCA")], //CA Magic// : [r: json.get(propCombatStatus,"magicCA")], //CA Mod// : [r: json.get(propCombatStatus,"bonusCA")]<br>
+SR Base : [r: json.get(propStrikeRank, "base")], //SR Bonus// : [r: currentSRbonus], //SR Malus// : [r: currentSRmalus]<br>
+<br>
+Damage Mod : [r: json.get(propDamageMod, "current")]<br>
+//Damage Magic Mod// : [r: json.get(propDamageMod, "magicMod")] ((% style="color: #A5ACAF;" %)[r: json.get(propDamageMod, "magicDesc")](%%))<br>
+//Damage Special Mod//: [r: json.get(propDamageMod, "specialMod")] ((% style="color: #A5ACAF;" %)[r: json.get(propDamageMod, "specialDesc")](%%))
 )))
 <br><br>
 == Armures & Points de vie ==
@@ -100,7 +106,7 @@ Bonus CA : [r: json.get(propCombatStatus,"bonusCA")]
 [h: aSkills = getProperty("commonSkills", tokenId)]
 [h: skillValues = json.get(aSkills,"Unarmed")]
 , Unarmed [r: json.get(skillValues,"current")]%
-. **DMG :** [r: json.get(propDamageMod, "current")]
+. **DMG :** [r: computeDmgTotalMod(tokenId,"")]
 <br><br>
 |=Type |=Size |=Reach |= Dmg |= AP/HP |=Manoe. |= Spe.
 <br>
@@ -348,11 +354,11 @@ Bonus CA : [r: json.get(propCombatStatus,"bonusCA")]
 [h: holdEquipment = json.get(propEquipmentDesc,"hold")]
 [h: hiddenEquipment = json.get(propEquipmentDesc,"hidden")]
 ##Hold : ##\\
-[r: holdEquipment]
+[r: replace(holdEquipment,"\\\n","<br>")]
 \\
 <br>
 ##Hidden : ##\\
-[r: hiddenEquipment]
+[r: replace(hiddenEquipment,"\\\n","<br>")]
 <br>
 )))|(% style="border-color:white; border-style:solid; border-width:1px; margin:0px" %) |(% style="border-color:white; border-style:solid; border-width:1px; margin:0px; vertical-align:top" %)(((<br>
 <br>

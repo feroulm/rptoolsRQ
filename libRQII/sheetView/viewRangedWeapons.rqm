@@ -1,6 +1,9 @@
 [h: arguments = macro.args]
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: srcWindow = json.get(arguments, "srcWindow")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+
+[h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
 
 [h: propDamageMod = getProperty("DamageMod",tokenId)]
 [h: tokenDmgMod = json.get(propDamageMod, "current")]
@@ -27,7 +30,7 @@
       [h: wProp = macro.return]
       [h: missileDmgMod = getStrProp(wProp, "Modif")]
       [h, if((tokenDmgMod != "0")&&(missileDmgMod == "Y")), code:{
-        [h: tokenDmgModDisplay = "<span style='color:red'>"+tokenDmgMod+"</span>"]
+        [h: tokenDmgModDisplay = computeDmgTotalMod(tokenId,tokenMap)]
       };{
         [h: tokenDmgModDisplay = ""]
       }]

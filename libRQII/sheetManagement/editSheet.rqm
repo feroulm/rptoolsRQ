@@ -57,9 +57,6 @@
 				   </td>
 				 </tr>
 				 <tr>
-					 <td>Damage Modifier : </td><td>[r: json.get(propDamageMod, "current")]</td>
-				 </tr>
-				 <tr>
 						 <td>Hero Pts :</td>
 				 <td>
 					 <input type="text" placeholder="currHeroPts" name="currHeroPts" value='[r: json.get(propOtherAttr,"currHeroPts")]' size="3" align="right">
@@ -320,8 +317,53 @@
 			[h: link = macroLinkText("openEquipmentMgt@Lib:RQII", "all",macroParam)]
 			<a class="button-secondary pure-button" href="[r: link]">Gold, Equipement & Magic items</a>
 			<br><br>
-			[r, macro("editSheetMeleeWeapon@Lib:RQII"): tokenId]<br>
-	</td>
+			[r, macro("editSheetMeleeWeapon@Lib:RQII"): tokenId]
+      <br><br>
+      [h: "<!-- Start Manage Damage Modifier Change -->"] 
+      [h: currDmgMagicMod = json.get(propDamageMod, "magicMod")]
+      [h: currDmgMagicDesc = json.get(propDamageMod, "magicDesc")]
+      [h: currDmgSpecialMod = json.get(propDamageMod, "specialMod")]
+      [h: currDmgSpecialDesc = json.get(propDamageMod, "specialDesc")]
+      [h: link = macroLinkText("updateDmgMod@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:link]" method="json">
+      <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
+      <thead><th colspan="5">Damage Modifier : [r: computeDmgTotalMod(tokenId,"")]</th></thead>
+      <tbody>
+        <tr>
+          <td colspan="5" >
+           <span class='current-mod'>Current</span> (Based on STR & SIZ) : [r: json.get(propDamageMod, "current")]
+          </td>
+        </tr> 
+        <tr>
+          <td style="text-align:left"><span class='magic-mod'>Magic Dmg Mod.</span></td>
+          <td> 
+            <input type="text" name="dmgMagicMod" value="[r:currDmgMagicMod]" size="6" align="right">
+          </td>
+          <td style="text-align:left"><span class='special-mod'>Special Dmg Mod.</span></td>
+          <td> 
+            <input type="text" name="dmgSpecialMod" value="[r:currDmgSpecialMod]" size="6" align="right">
+          </td>
+          <td rowspan = "2">
+            <input type="hidden" name="srcWindow" value="openHumCombatAttr">
+            <input type="hidden" name="tokenId" value="[r:tokenId]">
+            <button type="submit" class="pure-button pure-button-primary" value="U.">U.</button>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align:left">Magic Desc. </td>
+          <td> 
+            <input type="text" name="dmgMagicDesc" value="[r:currDmgMagicDesc]" size="20" align="right">
+          </td>
+          <td style="text-align:left">Special Desc. </td>
+          <td> 
+            <input type="text" name="dmgSpecialDesc" value="[r:currDmgSpecialDesc]" size="20" align="right">
+          </td>
+        </tr>       
+      </tbody>
+      </table>
+      </form>
+      [h: "<!-- End Manage Damage Modifier Change -->"]     
+	  </td>
   </tr>
   <tr>
     <td valign="top" colspan="3">

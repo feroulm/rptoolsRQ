@@ -99,7 +99,7 @@
 [h, if(currentDamageMod != newDamageMod), code:{
 	[h: logLongMsg = strformat("%{logLongMsg} Damage Mod change from %{currentDamageMod} to <b>%{newDamageMod}</b>.<br>")]
 	[h: newPropDamageMod = json.set(propDamageMod,"current",newDamageMod)]
-	[h: setProperty("damageMod",newPropDamageMod,tokenId)]
+	[h: setProperty("DamageMod",newPropDamageMod,tokenId)]
 };{}]
 
 [h: "<!-- recompute Magic Point -->"]

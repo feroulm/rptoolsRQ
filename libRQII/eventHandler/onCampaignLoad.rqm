@@ -20,6 +20,7 @@
 
 [h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
+[h: defineFunction("computeDmgTotalMod","computeDmgTotalMod@Lib:RQII")]
 [h: defineFunction("getFatigueMalus","getFatigueMalus@Lib:RQII")]
 
 [h: "<!-- Sheet Improvement UDFs -->"]

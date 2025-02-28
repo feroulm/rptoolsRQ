@@ -78,15 +78,27 @@
 	<section class="section">
 	  [h: propDamageMod = getProperty("DamageMod",tokenId,tokenMap)]
     [h: propStrikeRank = getProperty("StrikeRank",tokenId,tokenMap)]
+    [h: currentSRbonus = json.get(propStrikeRank, "bonus")]
+    [h, if(json.isEmpty(currentSRbonus)): currentSRbonus = 0]
+    [h: currentSRmalus = json.get(propStrikeRank, "malus")]
+    [h, if(json.isEmpty(currentSRmalus)): currentSRmalus = 0]
     [h: propCombatStatus = getProperty("combatStatus",tokenId,tokenMap)]
     [h: propMagicPoint = getProperty("MagicPoint",tokenId,tokenMap)]
     [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
     [h: propCombatStatus = getProperty("combatStatus",tokenId)]
 	  <p>
-      <b>SR :</b> [r: json.get(propStrikeRank, "current")]([r: json.get(propStrikeRank, "base")]), <b>CA :</b> [r: json.get(propCombatStatus,"baseCA")], 
+      <b>SR :</b> [r: json.get(propStrikeRank, "current")], <b>CA :</b> [r: json.get(propCombatStatus,"ccCA")], 
       <b>MP :</b> [r: json.path.read(propMagicPoint,"MP.current")]/[r: json.path.read(propMagicPoint,"MP.base")] (<i>dedPOW : [r: json.get(propMagicPoint, "dedPOW")]</i>),
       <b>Armor Penalty : </b>[r: json.get(propArmorPenalty, "current")]
 	  </p>
+    <p>
+      <i>SR Base :</i> [r: json.get(propStrikeRank, "base")],
+      <i>SR Bonus :</i> [r: currentSRbonus],
+      <i>SR Malus :</i> [r: currentSRmalus],
+      <i>CA Base :</i> [r: json.get(propCombatStatus,"baseCA")],
+      <i>CA Magic :</i> [r: json.get(propCombatStatus,"magicCA")],
+      <i>CA Mod. :</i> [r: json.get(propCombatStatus,"bonusCA")]
+    </p>
     </section>	 
   </div>
   <div class="pure-u-1-24">
@@ -123,14 +135,6 @@
        <td>ImprovementMod</td>
 		   <td>[r: json.get(propOtherAttr,"improvementMod")]</td>
      </tr>
-     <tr>
-       <td>Magic CA</td>
-		   <td>[r: json.get(propCombatStatus,"magicCA")]</td>
-     </tr>
-          <tr>
-       <td>Bonus CA</td>
-		   <td>[r: json.get(propCombatStatus,"bonusCA")]</td>
-     </tr>
 	  </tbody>
     </table>
 	<p class="section">
@@ -155,7 +159,9 @@
     [h: aSkills = getProperty("commonSkills", tokenId)]
     [h: skillValues = json.get(aSkills,"Unarmed")]
     , Unarmed [r: json.get(skillValues,"current")]%
-    . <b>DMG :</b> <span style='color:red'>[r: json.get(propDamageMod, "current")]</span>
+    . <b>DMG :</b> 
+    [h: tokenDmgMod = computeDmgTotalMod(tokenId,tokenMap,1)]
+    [r, if(tokenDmgMod == "0"): tokenDmgMod ;computeDmgTotalMod(tokenId,tokenMap)]
     </section>
     [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow","openSheet")]
     [r, macro("viewMeleeWeapons@this"): macroParam]<br>
@@ -175,58 +181,80 @@
     [h: wealth = getProperty("wealth", tokenId)]
     [h: wealthHold = json.get(wealth,"hold")]
     [h: wealthHidden = json.get(wealth,"hidden")]
-	<table class="content pure-table pure-table-striped">
-	  <thead>
-          <tr>
-            <th></th>
-            <th>GP</th>
-			<th>SP</th>
-			<th>CP</th>
-			<th>Others</th>
-          </tr>
-	  </thead>
-	  <tbody>
-          <tr>
-            <td><b>Hold</b></td>
-            <td>[r: json.get(wealthHold,"gp")]</td>
-			<td>[r: json.get(wealthHold,"sp")]</td>
-			<td>[r: json.get(wealthHold,"cp")]</td>
-			<td>[r: json.get(wealthHold,"others")]</td>
-          </tr>
-		  <tr>
-            <td><b>Hidden</b></td>
-            <td>[r: json.get(wealthHidden,"gp")]</td>
-			<td>[r: json.get(wealthHidden,"sp")]</td>
-			<td>[r: json.get(wealthHidden,"cp")]</td>
-			<td>[r: json.get(wealthHidden,"others")]</td>			
-          </tr>
-	  </tbody>
-    </table>
+	    <table class="content pure-table pure-table-striped">
+	    <thead>
+        <tr>
+          <th></th>
+          <th>GP</th>
+		  	  <th>SP</th>
+		  	  <th>CP</th>
+		  	  <th>Others</th>
+        </tr>
+	    </thead>
+	    <tbody>
+        <tr>
+          <td><b>Hold</b></td>
+          <td>[r: json.get(wealthHold,"gp")]</td>
+		  	  <td>[r: json.get(wealthHold,"sp")]</td>
+		  	  <td>[r: json.get(wealthHold,"cp")]</td>
+		  	  <td>[r: json.get(wealthHold,"others")]</td>
+        </tr>
+		    <tr>
+          <td><b>Hidden</b></td>
+          <td>[r: json.get(wealthHidden,"gp")]</td>
+		  	  <td>[r: json.get(wealthHidden,"sp")]</td>
+		  	  <td>[r: json.get(wealthHidden,"cp")]</td>
+		  	  <td>[r: json.get(wealthHidden,"others")]</td>			
+         </tr>
+	    </tbody>
+      </table>
+    <h4>Damage Bonus</h4>
+      <table class="content pure-table pure-table-striped">
+      <tbody>
+        <tr>
+          <td>Current</td>
+          <td><span style='color:red'>[r: json.get(propDamageMod, "current")]</span></td>
+          <td>based on STR & SIZ</td>
+        </tr>
+        <tr>
+          <td>Magical Mod.</td>
+          <td><span style='color:blue'>[r: json.get(propDamageMod, "magicMod")]</span></td>
+          <td>[r: json.get(propDamageMod, "magicDesc")]</td>
+        </tr>
+        <tr>
+          <td>Special Mod.</td>
+          <td><span style='color:green'>[r: json.get(propDamageMod, "specialMod")]</span></td>
+          <td>[r: json.get(propDamageMod, "specialDesc")]</td>
+        </tr>
+      <tbody> 
+      </table>      
   </div>
-  <div class="header pure-u-2-24">
+  <div class="header pure-u-1-24">
   </div>
   <div class="header pure-u-14-24">
     <h4>Equipment</h4>
-	[h: equipmentDesc = getProperty("equipmentDesc", tokenId)]
-	[h: holdEquipment = json.get(equipmentDesc,"hold")]
-	[h: hiddenEquipment = json.get(equipmentDesc,"hidden")]
-	<table class="content pure-table pure-table-striped">
-	  <thead>
-	    <tr><th>Hold</th></tr>
-	  </thead>
-	  <tbody>
-	    <tr><td>[r: holdEquipment]</td><tr>
-	  </tbody>
-	  <thead>
-	    <tr><th>Hidden</th></tr>
-	  </thead>
-	  <tbody>
-	    <tr><td>[r: hiddenEquipment]</td><tr>
-	  </tbody>
-	</table>
-  <p class="section">
-    <i>Typical Armor</i> : [r: json.get(propArmorPenalty, "desc")]
-  </p>
+	  [h: equipmentDesc = getProperty("equipmentDesc", tokenId)]
+	  [h: holdEquipment = json.get(equipmentDesc,"hold")]
+	  [h: hiddenEquipment = json.get(equipmentDesc,"hidden")]
+	  <table class="content pure-table pure-table-striped">
+	    <thead>
+	      <tr><th>Hold</th></tr>
+	    </thead>
+	    <tbody>
+	      <tr><td>[r: replace(holdEquipment,"\\\n","<br>")]</td><tr>
+	    </tbody>
+	    <thead>
+	      <tr><th>Hidden</th></tr>
+	    </thead>
+	    <tbody>
+	      <tr><td>[r: replace(hiddenEquipment,"\\\n","<br>")]</td><tr>
+	    </tbody>
+	  </table>
+    <p class="section">
+      <i>Typical Armor</i> : [r: json.get(propArmorPenalty, "desc")]
+    </p>
+  </div>
+  <div class="pure-u-1-24">
   </div>
 </div>
 <div class="container pure-g">
