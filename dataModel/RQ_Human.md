@@ -51,12 +51,12 @@ StrikeRank = {"base":2,"current":2,"bonus":0,"malus":0}
 ```
 DamageMod = {"base":"+0","current":"+0","magicMod":"0","magicDesc":"-","specialMod":"0","specialDesc":"-"}
 ```
-*base* : DMG Mod compute with Base STR & Base SIZ, using a json Array defined on property *damageMod* on token [Lib:RQII](https://github.com/feroulm/rptoolsRQ/blob/master/dataModel/RQ_Lib.md)
-*current* : DMG Mod compute with Current STR & Current SIZ, using a json Array defined on property *damageMod* on token [Lib:RQII](https://github.com/feroulm/rptoolsRQ/blob/master/dataModel/RQ_Lib.md)
-*magicMod* : DMG modifier given by a spell, an artefact, etc.
-*magicDesc* : To be used if we want to describe the magicMod.
-*specialMod* : DMG modifier given by whatever reason.
-*specialDesc* : To be used if we want to describe the specialMod.
+* *base* : DMG Mod compute with Base STR & Base SIZ, using a json Array defined on property *damageMod* on token [Lib:RQII](https://github.com/feroulm/rptoolsRQ/blob/master/dataModel/RQ_Lib.md)
+* *current* : DMG Mod compute with Current STR & Current SIZ, using a json Array defined on property *damageMod* on token [Lib:RQII](https://github.com/feroulm/rptoolsRQ/blob/master/dataModel/RQ_Lib.md)
+* *magicMod* : DMG modifier given by a spell, an artefact, etc.
+* *magicDesc* : To be used if we want to describe the magicMod.
+* *specialMod* : DMG modifier given by whatever reason.
+* *specialDesc* : To be used if we want to describe the specialMod.
 
 - Cf issue #60 for last modification.
 
