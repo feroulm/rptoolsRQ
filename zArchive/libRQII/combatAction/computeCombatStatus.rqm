@@ -1,4 +1,4 @@
-[h: "<!-- Function to recompute and reset all computable combatStatus value -->"]
+[h: "<!-- A PRIORI jamais utilisée .... Function to recompute and reset all computable combatStatus value -->"]
 [h: "<!-- mainly ccCa and weaponCA -->"]
 [h: "<!-- return a newCombatStatus Json Object -->"]
 [h: newCombatStatus = arg(0)]

@@ -1,0 +1,41 @@
+[h: "<!-- Function to reset combatStatus property on the given tokenId -->"]
+[h: "<!-- cLogTokenId is an optionnal param , if not present we keep its original value -->"]
+[h: "<!-- versionTag is not updated by this UDF -->"]
+[h: "<!-- return a newCurrentCombatStatus -->"]
+
+[h: tokenId = arg(0)] 
+[h: currentCombatStatus = arg(1)]
+
+[h: "<!-- If no combatLogToken is given as a param, we keep the current defined combatLogToken -->"]
+[h: currentCLogTokenId = json.get(currentCombatStatus,"cLogTokenId")]
+
+[h: numArgs = argCount()]
+[h, if(numArgs == 3), code:{
+	[h: cLogTokenId = arg(2)]
+  [h, if(cLogTokenId == "") : cLogTokenId = currentCLogTokenId]
+};{
+	[h: cLogTokenId = currentCLogTokenId]
+}]
+
+[h: "<!-- 1st, bind it to new (or current) combatLog token -->"]
+[h: currentCombatStatus = json.set(currentCombatStatus,"cLogTokenId",cLogTokenId)]
+	
+[h: "<!-- then set everything to default / 0 before recomputing some values -->"]
+[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"lostCA",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+[h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
+[h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
+
+[h: "<!-- recompute and reset (1) ccCA, may impact current CA status -->"]
+[h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus,1)] 
+
+[r: currentCombatStatus]

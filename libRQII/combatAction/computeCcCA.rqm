@@ -1,8 +1,16 @@
-[h: "<!-- Function to recompute ccCA -->"]
-[h: "<!-- Called by : updateCcCA@Lib:RQII (combatAction Group) -->"]
+[h: "<!-- Function to recompute ccCA and activeCA -->"]
+[h: "<!-- resetActiveCA can be set to 1 : it is an optionnal param used to reset activeCA value instead of computing its current value during a combat-->"]
 [h: "<!-- return a newCurrentCombatStatus -->"]
 [h: tokenId = arg(0)] 
 [h: currentCombatStatus = arg(1)]
+
+[h: numArgs = argCount()]
+[h, if(numArgs == 3), code:{
+	[h: resetActiveCA = arg(2)]
+  [h, if(resetActiveCA == "") : resetActiveCA = "0"]
+};{
+	[h: resetActiveCA = "0"]
+}]
 
 [h: currActiveCA = json.get(currentCombatStatus,"activeCA")]
 [h: currCcCA = json.get(currentCombatStatus,"ccCA")]
@@ -15,9 +23,15 @@
 [h: newCcCA = baseCA + bonusCA + weaponCA + magicCA]
 [h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",newCcCA)]
 
-[h: "<!-- recompute activeCA, increase or decrease but can't be < 0 -->"]
-[h: newActiveCA = currActiveCA + (newCcCA - currCcCA)]
-[h, if (newActiveCA < 0): newActiveCA = 0]
+[h, if (resetActiveCA == 1), code: {
+  [h: "<!-- reset activeCA to ccCA (for example when called resetCombatStatus UDF) -->"]
+  [h: newActiveCA = newCcCA]
+};{
+  [h: "<!-- recompute activeCA because ccCA has changed during a combat, increase or decrease but can't be < 0 -->"]
+  [h: newActiveCA = currActiveCA + (newCcCA - currCcCA)]
+  [h, if (newActiveCA < 0): newActiveCA = 0]
+}]
+
 [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",newActiveCA)]
 
 [h: "if no more CA - token is out for this MR -->"]

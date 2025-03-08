@@ -4,7 +4,6 @@
 [h: defineFunction("showDelayedAction", "showDelayedAction@Lib:RQII")]
 [h: defineFunction("showReactiveAction", "showReactiveAction@Lib:RQII")]
 [h: defineFunction("computeCcCA", "computeCcCA@Lib:RQII")]
-[h: defineFunction("computeCombatStatus", "computeCombatStatus@Lib:RQII")]
 [h: defineFunction("computeSR", "computeSR@Lib:RQII")]
 [h: defineFunction("getInitiativeTokenOffset","getInitiativeTokenOffset@Lib:RQII")]
 [h: defineFunction("logCombatAction","logCombatAction@Lib:RQII")]
@@ -16,6 +15,7 @@
 [h: defineFunction("addCombatLogEntry","addCombatLogEntry@Lib:RQII")]
 [h: defineFunction("askActionResult","askActionResult@Lib:RQII")]
 [h: defineFunction("getSituationModMalus","getSituationModMalus@Lib:RQII")]
+[h: defineFunction("resetCombatStatus","resetCombatStatus@Lib:RQII")]
 
 
 [h: "<!-- Sheet Management UDFs -->"]

@@ -79,7 +79,7 @@
     }]     
   };
   case "bonusca" : {
-    [h, if (newBonusCA < 0): newBonusCA = 0]
+    
     [h: currentCombatStatus = json.set(currentCombatStatus,"bonusCA",newBonusCA)]
     
     [h: "<!-- recompute ccCA, may impact current CA status -->"]
