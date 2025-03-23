@@ -23,46 +23,9 @@
   [h, if(logSessionNameFilter == "") : logSessionNameFilter = ".*"]
 }]
 
-<div class="pure-g">
-  <div class="header pure-u-1">
-	<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-        <a class="pure-menu-heading" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>[r: getName(tokenId,tokenMap)]</a>
-        <ul class="pure-menu-list">
-			<li class="pure-menu-item">
-			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "main")]
-              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
-	          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
-			</li>
-			<li class="pure-menu-item">
-			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "magic")]
-              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
-	          <a class="pure-menu-link" href="[r: lnkTxt]">Magic</a>
-			</li>
-			<li class="pure-menu-item">
-			  [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "skills")]
-              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
-	          <a class="pure-menu-link" href="[r: lnkTxt]">Skills</a>
-			</li>
-			<li class="pure-menu-item">
-			  [h: macroParam = json.set("{}", "tokenId", tokenId)]
-              [h: lnkTxt = macroLinktext("openAPHP@Lib:RQII", "all",macroParam)]
-	          <a class="pure-menu-link" href="[r: lnkTxt]">Damage / Heal</a>
-			</li>
-			<li class="pure-menu-item">
-		      [h: macroParam = json.set("{}", "tokenId", tokenId)]
-              [h: lnkTxt = macroLinktext("openHumCombatAttr@Lib:RQII", "all",macroParam)]
-	          <a class="pure-menu-link" href="[r: lnkTxt]">Edit Sheet</a>
-			</li>
-      <li class="pure-menu-item pure-menu-selected">
-              [h: macroParam = json.set("{}", "tokenId", tokenId, "tab", "logs","logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter)]
-              [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
-	          <a class="pure-menu-link" href="[r: lnkTxt]">Logs</a>
-			</li>
-			<li class="pure-menu-item"><a class="pure-menu-link" href='https://www.inyanga.me/xwiki/bin/view/[r: getProperty("wiki",tokenId,tokenMap)]'>Wiki</a></li>
-        </ul>
-    </div>
-  </div>     
-</div> 
+[h: macroParam = json.set("{}", "tokenId", tokenId,"tokenMap", tokenMap,"tab","logs")]
+[r, macro("subViewSheetMenu@Lib:RQII"): macroParam]
+
 <div class="container pure-g">
 	<div class="pure-u-md-5-24">
 	<div class="section">

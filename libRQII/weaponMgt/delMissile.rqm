@@ -1,9 +1,6 @@
-<!--
-  Deletes a missile from the Missiles property List.
- 
-  Parameters
-    The missile number
--->
+[h: "<!-- Deletes a missile from the Missiles property List."]
+[h: "  Parameters : The missile number"]
+[h: "-->"]
 
 [h: arguments = macro.args]
 
@@ -24,6 +21,6 @@
 
 [h: setProperty("Missiles",Missiles,tokenId)]
 
-<!-- Refresh edit Window for the new token -->
+[h: "<!-- Refresh edit Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 [r, macro("openSheetMgt@Lib:RQII"): macroParam]

@@ -1,0 +1,11 @@
+[h: "<!-- Function to refresh Combat Sheet Gloal windows if it is open -->"]
+[h: "<!-- To be executed on each player instance in order to check the dialog box on th e player instance, not the mj instance -->"]
+[h: "<!-- return nothing -->"]
+[h: cLogTokenId = arg(0)] 
+
+[h, if(isDialogVisible("Combat Sheet")), code:{
+  [h: "<!-- Refresh Combat Window -->"]
+  [h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
+  [h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
+  [h: execLink(lnkTxt,0,"self")]
+}]

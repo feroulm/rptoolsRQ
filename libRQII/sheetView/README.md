@@ -7,7 +7,6 @@ Logic - Mermaid Diagram
 graph LR
   subgraph Menu
     Z1(openSheet - callback)
-    Z2(openAPHP)
     Z3(openHumCombatAttr)
     Z4@{ shape: braces, label: "Idem pour chaque tab (mais non représenté)" }
   end

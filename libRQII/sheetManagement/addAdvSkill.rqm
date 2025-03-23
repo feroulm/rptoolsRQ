@@ -21,12 +21,12 @@
   	[h: advSkDb = getLibProperty("MagicSkills", "Lib:RQII")]
   };
   default: {
- 	<!-- do nothing -->
+ 	[h: "<!-- do nothing -->"]
  	<br>Unknown skill type !<br>
   }
 ]
 
-<!-- get charc value to compute skill base -->
+[h: "<!-- get charc value to compute skill base -->"]
 [h: STR = getProperty("STR",tokenId)]
 [h: CON = getProperty("CON",tokenId)]
 [h: SIZ = getProperty("SIZ",tokenId)]
@@ -39,16 +39,16 @@
 
 [h, foreach(param,arguments,""),code :{
   [h: skillExist = json.contains(aSkills,param)]
-  <!-- add only new skill -->
+  [h: "<!-- add only new skill -->"]
   [h, if((param != "tokenId")&&(param != "edit_btn")&&(param != "skType")&&(! skillExist)), code :{
-  	<!-- get skill model -->
+  	[h: "<!-- get skill model -->"]
   	[h: skRef = json.get(advSkDb,param)]
   	[h: newSkCode = json.get(skRef,"code")]
   	[h: skSubType = json.get(skRef,"subtype")]
   	[h: skCulture = 0]
   	[h: skProfession = 0]
   	[h: skExperience = 0]
-  	<!-- works because we have properties with the name DEX, INT etc... -->
+  	[h: "<!-- works because we have properties with the name DEX, INT etc... -->"]
   	[h: skBase = eval(newSkCode)]
   	[h: skCurrent = skBase + skCulture + skProfession + skExperience]
   	[h: newAdvSkillValues = json.set("{}","code",newSkCode)]
@@ -78,12 +78,12 @@
       [h: setProperty("magicSkills",aSkills, tokenId)]
     };
     default: {
- 	<!-- do nothing -->
+ 	[h: "<!-- do nothing -->"]
  	  <br>Unknown skill type !<br>
     }
 ]	
 
 
-<!-- Refresh edit Window for the new token -->
+[h: "<!-- Refresh edit Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 [r, macro("openSheetMgt@Lib:RQII"): macroParam]

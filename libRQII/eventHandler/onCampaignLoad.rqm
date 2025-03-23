@@ -16,6 +16,7 @@
 [h: defineFunction("askActionResult","askActionResult@Lib:RQII")]
 [h: defineFunction("getSituationModMalus","getSituationModMalus@Lib:RQII")]
 [h: defineFunction("resetCombatStatus","resetCombatStatus@Lib:RQII")]
+[h: defineFunction("refreshCombatSheets","refreshCombatSheets@Lib:RQII")]
 
 
 [h: "<!-- Sheet Management UDFs -->"]

@@ -13,22 +13,23 @@
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h, if(tokenType != "RQ_Human"): abort(0)]
-[h: frameName = "AddAdvSkill"+tokenId]
 
-[h: link = macroLinkText("openAddAdvSkill@Lib:RQII", "")]
-[frame("Add Adv Skill"): {
-<html>
+[h: dialogName = "AddAdvSkill"+tokenId]
+
+[dialog5(dialogName,"width=888; height=830; temporary=1"): {
+  <html>
     <head>
-	  <link rel="onChangeSelection" type="macro" href="[r:link]">
-      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
       <title>Add [r: skType] Skills - [r: getName(tokenId)]</title>
     </head>
-<body>
-  [r, if(isNPC(tokenId) && !isGM()), code: {
-      Sorry you cannot edit this token.
-    };{
-      [r, macro("editAddAdvSkill@Lib:RQII"): arguments]
-  }]
-</body>
-</html>
+    <body class="body-custom"> 
+      [h: link = macroLinkText("openAddAdvSkill@Lib:RQII", "")]
+      [r, if(isNPC(tokenId) && !isGM()), code: {
+        Sorry you cannot edit this token.
+      };{
+       [r, macro("editAddAdvSkill@Lib:RQII"): arguments]
+      }]
+    </body>
+  </html>
 }]

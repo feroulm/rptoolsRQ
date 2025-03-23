@@ -1,9 +1,6 @@
-<!--
-  Deletes a weapon from the Weapons property List.
- 
-  Parameters
-    The weapon number
--->
+[h: "<!-- Deletes a weapon from the Weapons property List."]
+[h: "  Parameters : The weapon number"]
+[h: "-->"]
 
 [h: arguments = macro.args]
 
@@ -23,6 +20,6 @@
 
 [h: setProperty("Weapons",Weapons,tokenId)]
 
-<!-- Refresh edit Window for the new token -->
+[h: "<!-- Refresh edit Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 [r, macro("openSheetMgt@Lib:RQII"): macroParam]

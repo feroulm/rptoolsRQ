@@ -1,0 +1,12 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+[h: msg = json.get(arguments,"msg")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"tokenMap", tokenMap,"tab","aphp")]
+[r, macro("subViewSheetMenu@Lib:RQII"): macroParam]
+
+[h: param = json.set("{}", "tokenId", tokenId, "srcWindow", srcWindow)]
+[r, macro("editAPHP@Lib:RQII"): param]
+

@@ -8,64 +8,90 @@
 
 [h: meleeWeaponDb = getLibProperty("meleeWeaponDb", "Lib:RQII")]
 
-[h: link = macroLinkText("openAddMeleeWeapon@Lib:RQII", "all")]
-<form action="[r:link]" method="json">
-  <input type="hidden" name="tokenId" value="[r:tokenId]">
-  <table>
-    <tr>
-       <th>Weapon Name</th>
-       <th>Weapon Type</th>
-       <th></th>
-    </tr>
-    <tr>
-      <td><input type="text" name="nameFilter" value="[r: nameFilter]"></td>
-      <td><input type="text" name="typeFilter" value="[r: typeFilter]"></td>
-      <td><input type="submit" name="edit_btn" value="Filter"></td>
-    </tr>
-  </table>
-</form>
-
-[h: linkAddWeapon = macroLinkText("addMeleeWeapon@Lib:RQII", "all")]
-<form action="[r:linkAddWeapon]" method="json">
-<input type="hidden" name="tokenId" value="[r:tokenId]">
-<table id="stats" cellpadding="2" cellspacing="0" border="0">
-  [h: class = "oddRow"]
-  [r, foreach(weapon, meleeWeaponDb, ""), code:{
-	[h: weaponAttr = json.get(meleeWeaponDb,weapon)]
-	[h: weaponType = json.get(weaponAttr,"Type")]
-	[r, if(matches(weapon,nameFilter) && matches(weaponType,typeFilter)), code:{
-	<tr class="[r:class]">
-      <td class="leftBorder">
-        [r: weapon] 
-      </td>
-      <td>
-        <input type="checkbox" name="[r:weapon]"/>
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"Type")]
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"Size")]
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"Reach")]
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"Damage")]
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"ApHp")]
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"Manoeuvre")]
-      </td>
-      <td>
-        [r: json.get(weaponAttr,"Special")]
-      </td>     
-    </tr>
-	[h: class = if(class=="oddRow", "evenRow", "oddRow")] 
-	};{}]
-  }]
-</table>
-<input type="submit" name="edit_btn" value="Add Weapon">
-</form>
+<div class="container pure-g">
+  <div class="pure-u-1">
+    [h: link = macroLinkText("openAddMeleeWeapon@Lib:RQII", "all")]
+    <form class="pure-form" action="[r:link]" method="json">
+      <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <table class="content pure-table pure-table-striped">
+        <thead>
+          <tr>
+             <th>Weapon Name</th>
+             <th>Weapon Type</th>
+             <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" name="nameFilter" value="[r: nameFilter]"></td>
+            <td><input type="text" name="typeFilter" value="[r: typeFilter]"></td>
+            <td><input type="submit" class="pure-button pure-button-primary" name="edit_btn" value="Filter"></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+  <div class="pure-u-1">
+    [h: linkAddWeapon = macroLinkText("addMeleeWeapon@Lib:RQII", "all")]
+    <form class="pure-form" action="[r:linkAddWeapon]" method="json">
+    <input type="hidden" name="tokenId" value="[r:tokenId]">
+    <table id="inner" class="content pure-table pure-table-striped table-striped-custom">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Add</th>
+        <th>Type</th>
+        <th>Size</th>
+        <th>Reach</th>
+        <th>Damage</th>
+    	  <th>AP/HP</th>
+        <th>Manoeuvre</th>
+        <th>Special</th>
+      </tr>
+    </thead>
+    <tbody>
+      [r, foreach(weapon, meleeWeaponDb, ""), code:{
+    	[h: weaponAttr = json.get(meleeWeaponDb,weapon)]
+    	[h: weaponType = json.get(weaponAttr,"Type")]
+    	[r, if(matches(weapon,nameFilter) && matches(weaponType,typeFilter)), code:{
+    	  <tr>
+          <td>
+            [r: weapon] 
+          </td>
+          <td>
+            <input type="checkbox" name="[r:weapon]"/>
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"Type")]
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"Size")]
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"Reach")]
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"Damage")]
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"ApHp")]
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"Manoeuvre")]
+          </td>
+          <td>
+            [r: json.get(weaponAttr,"Special")]
+          </td>     
+        </tr>
+    	};{}]
+      }]
+      <tr>
+        <td colspan="9">
+        <button type="submit" class="pure-button pure-button-primary" name="edit_btn" value="Add Weapon">Add Weapon</button>
+        </td>
+      </tr>
+    </tbody>
+    </table>
+    </form>
+  </div>
+</div>

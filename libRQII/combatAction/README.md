@@ -147,7 +147,7 @@ graph LR
 	B -->B3[/Status buttons/]
 	B3 -->|tokenId,action|C4(updateCombat)
 	B -->B4[/Damage heal button/]
-	B4 -->|tokenId|C3(openAPHP)
+	B4 -->|tokenId|C3(openSheet - tab APHP)
 	B -->B5[/Change carac button/]
 	B5 -->|tokenId|C5(openHumCombatAttr)
 	B -->B6[/Edit combat status/]

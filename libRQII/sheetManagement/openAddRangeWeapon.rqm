@@ -3,19 +3,22 @@
 [h, if(json.isEmpty(arguments)): tokenId = getSelected(); tokenId = json.get(arguments,"tokenId")]
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
-[frame("Add Range Weapon"): {
-<html>
+
+[h: dialogName = "Add Range Weapon"]
+
+[dialog5(dialogName,"width=888; height=830; temporary=1"): {
+  <html>
     <head>
-      <link rel="onChangeSelection" type="macro" href="[r:link]">
-      <link rel="stylesheet" type="text/css" href="sheetCss@Lib:RQII">
-      <title>Add Range Weapon(s)</title>
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>Add Range Weapon(s) for [r: getName(tokenId)]</title>
     </head>
-<body>
-  [r, if(isNPC(tokenId) && !isGM()), code: {
-      Sorry you cannot edit this token.
-    };{
-      [r, macro("editAddRangeWeapon@Lib:RQII"): arguments]
-  }]
-</body>
-</html>
+    <body class="body-custom"> 
+      [r, if(isNPC(tokenId) && !isGM()), code: {
+        Sorry you cannot edit this token.
+      };{
+        [r, macro("editAddRangeWeapon@Lib:RQII"): arguments]
+      }]
+    </body>
+  </html>
 }]

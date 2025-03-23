@@ -39,7 +39,7 @@
 
 [h: dialogName = "Combat Sheet"]
 
-[dialog5(dialogName,"width=1550; height=900; temporary=0"): {
+[dialog5(dialogName,"width=990; height=900; temporary=0"): {
   <html>
     <head>
       <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
@@ -48,8 +48,7 @@
       <title>Combat Sheets</title>
     </head>
     <body class="body-custom">
-	  [h: macroParam = json.set("{}", "cLogTokenId", cLogTokenId)]
-	  [h: macroParam = json.merge(macroParam,getInitiativeList())]
+	  [h: macroParam = json.merge("{}",getInitiativeList())]
 	  [r, switch(tab), code:
         case "main" :{
   	      [r, macro("viewCombatSheets@Lib:RQII"): macroParam]

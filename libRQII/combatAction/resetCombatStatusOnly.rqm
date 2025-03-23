@@ -24,20 +24,8 @@
 [h: currentCombatStatus = json.set(currentCombatStatus,"chargeStatus","none")]
 [h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
 [h: currentCombatStatus = json.set(currentCombatStatus,"spellReady",0)]
-
-[h: "<!-- reset weapon CA-->"]
-[h: defWeaponNb = json.get(currentCombatStatus,"defWeaponNb")]
-[h: currentCombatStatus = json.set(currentCombatStatus,"currWeaponNb",defWeaponNb)]
-[h: newWeaponCA = defWeaponNb - 1]
-[h: currentCombatStatus = json.set(currentCombatStatus,"weaponCA",newWeaponCA)]
-
-[h: "<!-- recompute ccA -->"]
-[h: baseCA = json.get(currentCombatStatus,"baseCA")]
-[h: bonusCA = json.get(currentCombatStatus,"bonusCA")]
-[h: magicCA = json.get(currentCombatStatus,"magicCA")]
 	
-[h: ccCA = baseCA + bonusCA + newWeaponCA + magicCA]
-[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
-[h: currentCombatStatus = json.set(currentCombatStatus,"ccCA",ccCA)]
+[h: "<!-- recompute and reset (1) ccCA, may impact current CA status -->"]
+[h: currentCombatStatus = computeCcCA(tokenId,currentCombatStatus,1)]
 
 [h: setProperty("combatStatus",currentCombatStatus,tokenId)]

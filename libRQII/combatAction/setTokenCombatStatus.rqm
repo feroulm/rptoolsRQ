@@ -1,6 +1,8 @@
 [h: tokenId = json.get(macro.args, "tokenId")]
 [h: srcWindow = json.get(macro.args, "srcWindow")]
 [h, if(json.isEmpty(srcWindow)): srcWindow = "none"]
+[h: msg = json.get(macro.args, "msg")]
+[h, if(json.isEmpty(msg)): msg = ""]
 
 [h: combatStatus = getProperty("combatStatus",tokenId)]
 [h: propList = ""]
@@ -32,14 +34,10 @@
 [h: logMsg = strformat("CombatStatus property object has been updated directly.")]
 [h: addCombatLogEntry(tokenId,"globalEvent",logMsg,"")]
  
-[h: macroParam = json.set("{}", "tokenId", tokenId,"msg",logMsg)]
+[h: execFunction("refreshCombatSheets", json.append("[]",cLogTokenId), 0, "all")]
 
-[h, switch(srcWindow), code:
-   case "openCombatAction" : {
-    [h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
+[h, if(srcWindow == "openSheet"), code:{    
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",msg,"tab","combat")]
+    [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
     [h: execLink(lnkTxt,0,"all")]
-   };
-   default:{
-    [h: "<!-- Do nothing -->"]
-   }
-]
+}]

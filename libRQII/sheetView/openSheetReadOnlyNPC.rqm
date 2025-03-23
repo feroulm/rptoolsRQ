@@ -1,6 +1,6 @@
 [h: arguments = macro.args]
 [r, if(json.isEmpty(arguments)), code: {
-  [assert(0,"<i>sheetView::openSheet</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+  [assert(0,"<i>sheetView::openSheetReadOnlyNPC</i> : no arguments, this macro can't be called without mandatory parameters",0)]
  };{
   [h: tokenId = json.get(arguments,"tokenId")]
   [h: tab = json.get(arguments,"tab")]
@@ -11,7 +11,6 @@
 [h, if(listCount(tokenId) != 1): abort(0)]
 [h: tokenType = getPropertyType(tokenId)]
 [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")): abort(0)]
-[h, if(isNPC(tokenId)&&!isGM()): abort(0)]
 
 [h: logTypeFilter = json.get(arguments, "logTypeFilter")]
 [h, if(json.isEmpty(logTypeFilter)), code:{
@@ -27,7 +26,7 @@
   [h, if(logSessionNameFilter == "") : logSessionNameFilter = ".*"]
 }]
 
-[h: dialogName = "Sheet"+tokenId]
+[h: dialogName = "SheetNPC"+tokenId]
 
 [dialog5(dialogName,"width=888; height=830; temporary=1"): {
   <html>
@@ -38,30 +37,7 @@
     </head>
     <body class="body-custom">   
 	  [h: macroParam = json.set("{}", "tokenId", tokenId, "msg", msg, "srcWindow", "openSheet")]
-	  [r, switch(tab), code:
-        case "main" :{
-  	      [r, macro("viewSheet@Lib:RQII"): macroParam]
-        };
-	    case "magic" :{
-  	      [r, macro("viewSheetMagic@Lib:RQII"): macroParam]
-        };
-      case "skills" :{
-  	      [r, macro("viewSheetSkills@Lib:RQII"): macroParam]
-        };
-      case "aphp" :{
-  	      [r, macro("viewSheetApHp@Lib:RQII"): macroParam]
-      };
-      case "combat" :{
-  	      [r, macro("viewSheetCombat@Lib:RQII"): macroParam]
-      };
-      case "logs" :{
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"logTypeFilter",logTypeFilter,"logSessionNameFilter",logSessionNameFilter)]
-  	      [r, macro("viewSheetLogs@Lib:RQII"): macroParam]
-        };
-        default: {
-          [r, macro("viewSheet@Lib:RQII"): macroParam]
-        }
-      ] 
+    [r, macro("editCombatActionReadOnly@Lib:RQII"): macroParam]
     </body>
 </html>
 }]

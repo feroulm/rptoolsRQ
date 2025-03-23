@@ -5,6 +5,8 @@
 [h: arguments = macro.args] 
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: tokenMap = json.get(arguments, "tokenMap")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
+[h, if(json.isEmpty(srcWindow)): srcWindow = "none"]
 
 [h, if(tokenMap == "") : tokenMap = getCurrentMapName()]
 
@@ -23,6 +25,7 @@
     };{
       <form class="pure-form" action="[r:link]" method="json">
       <input type="hidden" name="tokenId" value="[r:tokenId]">
+      <input type="hidden" name="srcWindow" value="[r:srcWindow]">
       <table width="*" class="content">
       <tr>
         <td>Damage :</td>

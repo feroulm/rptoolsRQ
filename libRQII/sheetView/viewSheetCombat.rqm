@@ -1,0 +1,15 @@
+[h: arguments = macro.args] 
+[h: tokenId = json.get(arguments, "tokenId")]
+[h: tokenMap = json.get(arguments, "tokenMap")]
+[h: msg = json.get(arguments,"msg")]
+[h: srcWindow = json.get(arguments, "srcWindow")]
+
+[h: macroParam = json.set("{}", "tokenId", tokenId,"tokenMap", tokenMap,"tab","combat")]
+[r, macro("subViewSheetMenu@Lib:RQII"): macroParam]
+
+[h: param = json.set("{}", "tokenId", tokenId, "msg", msg, "srcWindow", srcWindow)]
+[r, if(isNPC(tokenId) && !isGM()), code: {
+  [r, macro("editCombatActionReadOnly@Lib:RQII"): param]
+};{
+  [r, macro("editCombatAction@Lib:RQII"): param]
+}]

@@ -3,13 +3,13 @@
 [h: tokenId = json.get(arguments, "tokenId")]
 [h: weaponDb = getLibProperty("rangeWeaponDb", "Lib:RQII")]
 
-[r, foreach(param,arguments,""),code :{
-  <!-- add only new skill -->
-  [r, if((param != "tokenId")&&(param != "edit_btn")), code :{
-  	<!-- get skill model -->
+[h, foreach(param,arguments,""),code :{
+  [h: "<!-- add only new skill -->"]
+  [h, if((param != "tokenId")&&(param != "edit_btn")), code :{
+  	[h: "<!-- get skill model -->"]
   	[h: weaponRef = json.get(weaponDb,param)]
-  	<!-- Increment Weapon Number -->
-    [r, macro("nextMissileNb@this"): tokenId]
+  	[h: "<!-- Increment Weapon Number -->"]
+    [h, macro("nextMissileNb@this"): tokenId]
     [h: num = macro.return]
 
     [h: Missiles = getProperty("Missiles",tokenId)]
@@ -40,6 +40,6 @@
 
 }]
 
-<!-- Refresh edit Window for the new token -->
+[h: "<!-- Refresh edit Window for the new token -->"]
 [h: macroParam = json.set("{}", "tokenId", tokenId)]
 [r, macro("openSheetMgt@Lib:RQII"): macroParam]

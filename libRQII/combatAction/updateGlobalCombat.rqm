@@ -4,6 +4,9 @@
 [h: tokenIdCaller = json.get(arguments, "tokenId")]
 [h, if(json.isEmpty(tokenIdCaller)) : tokenIdCaller = "none"]
 
+[h: srcWindow = json.get(arguments, "srcWindow")]
+[h, if(json.isEmpty(srcWindow)): srcWindow = "none"]
+
 [h: logMsg = ""]
 [h: logComment = ""]
 
@@ -176,12 +179,18 @@
 [h: setState("CurrentTurn", 1, firstToken)]
 [h: setCurrentInitiative(0)]
   
-[h: "<!-- Refresh Combat Action & Combat Window -->"]
+[h: "<!-- Refresh Sheets Combat Tab & Global Combat Window -->"]
 
-[h: macroParam = json.set("{}", "tokenId", firstToken,"msg",msg)]
-[h: lnkTxt = macroLinktext("openCombatAction@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")]
-
-[h: macroParam = json.set("{}", "tab", "main","cLogTokenId", cLogTokenId)]
-[h: lnkTxt = macroLinktext("openCombatSheets@Lib:RQII", "all",macroParam)]
-[h: execLink(lnkTxt,0,"all")]
+[h: execFunction("refreshCombatSheets", json.append("[]",cLogTokenId), 0, "all")]
+ 
+[h, if(srcWindow == "openSheet"), code:{    
+    [h: macroParam = json.set("{}", "tokenId", firstToken,"msg",logMsg,"tab","combat")]
+    [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
+}]
+ 
+[h, if(srcWindow == "openSheet" && tokenIdCaller != "none"), code:{    
+    [h: macroParam = json.set("{}", "tokenId", tokenIdCaller,"msg",logMsg,"tab","combat")]
+    [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
+}]
