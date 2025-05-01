@@ -1,0 +1,42 @@
+[h: "<!-- addTokenToPursuit - Function that add token(s) to a pursuit -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   newTokenLst : a list of tokenID to be added  -->"]
+[h: "<!--   currTokens : a pursuit jsonStructure to be updated with new tokens  -->"]
+[h: "<!-- return a tokens jsonStructure to be updated in a pursuitToken's pursuit property -->"]
+
+[h: newTokenLst = arg(0)]
+[h: tokens = arg(1)]
+[h, if(json.isEmpty(tokens)) : tokens = '[]']
+
+[h: fctResult = json.set("{}", "tokens", tokens, "logMsg", "")]
+[h: logMsg = ""]
+
+[h, foreach(tokenId, newTokenLst, ""), code: {
+  [h: tokenName = getName(tokenId)] 
+  [h: tokenType = getPropertyType(tokenId)]
+  [h: tokenExist = '[]']
+  [h: existCond = true]
+  [h: tokenExist = json.path.read(tokens, "[?(@.tokenId == '"+tokenId+"')]")]
+  [h, if(json.isEmpty(tokenExist)) : existCond = false]
+
+  [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")||(existCond == true)), code: {  
+        [h: "<!-- Wrong token type or exist already in the pursuit : do not add -->"]
+  };{
+
+    [h: inputStr = strformat("tip|Select %{tokenName} position in the pursuit||LABEL|SPAN=TRUE")]
+    [h: inputStr = json.append(inputStr, strformat("startX|0|Starting position in meter (startX)|Text"))]
+    [h: abort(input(json.toList(inputStr,"##")))]
+    
+    [h: newToken = json.set("{}", "tokenId", tokenId, "startX", startX, "currX", "","prevX", startX,"prevXlogId", "none","currXlogId", "none")]
+    [h: tokens = json.append(tokens, newToken)]
+    
+    [h: logMsg = logMsg+tokenName+" "]
+  }]
+
+}]
+
+[h, if( logMsg == "") : logMsg = " No tokens "]
+[h: fctResult = json.set(fctResult,"tokens",tokens)]
+[h: logMsg = logMsg+"added to the pursuit"]
+[h: fctResult = json.set(fctResult,"logMsg",logMsg)]
+[r: fctResult]

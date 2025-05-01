@@ -1,0 +1,65 @@
+[h: arguments = macro.args]
+[h: currPursuitTokenId = json.get(arguments, "pursuitTokenId")]
+
+[h: cond = json.set("{}","propertyType" ,"RQ_Pursuit")]
+[h: pursuitTokenActiveOnly = ""]
+[h: pursuitTokens = getTokens("json", cond)]
+[h, foreach(pursuitTokenId, pursuitTokens, ""), code:{
+  [h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+	[h: status = json.get(pursuitProp,"status")]
+	[h, if(status == "active"), code:{
+	  [h: pursuitTokenActiveOnly = json.append(pursuitTokenActiveOnly,pursuitTokenId)]
+	}]
+}]
+
+<div class="container pure-g">
+  <div class="pure-u-md-12-24">
+  <br>
+    [r, if(pursuitTokenActiveOnly != ""), code:{
+      [h: linkFrm = macroLinkText("openPursuit@Lib:RQII", "all")]
+      <form class="pure-form" action="[r:linkFrm]" method="json">
+      <input type="hidden" name="tab" value="main">
+      <table class="content pure-table pure-table-striped">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Pursuit Name</th>
+          </tr>
+        </thead>
+        <tbody>
+        [r, foreach(pursuitTokenId, pursuitTokenActiveOnly, ""), code:{
+        	[h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+          
+        	<tr>
+        		<td>
+        			[h: isSelected = ""]
+        			[h, if(currPursuitTokenId == pursuitTokenId): isSelected = "checked"]
+        			<input type="radio" name="pursuitTokenId" value="[r:pursuitTokenId]" [r:isSelected]/>
+        		</td>
+        		<td>
+        			[r: json.get(pursuitProp,"desc")]
+        		</td>
+        	</tr>
+        }]
+        	<tr>
+        		<td colspan="2">
+        			<button type="submit" class="pure-button pure-button-primary">Select a pursuit</button>
+        		</td>
+        	</tr>
+        </tbody>
+        </table>
+      </form>
+
+      [h: macroParam = json.set("{}", "action", "create")]
+      [h: link = macroLinkText("updatePursuit@Lib:RQII", "all",macroParam)]
+      <a class="button-warning pure-button" href="[r: link]">Create new pursuit</a>     
+    };{
+       No current Pursuit on this map - Create a pursuit first.<br>
+      [r, if(isGM()), code:{
+          [h: macroParam = json.set("{}", "action", "create")]
+          [h: link = macroLinkText("updatePursuit@Lib:RQII", "all",macroParam)]
+          <a class="button-warning pure-button" href="[r: link]">Create new pursuit</a>
+       };{}]
+    }]
+  </div>
+</div>

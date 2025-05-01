@@ -1,0 +1,35 @@
+[h: arguments = macro.args]
+[h: logEntry = json.get(macro.args, "logEntry")]
+[h: logEntryKey = json.get(macro.args, "logEntryKey")]
+[h: logTypeFilter = json.get(macro.args, "logTypeFilter")]
+[h: logMrFilter = json.get(macro.args, "logMrFilter")]
+[h: tokenNameFilter = json.get(macro.args, "tokenNameFilter")]
+[h: pursuitTokenId = json.get(macro.args, "pursuitTokenId")]
+
+
+[h: tokenId = json.get(logEntry,"tokenId")]
+[h: tokenName = getName(tokenId)]
+
+[h: logType = json.get(logEntry,"logType")]
+[h: logCurrMr = json.get(logEntry,"currMr")]
+
+[h, if(tokenId == pursuitTokenId) : tokenName = "All")]
+
+[r, if(matches(logType,logTypeFilter) && matches(logCurrMr,logMrFilter) && matches(tokenName,tokenNameFilter)), code:{
+	<tr>
+		<td>[r: logEntryKey]</td>
+		<td>MR [r: json.get(logEntry,"currMr")]</td>
+		<td>[r: tokenName]</td>
+		<td>[r: json.get(logEntry,"logType")]</td>
+		<td>[r: json.get(logEntry,"logMsg")]</td>
+		<td>[r: json.get(logEntry,"logComment")]</td>
+		<td>[r: json.get(logEntry,"serverTime")]</td>
+    <td>
+      [h: macroParam = json.set("{}", "logId", logEntryKey,"pursuitTokenId",pursuitTokenId)]
+      [h: link = macroLinkText("editPursuitLogEntry@Lib:RQII", "all",macroParam)]
+      [r, if(isGM()), code:{
+        <a class="button-warning pure-button" href="[r: link]">edit</a>
+      };{}]
+    </td>
+	</tr>
+}]

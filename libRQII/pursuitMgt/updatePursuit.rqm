@@ -1,0 +1,140 @@
+[h: arguments = macro.args]
+
+[h: action = json.get(arguments, "action")]
+[h: pursuitTokenId = json.get(arguments, "pursuitTokenId")]
+[h, if(json.isEmpty(pursuitTokenId)) : pursuitTokenId = "none"]
+[h: tokenId = json.get(arguments, "tokenId")]
+[h, if(json.isEmpty(tokenId)) : tokenId = "none"]
+[h: runRollBonus = json.get(arguments, "runRollBonus")]
+[h, if(json.isEmpty(runRollBonus)) : runRollBonus = 0]
+[h: runRollMalus = json.get(arguments, "runRollMalus")]
+[h, if(json.isEmpty(runRollMalus)) : runRollMalus = 0]
+
+[h: dialogName = "Pursuit Mgr"+pursuitTokenId]
+[h: logMsg = ""]
+[h: logComment = ""]
+
+
+[r, switch(action), code:
+  case "create" : {
+    [h: res = input("junk|This will create a new the pursuit. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true",
+		"pursuitDesc|new pursuit|Pursuit short desc / nickname :")]
+  	[h: abort(res)]
+    [h: pursuitTokenId = createNewPursuitToken(pursuitDesc)]
+    
+
+    [h: macroParam = json.set("{}", "tab", "main","pursuitTokenId", pursuitTokenId)]
+    [h: lnkTxt = macroLinktext("openPursuit@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"self")]
+  };
+  case "nxtmr" : {	
+		[h: pursuitProp = getProperty("pursuit",pursuitTokenId)] 
+    [h: tokens = json.get(pursuitProp, "tokens")]
+    
+    [h, foreach(item, tokens, ""), code: {
+      [h: tokenId = json.get(item, "tokenId")]
+      [h: currX = json.get(item, "currX")]
+      [h: prevX = json.get(item, "prevX")]
+      [h: currXlogId = json.get(item, "currXlogId")]
+      
+      [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].prevX",currX)]
+      [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].prevXlogId",currXlogId)]
+      [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].currX","")]
+      [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].currXlogId","none")]
+      		
+    }]
+	  
+    [h: tokens = json.sort(tokens, "d", "prevX")]
+    
+    [h: pursuitProp = json.set(pursuitProp,"tokens",tokens)]
+		[h: mrNb = json.get(pursuitProp, "mr") + 1]
+		[h: pursuitProp = json.set(pursuitProp,"mr",mrNb)]
+		[h: setProperty("pursuit",pursuitProp,pursuitTokenId)]	
+	
+		[h: logMsg = strformat("New MR %{mrNb} is starting")]
+    [h: addLogResult = addPursuitLogEntry(pursuitTokenId,pursuitTokenId,"globalEvent",logMsg,"")]
+    
+  };
+  case "removetoken" :{
+    [h: msgWrongTokenId = strformat("Token id is none")]
+    [h: assert((tokenId != "none"),msgWrongTokenId,0)]
+    [h: pursuitProp = getProperty("pursuit",pursuitTokenId)] 
+    [h: tokens = json.get(pursuitProp, "tokens")]
+    
+    [h: tokens = json.path.delete(tokens, "[?(@.tokenId == '"+tokenId+"')]")]
+    
+    [h: tokens = json.sort(tokens, "d", "prevX")]
+    
+    [h: pursuitProp = json.set(pursuitProp,"tokens",tokens)]
+		[h: setProperty("pursuit",pursuitProp,pursuitTokenId)]
+    [h: logMsg = getName(tokenId)+" has been removed from the pursuit"]    
+    [h: addLogResult = addPursuitLogEntry(pursuitTokenId,tokenId,"globalEvent",logMsg,"")]
+  };
+  case "addtokens" :{
+    [h: tokenLst = getSelected()]
+    [h: msgNoTokenId = strformat("No token selected")]
+    [h: assert((tokenLst != ""),msgNoTokenId,0)]
+    [h: pursuitProp = getProperty("pursuit",pursuitTokenId)] 
+    [h: tokens = json.get(pursuitProp, "tokens")]
+    
+    [h: addedTokens = addTokenToPursuit(tokenLst,tokens)]
+    [h: tokens = json.get(addedTokens,"tokens")]
+    [h: logMsg = json.get(addedTokens,"logMsg")]
+    
+    [h: tokens = json.sort(tokens, "d", "prevX")]
+    
+    [h: pursuitProp = json.set(pursuitProp,"tokens",tokens)]
+    [h: setProperty("pursuit",pursuitProp,pursuitTokenId)]
+
+    [h: addLogResult = addPursuitLogEntry(pursuitTokenId,pursuitTokenId,"globalEvent",logMsg,"")]       
+  };
+   case "run" :{
+    [h: msgWrongTokenId = strformat("Token id is none")]
+    [h: assert((tokenId != "none"),msgWrongTokenId,0)]
+    [h: pursuitProp = getProperty("pursuit",pursuitTokenId)] 
+    [h: tokens = json.get(pursuitProp, "tokens")]
+    [h: mrNb = json.get(pursuitProp, "mr")]
+    [h: tokenName = getName(tokenId)] 
+    
+    [h: currSkill = getProperty("commonSkills",tokenId)]
+    [h: skAthletics = json.path.read(currSkill,"Athletics.current")]
+    
+    [h: skAthleticsRoll = roll(1,100)]
+    [h: prevX = json.get(json.path.read(tokens, "[?(@.tokenId == '"+tokenId+"')].prevX"),0)]
+    [h: inputStr = strformat("tip|%{tokenName} is running , choose whether it is a Jog or a Sprint :)||LABEL|SPAN=TRUE")]
+    [h: inputStr = json.append(inputStr, strformat("runType|jog,sprint|Run type|RADIO|ORIENT=H SELECT=1 VALUE=STRING"))]
+    [h: inputStr = json.append(inputStr, strformat("tip|Roll under Athletics skill %{skAthletics} (roll auto : %{skAthleticsRoll})||LABEL|SPAN=TRUE"))]
+    [h: inputStr = json.append(inputStr, strformat("skAthleticsRoll|%{skAthleticsRoll}|Athletics roll result|Text"))]
+    [h: inputStr = json.append(inputStr, strformat("runRollBonus|%{runRollBonus}|Athletics roll bonus|Text"))]
+    [h: inputStr = json.append(inputStr, strformat("runRollMalus|%{runRollMalus}|Athletics roll malus ( ! do not add fatigue malus)|Text"))]
+    [h: abort(input(json.toList(inputStr,"##")))]
+    
+    [h: runResult = computeRunDistance(tokenId,prevX,skAthleticsRoll,runType,runRollBonus,runRollMalus)]
+    [h: currX = json.get(runResult,"currX")]
+    [h: logMsg = json.get(runResult,"logMsg")]
+    [h: logDebugMsg = json.get(runResult,"logDebugMsg")]   
+    [h: addLogResult = addPursuitLogEntry(pursuitTokenId,tokenId,"globalEvent",logMsg,"")]
+    [h: currXlogId = json.get(addLogResult,"logId")] 
+    
+    [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].currX",currX)]
+    [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].currXlogId",currXlogId)]
+
+    [h: pursuitProp = json.set(pursuitProp,"tokens",tokens)]
+		[h: setProperty("pursuit",pursuitProp,pursuitTokenId)]
+    
+    [h: addPursuitLogEntry(pursuitTokenId,tokenId,"debugEvent",logDebugMsg,"")]
+  };
+  case "reset" : {
+  	[h: res = input("junk|This will reset the pursuit, using startX values for each token in the pursuit. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true",
+		"combatDesc|new combat|Combat short desc / nickname :")]
+  	[h: abort(res)]
+		
+  };
+  default: {
+ 	<br><b>[r: action]</b> is not implemented in <i>updatePursuit</i> !<br>
+  }
+]
+
+[h: "<!-- Refresh pursuit -->"]
+[h: execFunction("refreshPursuit", json.append("[]",pursuitTokenId,dialogName,"main"), 0, "all")]
+

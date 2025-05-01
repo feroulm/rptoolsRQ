@@ -1,0 +1,22 @@
+[h: "<!-- updatePursuitLogEntry -->"]
+[h: arguments = macro.args]
+
+[r, if(json.isEmpty(arguments)), code: {
+  [assert(0,"<i>combat::updatePursuitLogEntry</i> : no arguments, this macro can't be called without mandatory parameters",0)]
+ };{
+  [h: logIdx = json.get(arguments, "logIdx")]
+  [h: pursuitTokenId = json.get(arguments, "pursuitTokenId")]
+}]
+
+[h: logs = getProperty("pursuitLog", pursuitTokenId)]
+[h: logNewEntry = json.get(logs,logIdx)]
+[h: logNewEntry = json.set(logNewEntry,"currMr",json.get(arguments, "currMr"))]
+[h: logNewEntry = json.set(logNewEntry,"logMsg",json.get(arguments, "logMsg"))]
+[h: logNewEntry = json.set(logNewEntry,"logComment",json.get(arguments, "logComment"))]
+
+[h: logs = json.set(logs,logIdx,logNewEntry)]
+[h: setProperty("pursuitLog",logs,pursuitTokenId)]	
+
+[h: "<!-- Refresh pursuit -->"]
+[h: dialogName = "Pursuit Mgr"+pursuitTokenId]
+[h: execFunction("refreshPursuit", json.append("[]",pursuitTokenId,dialogName,"log"), 0, "all")]

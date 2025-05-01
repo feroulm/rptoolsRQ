@@ -1,0 +1,143 @@
+[h: arguments = macro.args]
+
+[h: pursuitTokenId = json.get(arguments, "pursuitTokenId")]
+[h: tokenMap = getCurrentMapName()]
+
+[h: tokenNameFilter = json.get(arguments, "tokenNameFilter")]
+[h, if(json.isEmpty(tokenNameFilter)), code:{
+	[h: tokenNameFilter = ".*"]
+};{
+  [h, if(tokenNameFilter == "") : tokenNameFilter = ".*"]
+}]
+
+[h: logTypeFilter = json.get(arguments, "logTypeFilter")]
+[h, if(json.isEmpty(logTypeFilter)), code:{
+	[h: logTypeFilter = ".*"]
+};{
+  [h, if(logTypeFilter == "") : logTypeFilter = ".*"]
+}]
+
+[h: logMrFilter = json.get(arguments, "logMrFilter")]
+[h, if(json.isEmpty(logMrFilter)), code:{
+	[h: logMrFilter = ".*"]
+};{
+  [h, if(logMrFilter == "") : logMrFilter = ".*"]
+}]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+	  <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item pure-menu-selected">
+          [h: macroParam = json.set("{}", "tab", "main","pursuitTokenId",pursuitTokenId)]
+          [h: lnkTxt = macroLinktext("openPursuit@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}", "tab","log","pursuitTokenId",pursuitTokenId)]
+          [h: lnkTxt = macroLinktext("openPursuit@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Pursuit Log</a>
+         </li>
+       </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+	<div class="pure-u-md-5-24">
+	  <div class="section">
+		  [h: linkOpenPursuit = macroLinkText("openPursuit@Lib:RQII", "all")]
+		  <form class="pure-form pure-form-stacked" action="[r:linkOpenPursuit]" method="json">
+		  	<input type="hidden" name="tab" value="log">
+		  	<input type="hidden" name="pursuitTokenId" value="[r: pursuitTokenId]">
+		  	<fieldset>
+          <legend>Select filter</legend>
+          <div class="pure-g">
+              <div class="pure-u-1 pure-u-md-2-4">
+                  <label for="tokenNameFilter">Token Name</label>
+                  <input type="text" id="tokenNameFilter" name="tokenNameFilter" value="[r:tokenNameFilter]" class="pure-u-24-24" />
+              </div>
+              <div class="pure-u-1 pure-u-md-1-4">
+                  <label for="logTypeFilter">log Type</label>
+                  <input type="text" id="logTypeFilter" name="logTypeFilter" value="[r:logTypeFilter]" class="pure-u-16-24" />
+              </div>
+		  				<div class="pure-u-1 pure-u-md-1-4">
+                  <label for="logMrFilter">MR</label>
+                  <input type="text" id="logMrFilter" name="logMrFilter" value="[r:logMrFilter]" class="pure-u-8-24" />
+              </div>
+          </div>
+          <button type="submit" class="pure-button pure-button-primary">Filter</button>
+        </fieldset>
+		  </form>
+		</div>
+  </div>
+	<div class="pure-u-md-5-24"> 
+    <div class="section">
+    [r, if(pursuitTokenId != "none"), code:{
+      [h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+      [h: tokens = json.get(pursuitProp,"tokens")]
+      
+      [h: linkAddLog = macroLinkText("addPursuitLogManualEntry@Lib:RQII", "all")]
+		  <form class="pure-form pure-form-stacked" action="[r:linkAddLog]" method="json">
+        <input type="hidden" name="pursuitTokenId" value="[r: pursuitTokenId]">
+        <input type="hidden" name="srcWindow" value="openPursuit">
+		  	<fieldset>
+          <legend>Add a global log line</legend>
+
+                [h: "<!-- return a select list with all the token in the pursuit list -->"]
+                [h: "<!-- the select name / variable is given as a param -->"]
+                [h: selectName = "tokenId"] 
+                <select name="[r:selectName]" size="" class="pure-u-24-24">
+                	<option value="[r: pursuitTokenId]" selected="selected">All ([r: pursuitTokenId])</option>
+                [r, foreach(item, tokens, ""), code: {
+                  [h: tokenId = json.get(item, "tokenId")]
+                  <option value="[r: tokenId]">[r: getName(tokenId)]</option> 
+                }]
+                </select>
+
+                  <label for="logMsg">log Message</label>
+                  <input type="text" id="logMsg" name="logMsg" class="pure-u-24-24" />
+
+                  <label for="logMsg">log Comment</label>
+                  <input type="text" id="logComment" name="logComment" class="pure-u-24-24" />
+          <button type="submit" class="pure-button pure-button-primary">Add log</button>
+      </fieldset>
+		</form>
+    }]
+	  </div>
+	</div>
+  <div class="pure-u-md-5-24">
+  </div>
+</div>
+<div class="container pure-g">
+  <div class="pure-u-1">
+		<table class="content pure-table pure-table-striped">
+		<thead>
+			<tr>
+			<th>logId</th>
+			<th>MR</th>
+			<th>Token</th>
+			<th>log Type</th>
+			<th>Event(s)</th>
+			<th>Comment</th>
+			<th>Server Time</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		[r, if(pursuitTokenId != "none"), code:{
+			[h: logs = getProperty("pursuitLog", pursuitTokenId)]
+			[h: logs = json.sort(logs,"d","logId")]
+			[r, foreach(logEntry, logs, ""), code: {
+				[h: logEntryKey = json.get(logEntry,"logId")]
+				[h: macroParam = json.set("{}", "logEntry", logEntry,"logEntryKey",logEntryKey,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter,"pursuitTokenId",pursuitTokenId)]
+				[r, macro("viewSubFilteredPursuitLogEntry@Lib:RQII"): macroParam]
+			}]
+		};{
+			<tr>
+				<td colspan="7">! No combatLog found</td>
+			</tr>
+		}]
+		</tbody>
+		</table>
+		</div>
+</div>

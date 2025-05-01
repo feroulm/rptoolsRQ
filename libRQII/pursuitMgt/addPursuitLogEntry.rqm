@@ -1,0 +1,49 @@
+[h: "<!-- addPursuitLogEntry - Function to add a log entry to the pursuitLog token given in parameter on current map -->"]
+[h: "<!-- Called by several combatAction/update* method  -->"]
+[h: "<!-- if no combatLogToken is found, we try to log on the tokenLog which is on map _Main_AE (if the token is a pc) otherwise we log to the chat window, otherwise return nothing -->"]
+
+[h: pursuitTokenId = arg(0)]
+[h, if(pursuitTokenId == ""): pursuitTokenId = "none"]
+[h: tokenId = arg(1)]
+[h: logType = arg(2)]
+[h: logMsg = arg(3)]
+[h: logComment = arg(4)]
+
+[h: numArgs = argCount()]
+[h, if(numArgs == 6), code:{
+	[h: logToToken = arg(5)]
+};{
+	[h: logToToken = "0"]
+}]
+
+[h: fctResult = json.set("{}", "logId", "none", "consoleLogMsg", "", "consolelogDebugMsg", "")]
+[h: timestamp = json.get(getInfo("server"),"timeDate")]
+
+[h, if(pursuitTokenId == "none"), code :{
+  [h:"<!-- non pursuitToken is given, log to the console -->"]
+  [h: consoleLogMsg = "<b>" + getName(tokenId) +"</b> : "+ logMsg + " " + logComment]
+  [h: fctResult = json.set(fctResult,"consoleLogMsg",consoleLogMsg)]
+};{
+  [h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+  [h: currMr = json.get(pursuitProp,"mr"))]
+ 
+  [h: logs = getProperty("pursuitLog", pursuitTokenId)]
+  
+  [h: len = json.length(logs)]
+  [h: nextId = len + 1]
+    
+  [h: newLogValues = json.set("{}","logId",nextId,"tokenId",tokenId)]
+  [h: newLogValues = json.set(newLogValues,"logType",logType)]
+  [h: newLogValues = json.set(newLogValues,"currMr",currMr)]
+  [h: newLogValues = json.set(newLogValues,"logMsg",logMsg)]
+  [h: newLogValues = json.set(newLogValues,"logComment",logComment)]
+  [h: newLogValues = json.set(newLogValues,"serverTime",timestamp)]
+  
+  [h: logs = json.append(logs,newLogValues)]
+    
+  [h: setProperty("pursuitLog", logs, pursuitTokenId)]
+  
+  [h: fctResult = json.set(fctResult,"logId",nextId)]
+}]
+
+[r: fctResult]

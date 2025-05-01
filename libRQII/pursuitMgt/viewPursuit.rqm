@@ -1,0 +1,163 @@
+[h: arguments = macro.args]
+[h: pursuitTokenId = json.get(arguments, "pursuitTokenId")]
+
+[h: tokenMap = getCurrentMapName()]
+
+<div class="pure-g">
+  <div class="header pure-u-1">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item pure-menu-selected">
+          [h: macroParam = json.set("{}", "tab", "main","pursuitTokenId",pursuitTokenId)]
+          [h: lnkTxt = macroLinktext("openPursuit@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Main</a>
+        </li>
+        <li class="pure-menu-item">
+          [h: macroParam = json.set("{}", "tab","log","pursuitTokenId",pursuitTokenId)]
+          [h: lnkTxt = macroLinktext("openPursuit@Lib:RQII", "all",macroParam)]
+          <a class="pure-menu-link" href="[r: lnkTxt]">Pursuit Log</a>
+         </li>
+      </ul>
+    </div>
+  </div>     
+</div> 
+<div class="container pure-g">
+  <div class="pure-u-md-12-24">
+  [r, if(pursuitTokenId != "none"), code:{
+    [h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+    [h: tokens = json.get(pursuitProp,"tokens")]
+    [h: logs = getProperty("pursuitLog", pursuitTokenId)]
+    <table class="content pure-table">
+    <thead>
+      <tr>
+        <th>Combat</th>
+        <th>Melee Round</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>    
+        <td>[r: json.get(pursuitProp,"desc")]</td>  
+        <td><b>[r: json.get(pursuitProp, "mr")]</b></td>
+        <td>
+          [h: macroParam = json.set("{}", "tab", "main","pursuitTokenId",pursuitTokenId)]
+          [h: link = macroLinkText("openPursuit@Lib:RQII", "all",macroParam)]
+          <a class="pure-button pure-button-primary" href="[r: link]">Refresh</a>
+        </td>   
+        <td>
+          [r, if((pursuitTokenId != "none")&& isGM()), code:{
+            [h: macroParam = json.set("{}", "action", "addtokens","pursuitTokenId",pursuitTokenId)]
+            [h: link = macroLinkText("updatePursuit@Lib:RQII", "all",macroParam)]
+            <a class="pure-button pure-button-primary" href="[r: link]">Add selected token(s) to the pursuit</a>
+          };{}]
+        </td>
+        <td>
+          [r, if((pursuitTokenId != "none")&& isGM()), code:{
+            [h: macroParam = json.set("{}", "action", "create")]
+            [h: link = macroLinkText("updatePursuit@Lib:RQII", "all",macroParam)]
+            <a class="pure-button pure-button-warning" href="[r: link]">Create new pursuit</a>
+          };{}]
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  };{  
+    [h: tokens = '[]']
+  }] 
+  </div>
+</div>
+
+[r, if(json.isEmpty(tokens)), code:{
+  [r, if(pursuitTokenId != "none"), code:{
+     No token in the pursuit. Add a token
+   };{
+   }]
+};{
+  <div class="container pure-g">
+    <div class="pure-u-1">
+      [h: existingEmptyCurrX = json.path.read(tokens, "[?(@.currX && @.currX == '')]")]
+      [r, if(json.isEmpty(existingEmptyCurrX)), code:{
+        Everyone has run, switch to next MR : &nbsp;
+
+            [h: macroParam = json.set("{}", "action", "nxtmr","pursuitTokenId",pursuitTokenId)]
+            [h: link = macroLinkText("updatePursuit@Lib:RQII", "all",macroParam)]
+            <a class="pure-button pure-button-warning" href="[r: link]">Next MR</a>
+      <br> 
+      };{
+        Il y a encore des joueurs qui doivent courir
+      }]<br>
+    <table class="content pure-table pure-table-striped table-striped-custom">
+    <thead>
+    <tr>
+      <th colspan="2">Token (and Condition)</th>
+      <th></th>
+      <th>Position</th>
+      <th>Action</th>
+      <th></th>
+      <th>Log</th>
+    </tr>
+    </thead>
+    <tbody>
+      [h: emptyLogEntry = json.set("{}","logId","none","tokenId","","logType","","currMr","","logMsg","","logComment","","serverTime","")]
+      [r, foreach(item, tokens, ""), code: {
+        [h: tokenId = json.get(item, "tokenId")]
+        
+        [h: macroParam = json.set("{}", "tokenId",tokenId)]
+        [h: linkEditLabel = macroLinkText("editTokenLabelAndNotes@Lib:RQII", "all",macroParam)]
+       
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","","tab","combat")]
+        [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+        [h, if(isNPC(tokenId)&&!isGM()): lnkTxt = macroLinktext("openSheetReadOnlyNPC@Lib:RQII", "all",macroParam)]
+        
+        [h: currX = json.get(item, "currX")]
+        [h: buttonClass = "pure-button button-warning button-small"]
+        [h, if(currX != "") : buttonClass = buttonClass+" pure-button-disabled"] 
+      
+        [h:"<!-- Get relevant info (like fatigue and other malus) -->"]
+        [h: tokenOtherStatus = ""]
+        
+        <tr>
+          <td>
+            <a href="[r: linkEditLabel]"><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></a>      
+          </td>
+          <td>
+            <a id="" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a><br> 
+            <i>[r: getLabel(tokenId)]</i>
+          </td>
+          <td>
+            [r: if((isNPC(tokenId) && !isGM()),"",showPursuitSkillsOnly(tokenId))]
+          </td>
+          <td>
+           startX : [r: json.get(item, "startX")]<br>
+           prevX : [r: json.get(item, "prevX")] :: currX : [r: currX]<br>
+            
+          </td>
+          <td>
+            [h: macroParam = json.set("{}", "tokenId", tokenId,"pursuitTokenId",pursuitTokenId,"action", "run")]
+            [h: lnkTxt = macroLinktext("updatePursuit@Lib:RQII", "all",macroParam)]
+            <a class="[r: buttonClass]" href="[r: lnkTxt]">Run</a>
+      
+          </td>
+          <td>
+            [h: macroParam = json.set("{}", "tokenId", tokenId,"pursuitTokenId",pursuitTokenId,"action", "removetoken")]
+            [h: lnkTxt = macroLinktext("updatePursuit@Lib:RQII", "all",macroParam)]
+            <a class="pure-button button-warning button-small" href="[r: lnkTxt]">-</a>     
+          </td>
+          <td>
+            [h: currXlogId = json.get(item, "currXlogId")]
+            [h, if(currXlogId != "none") : logEntry = json.get(json.path.read(logs, "[?(@.logId == '"+currXlogId+"')]"), 0) ; logEntry = emptyLogEntry]
+            [h: logCurrMr = "MR "+json.get(logEntry, "currMr")+" : "+json.get(logEntry, "logMsg")+"<br><br>"]
+            [r, if(currXlogId != "none") : logCurrMr ]
+            [h: prevXlogId = json.get(item, "prevXlogId")]
+            [h, if(prevXlogId != "none") : logEntry = json.get(json.path.read(logs, "[?(@.logId == '"+prevXlogId+"')]"), 0) ; logEntry = emptyLogEntry]
+            [h: logPrevMr = "<span style='color:gray'>MR "+json.get(logEntry, "currMr")+" : "+json.get(logEntry, "logMsg")+"</span><br>"]
+            [r, if(prevXlogId != "none") : logPrevMr ]
+          </td>
+          
+        </tr>
+      }]
+    </tbody>
+    </table>
+    </div>
+  </div>
+}]

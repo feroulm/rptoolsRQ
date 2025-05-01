@@ -1,0 +1,55 @@
+<!-- Principe , on ajoute les nouveau champ et on remet les valeur des anciens champs "important" si il existe
+
+- Deux type de patch
+-- Ajouter un nouvel attribut : en ajoutant dans la structure newOtherAttrModel
+-- Modifer les valeurs en masse de plusieurs attributs
+--- la structure jSon qui définit les attributs et leur valeur est definie dans l'appel de depart :
+ Cf macro GM/patchPropOtherAttr
+-->
+
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): tokenId = currentToken(); tokenId = json.get(arguments,"tokenId")]
+[h, if(json.isEmpty(arguments)): mapName = getCurrentMapName(); mapName = json.get(arguments,"mapName")]
+[h, if(json.isEmpty(arguments)): newOtherAttrValues = '{}'; newOtherAttrValues = json.get(arguments,"newOtherAttrValues")]
+
+
+[h: newOtherAttrModel = '{
+  "currHeroPts": 0,
+  "prevHeroPts": 0,
+  "currEnc": 0,
+  "travelEnc": 0,
+  "healRate": 1,
+  "movement": 8,
+  "improvementMod": 0
+}']
+
+[h: patchLog = "Patching <i>otherAttr</i> properties for <b>"+getName(tokenId,mapName)+ "</b>"]
+
+[h: oldOtherAttrProp = getProperty("otherAttr",tokenId,mapName)]
+[r, if(json.isEmpty(oldOtherAttrProp)), code:{
+		<br><br><b>[r: getName(tokenId, mapName)] have no otherAttr prop !</b><br>
+		[h: oldOtherAttrProp = newOtherAttrModel]
+};{}]
+
+<!-- copy existing value when the item exists -->
+
+[h, foreach(item, oldOtherAttrProp, ""), code:{
+  [h: itemValue = json.get(oldOtherAttrProp,item)]
+  [h, if(itemValue != "") : newOtherAttrModel = json.set(newOtherAttrModel,item,itemValue)]
+}]
+
+<!-- For each value that we want to modify check that key exist and update it -->
+[r, foreach(item, newOtherAttrValues, ""), code:{
+ [h: item]
+ [h: newItemValue = json.get(newOtherAttrValues,item)]
+ [h: currentItemValue = json.get(newOtherAttrModel,item)]
+  [r, if(json.isEmpty(currentItemValue)||(currentItemValue != "8m")), code:{
+     [r: item] does not exist and cannot be patched or movement value is not 8m<br>
+  };{
+   [h: newOtherAttrModel = json.set(newOtherAttrModel,item,newItemValue)]
+   [h: setProperty("otherAttr",newOtherAttrModel,tokenId,mapName)]
+    Patching [r: getName(tokenId,mapName)] : [r: currentItemValue] to [r: newItemValue]<br>
+  }]
+}]
+
+[r: patchLog] is done.<br>

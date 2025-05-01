@@ -1,0 +1,138 @@
+[h: "<!-- computeRunDistance - Function that compute the run distance for a token -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   tokenId : the token -->"]
+[h: "<!--   prevX : an info to compute currX based on the distance -->"]
+[h: "<!--   skAthleticsRoll : roll Result -->"]
+[h: "<!--   runType : Jog or Sprint -->"]
+[h: "<!--   runRollBonus : roll bonus specific for the token -->"]
+[h: "<!--   runRollMalus : roll malus specific for the token, do not add fatigue malus which is included automatically -->"]
+[h: "<!-- return a jsonStructure with the newPosition currX and a log Msg -->"]
+
+[h: tokenId = arg(0)]
+[h: prevX = arg(1)]
+[h: skAthleticsRoll = arg(2)]
+[h: runType = arg(3)]
+[h: runRollBonus = arg(4)]
+[h: runRollMalus = arg(5)]
+[h: logMsg = ""]
+[h: logDebugMsg = ""]
+[h: fctResult = json.set("{}", "currX", "", "logMsg", "", "logDebugMsg", "")]
+
+[h: propOtherAttr = getProperty("otherAttr",tokenId)]
+[h: movement = json.get(propOtherAttr, "movement")]
+[h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
+[h: currArmorPenalty = json.get(propArmorPenalty,"current")]
+[h: currSkill = getProperty("commonSkills",tokenId)]
+[h: skAthletics = json.path.read(currSkill,"Athletics.current")]
+
+[h: showValuesForBonusComputation = "Movement "+movement+" Armor Penalty : "+currArmorPenalty+" Sk Athletics : "+skAthletics]
+[h: tokenName = getName(tokenId)] 
+
+[h: logDebugMsg = logDebugMsg+"DEBUG - Start computing for "+tokenName+" :<br>"]  
+[h: runBaseDst = number(movement) ]
+
+[h: logDebugMsg = logDebugMsg+"-- Initial runBaseDst = movement :"+runBaseDst+"<br>"]
+
+[h: "<!-- Compute base distance based on runType and add armor Penalty-->"]
+[h, if(runType == "jog") : runBaseDst = runBaseDst*3]
+[h, if(runType == "sprint") : runBaseDst = runBaseDst*5]
+
+[h: logDebugMsg = logDebugMsg+"-- new runBaseDst for "+runType+" :"+runBaseDst+"<br>"]
+
+[h: "<!-- Apply fatigue movement penalty & athletics roll malus-->"]
+[h: fatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
+[h: propFatigue = getProperty("fatigue",tokenId)]
+
+[h: fatigueLevel = json.get(propFatigue,"level")]
+[h: fatigueMalusPath = fatigueLevel+".skillGrade"]
+[h: fatigueMalus = json.path.read(fatigueLevels,fatigueMalusPath)]   
+
+[h: logDebugMsg = logDebugMsg+"-- fatigueMalus :"+fatigueMalus+" , runRollMalus :"+runRollMalus+" <br>"]  
+
+[h: runRollMalus = abs(number(runRollMalus))+abs(number(fatigueMalus))]
+
+[h, if( fatigueLevel == "Tired") : runBaseDst = runBaseDst - 1]
+[h, if( fatigueLevel == "Wearied") : runBaseDst = runBaseDst - 2]
+[h, if( fatigueLevel == "Exhausted") : runBaseDst = ceil(runBaseDst / 2)]
+[h, if( fatigueLevel == "Debilitated") : runBaseDst = ceil(runBaseDst / 2)]
+[h, if( fatigueLevel == "Incapacitated") : runBaseDst = 0]
+[h, if( fatigueLevel == "SemiConscious") : runBaseDst = 0]
+[h, if( fatigueLevel == "Comatose") : runBaseDst = 0]
+
+[h: logDebugMsg = logDebugMsg+"-- new runBaseDst after malus from fatigueLevel "+fatigueLevel+" :"+runBaseDst+"<br>"]
+
+[h: "<!-- Add armor Penalty-->"]
+[h: runBaseDst = runBaseDst - abs(number(currArmorPenalty))]
+
+[h: logDebugMsg = logDebugMsg+"-- new runBaseDst after malus from armorPenalty "+fatigueLevel+" :"+runBaseDst+"<br>"]
+
+[h: "<!-- Add bonusAthletics based on the athletics roll result -->"]
+[h: bonusAthletics = floor(number(skAthletics) / 25)] 
+
+[h: logDebugMsg = logDebugMsg+"-- skAthletics value : "+skAthletics+" %<br>"]
+[h: logDebugMsg = logDebugMsg+"-- bonusAthletics (skAthletics / 25) rounded down : "+bonusAthletics+"<br>"]
+
+[h: rollResult = computeRollResult(skAthleticsRoll,skAthletics,runRollBonus,runRollMalus)]
+[h: resultType = json.get(rollResult,"resultType")]
+[h: logMsg = logMsg + json.get(rollResult,"logMsg")]
+
+[r, switch(resultType), code:
+  case "success" : {
+    [h, if(runType == "jog"), code : {
+      [h: bonusAthletics = floor(bonusAthletics*0.5)]
+      [h: logMsg = logMsg +"SUCCESS ! Athletics bonus gained for a jog : "+bonusAthletics+" m. "]
+      [h: logDebugMsg = logDebugMsg+"-- bonusAthletics for a jog = floor(bonusAthletics*0.5) : "+bonusAthletics+"<br>"]
+    }]
+    [h, if(runType == "sprint"), code : {
+      [h: logMsg = logMsg +"SUCCESS ! Athletics bonus gained for a sprint : "+bonusAthletics+" m. "]
+      [h: logDebugMsg = logDebugMsg+"-- bonusAthletics for a sprint = bonusAthletics*1 : "+bonusAthletics+"<br>"]
+    }]
+    [h: runDistance = runBaseDst + bonusAthletics]
+    
+    [h: logDebugMsg = logDebugMsg+"-- success : runDistance =  runBaseDst + bonusAthletics : "+runDistance+"<br>"]
+    
+  };
+  case "failure" : {
+   [h, if(runType == "jog"), code : {
+      [h: logMsg = logMsg +"FAILURE ! No bonus gained. "]
+    }]
+    [h, if(runType == "sprint"), code : {  
+      [h: switchFatigueResult = switchFatigueLevel(tokenId,"increase")]
+      [h: logMsg = logMsg +"FAILURE ! No bonus gained. "+json.get(switchFatigueResult,"logMsg")]
+      [h: logDebugMsg = logDebugMsg+"-- bonusAthletics for a sprint = bonusAthletics*1 : "+bonusAthletics+"<br>"]
+    }]
+    [h: runDistance = runBaseDst]
+    [h: logDebugMsg = logDebugMsg+"-- failure : runDistance =  runBaseDst : "+runDistance+"<br>"]
+  };
+  case "critical" : {
+    [h, if(runType == "jog"), code : {
+      [h: bonusAthletics = floor(bonusAthletics*0.5)]
+      [h: logMsg = logMsg +"CRITICAL ! Athletics bonus gained for a jog : "+bonusAthletics+" m + Critical bonus : 1m "]
+      [h: logDebugMsg = logDebugMsg+"-- bonusAthletics for a jog = floor(bonusAthletics*0.5) : "+bonusAthletics+"<br>"]
+    }]
+    [h, if(runType == "sprint"), code : {
+      [h: logMsg = logMsg +"CRITICAL ! Athletics bonus gained for a sprint : "+bonusAthletics+" m + Critical bonus : 1m "]
+      [h: logDebugMsg = logDebugMsg+"-- bonusAthletics for a sprint = bonusAthletics*1 : "+bonusAthletics+"<br>"]
+    }]
+    [h: runDistance = runBaseDst + bonusAthletics + 1]
+    [h: logDebugMsg = logDebugMsg+"-- critical : runDistance =  runBaseDst + bonusAthletics + 1 : "+runDistance+"<br>"]
+  };
+  case "fumble" : {
+    [h: runDistance = 0]
+    [h: logMsg = logMsg +"<b>FUMBLE !</b> Pursuit is over. "]
+    [h: logDebugMsg = logDebugMsg+"-- fumble : runDistance =  0 : "+runDistance+"<br>"]
+  };
+  default: {
+    [h: runDistance = 0]
+ 	  [h: logMsg = resultType+ "is not implemented in <i>computeRunDistance</i> !"]
+  }
+]
+[h, if(runDistance < 0) : runDistance = 0]
+[h: currX = number(prevX) + number(runDistance)] 
+[h: logDebugMsg = logDebugMsg+"-- currX : prevX("+prevX+")+ rundistance ("+runDistance+").<br>"]
+[h: logMsg = logMsg+"<br><b>"+tokenName+" "+runType+" "+runDistance+" m</b>, currX is now :"+currX]
+
+[h: fctResult = json.set(fctResult,"currX",currX)]
+[h: fctResult = json.set(fctResult,"logMsg",logMsg)]
+[h: fctResult = json.set(fctResult,"logDebugMsg",logDebugMsg)]
+[r: fctResult]

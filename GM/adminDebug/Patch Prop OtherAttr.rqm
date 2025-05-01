@@ -1,0 +1,44 @@
+
+[h: inputStr = strformat("tip|Patch prop OtherAttr||LABEL|SPAN=TRUE")]
+[h: inputStr = json.append(inputStr, strformat("patchTarget|allMap,currentMap,selectedToken|Target type|RADIO|ORIENT=H SELECT=2 VALUE=STRING"))]
+[h: abort(input(json.toList(inputStr,"##")))]
+
+[h: "<!-- Modify the structure below to define attribute and value to be patched -->"]
+[h: newOtherAttrValues = '{
+  "movement": 8
+}'] 
+
+[h: "<!-- Exemple of a the structure which is not ued in the macro -->"]
+[h: newOtherAttrValuesEXAMPLE = '{
+  "movement": 10,
+  "improvementMod": 2,
+  "newAttr": 3
+}'] 
+
+[r, switch(patchTarget), code:
+  case "allMap" : {
+    [h: allMapNames = getAllMapNames("json")]
+    [r, foreach(mapName, allMapNames, ""), code:{
+     [h: macroParam = json.set("{}","mapName", mapName,"newOtherAttrValues",newOtherAttrValues)]
+     [r, macro("patchPropOtherAttrAllToken@Lib:RQII"): macroParam]	
+    }]
+  };
+  case "currentMap" : {
+    [h: mapName = getCurrentMapName()]
+  	[h: macroParam = json.set("{}","mapName", mapName,"newOtherAttrValues",newOtherAttrValues)]
+    [r, macro("patchPropOtherAttrAllToken@Lib:RQII"): macroParam]
+  };
+  case "selectedToken" : {
+    [h: tokenLst = getSelected()]
+    [h: msgNoTokenId = strformat("No token selected")]
+    [h: assert((tokenLst != ""),msgNoTokenId,0)]
+    [h: mapName = getCurrentMapName()]
+    [r, foreach(tokenId, tokenLst, ""), code:{
+  	  [h: macroParam = json.set("{}","mapName", mapName,"tokenId", tokenId,"newOtherAttrValues",newOtherAttrValues)]
+      [r, macro("patchPropOtherAttr@Lib:RQII"): macroParam]
+    }]
+  };
+  default: {
+ 	<br><b>[r: patchTarget]</b> is not implemented in <i>Patch Prop OtherAttr</i> !<br>
+  }
+]

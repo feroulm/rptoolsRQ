@@ -1,0 +1,66 @@
+[h: "<!-- switchFatigueLevel - Function to incresae or decrease the fatigue level of one step -->"]
+[h: "<!-- Careful - Level Name are hardocded and case sensitive. he json structure is on Lib:RQ!! tokne -->"]
+[h: "<!-- -Fresh,Winded,Tired,Wearied,Exhausted, Debilitated, Incapacitated, SemiConscious, Comatose -->"]
+[h: "<!-- return json Structure  -->"]
+
+[h: tokenId = arg(0)]
+[h: switchDirection = arg(1)]
+
+[h: fctResult = json.set("{}", "newFatigueLevel", "none", "logMsg", "")]
+
+[h: propFatigue = getProperty("fatigue",tokenId)]
+[h: currentFatigueLevel = json.get(propFatigue,"level")]
+
+[r, switch(currentFatigueLevel), code:
+  case "Fresh" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Winded"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Fresh"]
+  };
+  case "Winded" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Tired"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Fresh"]
+  };
+  case "Tired" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Wearied"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Winded"] 
+  };
+  case "Wearied" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Exhausted"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Tired"]
+  };
+  case "Exhausted" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Debilitated"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Wearied"]
+  };
+  case "Debilitated" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Incapacitated"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Exhausted"]
+  };
+  case "Incapacitated" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "SemiConscious"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Debilitated"]
+  };
+  case "SemiConscious" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Comatose"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "Incapacitated"]
+  };
+  case "Comatose" : {
+   [h, if(switchDirection == "increase") : newFatigueLevel = "Comatose"]
+   [h, if(switchDirection == "decrease") : newFatigueLevel = "SemiConscious"]
+  };
+  default: {
+ 	 [h: logMsg = "<b>"+fatigueLevel+"</b> is not implemented in <i>switchFatigueLevel</i> !<br>"]
+  }
+]
+
+[h: fatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
+[h: fatigueMalusPath = newFatigueLevel+".skillGrade"]
+[h: newFatigueMalus = "<b>"+json.path.read(fatigueLevels,fatigueMalusPath)+" %</b>"]
+[h: logMsg = "Fatigue level has been "+switchDirection+"d from <i>"+currentFatigueLevel+"</i> to <b>"+newFatigueLevel+"</b>, malus is now : "+newFatigueMalus]
+
+[h: propFatigue = json.set(propFatigue,"level",newFatigueLevel)]
+[h: setProperty("fatigue",propFatigue,tokenId)]
+
+[h: fctResult = json.set(fctResult,"newFatigueLevel",newFatigueLevel)]
+[h: fctResult = json.set(fctResult,"logMsg",logMsg)]
+[r: fctResult]

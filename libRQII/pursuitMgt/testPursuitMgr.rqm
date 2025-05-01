@@ -1,0 +1,166 @@
+[h: "<!-- Infos for testing -->"]
+TEST tokens array management
+[h: thugTokenId = "457D6AE642AC4C2386067D1B4729204C"]
+[h: lizardTokenId = "B2C6803A77C04871A989E38CAF377DDE"]
+[h: warriorTokenId = "050FF7DD7FEE4D1994AD53D44589AA52"]
+[h: wizardTokenId = "D1DDA762D82144C6845C4AEEDDBBEDB7"]
+
+<br><br>
+<b>Parse initial tokens array</b>
+<br>
+[h: pursuitTokenId = "C750B542F48E48C7B43275B7DC6C41AA"]
+
+[h: noMemberPursuitTokenID = "E36B25E506964B318D350AD2149CE2E3"]
+
+[h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+[h: tokens = json.get(pursuitProp,"tokens")]
+
+[r, foreach(item, tokens, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+  [h: startX = json.get(item, "startX")]
+  [h: currX = json.get(item, "currX")]
+  [h: prevX = json.get(item, "prevX")]
+  
+  [r: getName(tokenId)] : [r: startX], [r: currX], [r: prevX]<br>
+
+}]
+
+<br>
+<b>Create and add a new token WIZARD</b>
+<br>
+
+[h: tokenExist = ""]
+[h: tokenExist = json.path.read(tokens, "[?(@.tokenId == '"+wizardTokenId+"')]")]
+
+[r, if(json.isEmpty(tokenExist)), code:{
+  [h: newToken = json.set("{}", "tokenId", wizardTokenId, "startX", 2, "currX", 2,"prevX", 2)]
+  [h: tokens = json.append(tokens, newToken)]
+};{
+  [r: getName(wizardTokenId)] est déja dans la poursuite
+}]
+
+[r, foreach(item, tokens, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+  [h: startX = json.get(item, "startX")]
+  [h: currX = json.get(item, "currX")]
+  [h: prevX = json.get(item, "prevX")]
+  
+  [r: getName(tokenId)] : [r: startX], [r: currX], [r: prevX]<br>
+}]
+
+<br>
+<b>Set currX for token WIZARD</b>
+<br>
+[r: existingEmptyCurrX = json.path.read(tokens, "[?(@.currX && @.currX == '')]")]
+<br>
+[r, if(json.isEmpty(existingEmptyCurrX)), code:{
+  Tous le monde à joué : new MR
+};{
+  Il y a encore des joueurs qui doivent courir
+}]<br>
+[h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+wizardTokenId+"')].currX",12)]
+[h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+lizardTokenId+"')].currX",11)]
+[h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+warriorTokenId+"')].currX",13)]
+[r: existingEmptyCurrX = json.path.read(tokens, "[?(@.currX && @.currX == '')]")]
+<br>
+[h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+thugTokenId+"')].currX",14)]
+[r: existingEmptyCurrX = json.path.read(tokens, "[?(@.currX && @.currX == '')]")]
+[r, if(json.isEmpty(existingEmptyCurrX)), code:{
+  Tous le monde à joué : new MR
+};{
+  Il y a encore des joueurs qui doivent courir
+}]<br>
+<br>
+<b>Try to re-add WIZARD , use case of an already existing token</b>
+<br>
+
+[h: tokenExist = ""]
+[h: tokenExist = json.path.read(tokens, "[?(@.tokenId == '"+wizardTokenId+"')]")]
+
+[r, if(json.isEmpty(tokenExist)), code:{
+  [h: newToken = json.set("{}", "tokenId", wizardTokenId, "startX", 2, "currX", 2,"prevX", 2)]
+  [h: tokens = json.append(tokens, newToken)]
+};{
+  [r: getName(wizardTokenId)] est déja dans la poursuite !<br>
+}]
+
+<br>
+<b>Sort , based on prevX</b>
+<br>
+
+[h: tokens = json.sort(tokens, "d", "prevX")]
+
+[r, foreach(item, tokens, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+  [h: startX = json.get(item, "startX")]
+  [h: currX = json.get(item, "currX")]
+  [h: prevX = json.get(item, "prevX")]
+  
+  [r: getName(tokenId)] : [r: startX], [r: currX], [r: prevX]<br>
+}]
+
+<br>
+<b>Get THUG1 object & its index in the array</b>
+<br>
+[r: json.path.read(tokens, "[?(@.tokenId == '"+thugTokenId+"')]")]<br>
+[h: tokenIdxNb = json.get(json.path.read(tokens, "[?(@.tokenId == '"+thugTokenId+"')]"), 0)]
+Index : [r: json.indexOf(tokens, tokenIdxNb)]
+
+<br>
+<b>Modify THUG1::currX value in the array</b>
+<br>
+
+[h: tokenObject = json.get(json.path.read(tokens, "[?(@.tokenId == '"+thugTokenId+"')]"), 0)]
+[h: tokenIdx = json.indexOf(tokens, tokenObject)]
+[h: tokenObject = json.set(tokenObject,"currX",12)]
+[h: tokens = json.set(tokens,tokenIdx,tokenObject)]
+
+[r, foreach(item, tokens, ""), code: {
+  [h: tokenId = json.get(item, "tokenId")]
+  [h: startX = json.get(item, "startX")]
+  [h: currX = json.get(item, "currX")]
+  [h: prevX = json.get(item, "prevX")]
+  
+  [r: getName(tokenId)] : [r: startX], [r: currX], [r: prevX]<br>
+}]
+
+<br>
+<b>Remove WIZARD</b>
+<br>
+
+[h: tokens = json.path.delete(tokens, "[?(@.tokenId == '"+wizardTokenId+"')]")]
+
+[r, if(json.isEmpty(tokens)), code:{
+  <br>Il faut ajouter des tokens dans la poursuite<br>
+};{
+  <br>membres de la poursuite :<br>
+  [r, foreach(item, tokens, ""), code: {
+    [h: tokenId = json.get(item, "tokenId")]
+    [h: startX = json.get(item, "startX")]
+    [h: currX = json.get(item, "currX")]
+    [h: prevX = json.get(item, "prevX")]
+  
+    [r: getName(tokenId)] : [r: startX], [r: currX], [r: prevX]<br>
+   }]
+}]
+
+<br>
+<b>On retire tout les tokens et on teste si le tableau est vide</b>
+<br>
+[h: tokens = json.path.delete(tokens, "[?(@.tokenId == '"+thugTokenId+"')]")]
+[h: tokens = json.path.delete(tokens, "[?(@.tokenId == '"+lizardTokenId+"')]")]
+[h: tokens = json.path.delete(tokens, "[?(@.tokenId == '"+warriorTokenId+"')]")]
+
+[r, if(json.isEmpty(tokens)), code:{
+  <br>Il faut ajouter des tokens dans la poursuite<br>
+};{
+  <br>membres de la poursuite :<br>
+  [r, foreach(item, tokens, ""), code: {
+    [h: tokenId = json.get(item, "tokenId")]
+    [h: startX = json.get(item, "startX")]
+    [h: currX = json.get(item, "currX")]
+    [h: prevX = json.get(item, "prevX")]
+  
+    [r: getName(tokenId)] : [r: startX], [r: currX], [r: prevX]<br>
+   }]
+}]

@@ -1,0 +1,13 @@
+[h: tokenId = json.get(macro.args, "tokenId")]
+[h: srcWindow = json.get(macro.args, "srcWindow")]
+[h, if(json.isEmpty(srcWindow)): srcWindow = "none"]
+[h: logMsg = json.get(macro.args, "logMsg")]
+[h: logComment = json.get(macro.args, "logComment")]
+[h: pursuitTokenId = json.get(macro.args, "pursuitTokenId")]
+[h, if(json.isEmpty(pursuitTokenId)): pursuitTokenId = "none"]
+
+[h: addPursuitLogEntry(pursuitTokenId,tokenId,"specificEvent",logMsg,logComment)] 
+ 
+[h: "<!-- Refresh pursuit -->"]
+[h: dialogName = "Pursuit Mgr"+pursuitTokenId]
+[h: execFunction("refreshPursuit", json.append("[]",pursuitTokenId,dialogName,"log"), 0, "all")]

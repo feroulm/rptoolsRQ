@@ -1,0 +1,14 @@
+[h: "<!-- Function to refresh the pursuit windows if it is open -->"]
+[h: "<!-- To be executed on each player instance in order to check the dialog box on the player instance, not the mj instance -->"]
+[h: "<!-- return nothing -->"]
+[h: pursuitTokenId = arg(0)] 
+[h: dialogName = arg(1)] 
+[h: tabName = arg(2)] 
+[h, if(tabName == "") : tabName = "main"]
+
+[h, if(isDialogVisible(dialogName)), code:{
+  [h: "<!-- Refresh Pursuit Window -->"]
+  [h: macroParam = json.set("{}", "tab", tabName,"pursuitTokenId", pursuitTokenId)]
+  [h: lnkTxt = macroLinktext("openPursuit@Lib:RQII", "all",macroParam)]
+  [h: execLink(lnkTxt,0,"self")]
+}]

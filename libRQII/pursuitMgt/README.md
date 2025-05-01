@@ -50,6 +50,7 @@ TST_WIZARD1_PJ
 ```
 {
   "mr": 1,
+  "status": "active",
   "desc": "TST_WARRIOR1 & TST_WIZARD1_PJ chassent TST_THUG1 & TST_ShadowLizard1 ",
   "tokens":   [
         {
@@ -59,13 +60,13 @@ TST_WIZARD1_PJ
       "tokenId": "457D6AE642AC4C2386067D1B4729204C"
     },
         {
-       startX": "4",
+      "startX": "4",
       "prevX": "4",
       "currX": "",
       "tokenId": "B2C6803A77C04871A989E38CAF377DDE"
     },
         {
-       startX": "0",
+      "startX": "0",
       "prevX": "0",
       "currX": "",
       "tokenId": "050FF7DD7FEE4D1994AD53D44589AA52"

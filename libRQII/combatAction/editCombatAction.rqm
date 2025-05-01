@@ -96,6 +96,11 @@
           <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
         </tr>
       }]
+      <tr>
+        <td colspan="4">
+          [r,if(isGM()): getGMNotes(tokenId,tokenMap)+getNotes(tokenId,tokenMap); getNotes(tokenId,tokenMap)]
+        </td>  
+      </tr>
       </tbody>
     </table>
   </div>

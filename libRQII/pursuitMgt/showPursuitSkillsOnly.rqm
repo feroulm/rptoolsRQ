@@ -1,0 +1,23 @@
+[h: "<!-- showPursuitSkillsOnly - Function to display a reduce set of skills during a pursuit -->"]
+[h: tokenId = arg(0)]
+[h: tokenMap = getCurrentMapName()]
+
+[h: malusInfo = ""]
+
+[h: fatMalus = getFatigueMalus(tokenId)]
+[h, if(fatMalus!=""): malusInfo = fatMalus+" ";""]
+
+[h: smodMalus = getSituationModMalus(tokenId)]
+[h, if(smodMalus!=""): malusInfo = malusInfo+smodMalus+" ";""]
+
+[r, if(malusInfo != ""), code:{
+  <span style="font-weight: bold;color:red">Malus :</span> [r: malusInfo]<br><br>
+};{}]
+
+[h: aSkills = getProperty("commonSkills", tokenId)]
+
+[h: skAthletics = json.path.read(aSkills,"Athletics.current")]
+[h: skEvade = json.path.read(aSkills,"Evade.current")]
+[h: skResilience = json.path.read(aSkills,"Resilience.current")]
+
+Athletics [r: skAthletics]%, Evade [r: skEvade]%, Resilience [r: skResilience]%

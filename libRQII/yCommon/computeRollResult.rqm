@@ -1,0 +1,34 @@
+[h: "<!-- computeRollResult - Function that compute the result of a roll agains a skill value -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   rollResult : the result -->"]
+[h: "<!--   skValueInitial : the value against the roll is compared to (without bonus or malus)-->"]
+[h: "<!--   rollBonus : a bonus to the roll , not mandatory -->"]
+[h: "<!--   rollMalus : a malus to the roll , not mandator-->"]
+[h: "<!-- return a jsonStructure with a resultType : critical, success, failure or fumble, and logMsg : a log message -->"]
+
+[h: rollResult = number(arg(0))]
+[h: skValueInitial = number(arg(1))]
+[h: rollBonus = abs(number(arg(2)))]
+[h: rollMalus = abs(number(arg(3)))]
+[h: fctResult = json.set("{}", "resultType", "none", "logMsg", "")]
+
+[h: skValue = skValueInitial + rollBonus - rollMalus]
+[h, if(skValue <0) : skValue = 0]
+[h: logMsg = "Roll <b>"+rollResult+"</b> against <b>"+skValue+"</b> instead of <b>"+skValueInitial+"</b> (<i>bonus (+"+rollBonus+") & malus(-"+rollMalus+")</i>).<br>"]
+[h, if (rollResult > skValue) : fctResult = json.set(fctResult,"resultType","failure")]
+[h, if (rollResult <= skValue) : fctResult = json.set(fctResult,"resultType","success")]
+
+[h, if(rollResult == 99), code :{
+  [h, if(skValue < 100) : fctResult = json.set(fctResult,"resultType","fumble"); fctResult = json.set(fctResult,"resultType","failure")]
+}]
+
+[h, if(rollResult == 100), code :{
+  [h: fctResult = json.set(fctResult,"resultType","fumble")]
+}]
+
+[h: criticalValue = skValue*0.1]
+
+[h, if((rollResult <= criticalValue) || (rollResult == 1)) : fctResult = json.set(fctResult,"resultType","critical")]
+
+[h: fctResult = json.set(fctResult,"logMsg",logMsg)]
+[r: fctResult]

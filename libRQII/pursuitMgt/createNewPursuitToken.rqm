@@ -1,0 +1,29 @@
+[h: "<!-- Function to create a new Pursuit token on current map -->"]
+[h: "<!-- Called by : createPursuit@Lib:RQII (pursuitMgr Group) -->"]
+[h: "<!-- return the token id -->"]
+
+[h: pursuitDesc = arg(0)] 
+
+
+[h: "<!-- Create new Pursuit Token based on _Main_AE template -->"]
+[h: updates = json.set("{}",
+	"name" ,"Pursuit_Current",
+	"x","1",
+    "relativeto", "source")]
+    
+[h: pursuitTokenId = copyToken("Pursuit_TPL",1,"_Main_AE", updates)]
+[h: newName = strformat("pursuit_%{pursuitTokenId}")]
+[h: setName(newName,pursuitTokenId)]
+
+[h: "<!-- reset everything and return pursuitTokenId -->"]
+[h: pursuitProp = getProperty("pursuit",pursuitTokenId)]
+[h: pursuitProp = json.set(pursuitProp,"status","active")]
+[h: pursuitProp = json.set(pursuitProp,"desc",pursuitDesc)]
+[h: pursuitProp = json.set(pursuitProp,"mr",1)]
+[h: setProperty("pursuit",pursuitProp,pursuitTokenId)]	
+
+[h: logMsg = "Create new pursuit"]
+
+[h: addPursuitLogEntry(pursuitTokenId,pursuitTokenId,"globalEvent",logMsg,"")]
+
+[r: pursuitTokenId]

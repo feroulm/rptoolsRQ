@@ -1,0 +1,60 @@
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)) : arguments = json.set("{}", "tab", "main")]
+
+[h: tab = json.get(arguments,"tab")]
+[h, if(json.isEmpty(tab)) : tab = "main"]
+  
+[h: pursuitTokenId = json.get(arguments,"pursuitTokenId")]
+[h, if(json.isEmpty(pursuitTokenId)) : pursuitTokenId = "none"]
+[h, if(pursuitTokenId == "none") : tab = "none"]
+[h: tokenNameFilter = json.get(arguments, "tokenNameFilter")]
+[h, if(json.isEmpty(tokenNameFilter)), code:{
+	[h: tokenNameFilter = ".*"]
+};{
+  [h, if(tokenNameFilter == "") : tokenNameFilter = ".*"]
+}]
+
+[h: logTypeFilter = json.get(arguments, "logTypeFilter")]
+[h, if(json.isEmpty(logTypeFilter)), code:{
+	[h: logTypeFilter = ".*"]
+};{
+  [h, if(logTypeFilter == "") : logTypeFilter = ".*"]
+}]
+
+[h: logMrFilter = json.get(arguments, "logMrFilter")]
+[h, if(json.isEmpty(logMrFilter)), code:{
+	[h: logMrFilter = ".*"]
+};{
+  [h, if(logMrFilter == "") : logMrFilter = ".*"]
+}]
+
+[h: dialogName = "Pursuit Mgr"+pursuitTokenId]
+
+[dialog5(dialogName,"width=990; height=900; temporary=0"): {
+  <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="pureCss@Lib:RQII">
+			<link rel="stylesheet" type="text/css" href="pureGridsResponsiveCss@Lib:RQII">
+      <link rel="stylesheet" type="text/css" href="rqCss@Lib:RQII">
+      <title>Pursuit Manager</title>
+    </head>
+    <body class="body-custom">
+	  [h: macroParam = json.set("{}","pursuitTokenId", pursuitTokenId)]
+	  [r, switch(tab), code:
+        case "none" :{
+  	      [r, macro("viewSelectPursuit@Lib:RQII"): macroParam]
+        };
+        case "main" :{
+  	      [r, macro("viewPursuit@Lib:RQII"): macroParam]
+        };
+		    case "log" :{
+					[h: macroParam = json.set("{}", "pursuitTokenId", pursuitTokenId,"tokenNameFilter",tokenNameFilter,"logTypeFilter",logTypeFilter,"logMrFilter",logMrFilter)]
+  	      [r, macro("viewPursuitLog@Lib:RQII"): macroParam]
+        };
+        default: {
+          [r, macro("viewSelectPursuit@Lib:RQII"): macroParam]
+        }
+      ] 
+    </body>
+</html>
+}]

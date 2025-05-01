@@ -18,6 +18,13 @@
 [h: defineFunction("resetCombatStatus","resetCombatStatus@Lib:RQII")]
 [h: defineFunction("refreshCombatSheets","refreshCombatSheets@Lib:RQII")]
 
+[h: "<!-- Pursuit Management UDFs -->"]
+[h: defineFunction("createNewPursuitToken","createNewPursuitToken@Lib:RQII")]
+[h: defineFunction("addPursuitLogEntry","addPursuitLogEntry@Lib:RQII")]
+[h: defineFunction("refreshPursuit","refreshPursuit@Lib:RQII")]
+[h: defineFunction("addTokenToPursuit","addTokenToPursuit@Lib:RQII")]
+[h: defineFunction("computeRunDistance","computeRunDistance@Lib:RQII")]
+[h: defineFunction("showPursuitSkillsOnly","showPursuitSkillsOnly@Lib:RQII")]
 
 [h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]
@@ -39,3 +46,5 @@
 [h: "<!-- Generic UDFs -->"]
 [h: defineFunction("reindexJson","reindexJson@Lib:RQII")]
 [h: defineFunction("sortJson","sortJson@Lib:RQII")]
+[h: defineFunction("computeRollResult","computeRollResult@Lib:RQII")]
+[h: defineFunction("switchFatigueLevel","switchFatigueLevel@Lib:RQII")]

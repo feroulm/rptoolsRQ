@@ -1,0 +1,34 @@
+[h:"<!-- patchPropOtherAttrAllToken -->"]
+
+[h: arguments = macro.args]
+[h, if(json.isEmpty(arguments)): mapName = getCurrentMapName(); mapName = json.get(arguments,"mapName")]
+[h, if(json.isEmpty(arguments)): newOtherAttrValues = '{}'; newOtherAttrValues = json.get(arguments,"newOtherAttrValues")]
+
+[h: cond = json.set("{}","propertyType" ,"RQ_Human","mapName",mapName)]
+[h: rqHumanTokens = getTokens("json", cond)]
+
+<h3>Map :: [r: mapName]</h3><br>
+<b>Start OtherAttr property patching </b>
+<hr>
+[r, foreach(tokenId, rqHumanTokens, ""), code:{
+	[h: currentOtherAttr = getProperty("otherAttr",tokenId, mapName)]
+	[r, if(json.isEmpty(currentOtherAttr)), code:{
+		<br><br><b>[r: getName(tokenId, mapName)] have no otherAttr prop and will not be patched</b><br>
+	};{ 
+  	<br>[r: getName(tokenId, mapName)] is going to be patched 
+	  [h: macroParam = json.set("{}", "tokenId", tokenId,"mapName",mapName,"newOtherAttrValues",newOtherAttrValues)]
+	  - [r, macro("patchPropOtherAttr@Lib:RQII"): macroParam]  
+  }]
+}]
+
+<br><br>
+<b>Non RQ_Human tokens are not patched</b>
+<hr>
+[h: cond = json.set("{}","mapName",mapName)]
+[h: tokenIds = getTokens("json", cond)]
+[r, foreach(tokenId, tokenIds, ""), code:{
+  [h: tokenType = getPropertyType(tokenId, mapName)]
+  [r, if(tokenType != "RQ_Human"),code:{
+	  <br>[r: getName(tokenId,mapName)] is of type : [r: tokenType]
+  }]
+}]

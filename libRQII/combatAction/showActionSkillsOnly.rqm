@@ -32,6 +32,8 @@
   [h: evadeValue = json.set("{}", "current", 0)]
 };{}]
 
+[h: skAthletics = json.path.read(aSkills,"Athletics.current")]
+
 [h: resilienceValue = json.get(aSkills,"Resilience")]
 [h, if(json.isEmpty(resilienceValue)), code:{
   [h: resilienceValue = json.set("{}", "current", 0)]
@@ -43,4 +45,4 @@
 };{}]
 
 <br> Unarmed [r: json.get(unarmedValue,"current")]%, Evade [r: json.get(evadeValue,"current")]%
-<br><br> Resilience [r: json.get(resilienceValue,"current")]%, Persistence [r: json.get(persistenceValue,"current")]%
+<br><br> Athletics [r: skAthletics]%, Resilience [r: json.get(resilienceValue,"current")]%, Persistence [r: json.get(persistenceValue,"current")]%
