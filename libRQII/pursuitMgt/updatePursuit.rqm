@@ -113,7 +113,7 @@
     [h: currX = json.get(runResult,"currX")]
     [h: logMsg = json.get(runResult,"logMsg")]
     [h: logDebugMsg = json.get(runResult,"logDebugMsg")]   
-    [h: addLogResult = addPursuitLogEntry(pursuitTokenId,tokenId,"globalEvent",logMsg,"")]
+    [h: addLogResult = addPursuitLogEntry(pursuitTokenId,tokenId,"runEvent",logMsg,"")]
     [h: currXlogId = json.get(addLogResult,"logId")] 
     
     [h: tokens = json.path.set(tokens, "[?(@.tokenId == '"+tokenId+"')].currX",currX)]
@@ -125,9 +125,26 @@
     [h: addPursuitLogEntry(pursuitTokenId,tokenId,"debugEvent",logDebugMsg,"")]
   };
   case "reset" : {
-  	[h: res = input("junk|This will reset the pursuit, using startX values for each token in the pursuit. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true",
-		"combatDesc|new combat|Combat short desc / nickname :")]
+  	[h: res = input("junk|This will reset the pursuit, remove the log and ask for new startX values for each token in the pursuit. Are you sure?  Click OK to confirm.|ignored|LABEL|SPAN=true")]
   	[h: abort(res)]
+    [h: pursuitProp = getProperty("pursuit",pursuitTokenId)] 
+    [h: tokens = json.get(pursuitProp, "tokens")]
+    
+    [h: resetTokens = resetTokenInPursuit(tokens)]
+    [h: tokens = json.get(resetTokens,"tokens")]
+    [h: logMsg = json.get(resetTokens,"logMsg")]
+    [h: logDebugMsg = json.get(resetTokens,"logDebugMsg")]
+    
+    [h: tokens = json.sort(tokens, "d", "prevX")]
+    
+    [h: pursuitProp = json.set(pursuitProp,"tokens",tokens)]
+    [h: pursuitProp = json.set(pursuitProp,"mr",1)]
+    [h: setProperty("pursuit",pursuitProp,pursuitTokenId)]
+    
+    [h: setProperty("pursuitLog","[]",pursuitTokenId)]
+    
+    [h: addPursuitLogEntry(pursuitTokenId,pursuitTokenId,"globalEvent",logMsg,"")]
+    [h: addPursuitLogEntry(pursuitTokenId,pursuitTokenId,"debugEvent",logDebugMsg,"")]
 		
   };
   default: {

@@ -25,6 +25,8 @@
 [h: defineFunction("addTokenToPursuit","addTokenToPursuit@Lib:RQII")]
 [h: defineFunction("computeRunDistance","computeRunDistance@Lib:RQII")]
 [h: defineFunction("showPursuitSkillsOnly","showPursuitSkillsOnly@Lib:RQII")]
+[h: defineFunction("resetTokenInPursuit","resetTokenInPursuit@Lib:RQII")]
+
 
 [h: "<!-- Sheet Management UDFs -->"]
 [h: defineFunction("computeSkill","computeSkill@Lib:RQII")]

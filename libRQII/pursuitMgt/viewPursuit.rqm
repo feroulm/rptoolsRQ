@@ -53,9 +53,9 @@
         </td>
         <td>
           [r, if((pursuitTokenId != "none")&& isGM()), code:{
-            [h: macroParam = json.set("{}", "action", "create")]
+            [h: macroParam = json.set("{}", "action", "reset","pursuitTokenId",pursuitTokenId)]
             [h: link = macroLinkText("updatePursuit@Lib:RQII", "all",macroParam)]
-            <a class="pure-button pure-button-warning" href="[r: link]">Create new pursuit</a>
+            <a class="pure-button pure-button-warning" href="[r: link]">Reset pursuit</a>
           };{}]
         </td>
       </tr>
@@ -84,7 +84,7 @@
             <a class="pure-button pure-button-warning" href="[r: link]">Next MR</a>
       <br> 
       };{
-        Il y a encore des joueurs qui doivent courir
+        Some tokens has to run.<br>
       }]<br>
     <table class="content pure-table pure-table-striped table-striped-custom">
     <thead>
@@ -101,6 +101,7 @@
       [h: emptyLogEntry = json.set("{}","logId","none","tokenId","","logType","","currMr","","logMsg","","logComment","","serverTime","")]
       [r, foreach(item, tokens, ""), code: {
         [h: tokenId = json.get(item, "tokenId")]
+        [h: propArmorPenalty = getProperty("ArmorPenalty",tokenId)]
         
         [h: macroParam = json.set("{}", "tokenId",tokenId)]
         [h: linkEditLabel = macroLinkText("editTokenLabelAndNotes@Lib:RQII", "all",macroParam)]
@@ -122,14 +123,15 @@
           </td>
           <td>
             <a id="" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)]</a><br> 
-            <i>[r: getLabel(tokenId)]</i>
+            <i>[r: getLabel(tokenId)]</i><br>
+            <b>Armor Penalty : </b>[r: json.get(propArmorPenalty, "current")]
           </td>
           <td>
             [r: if((isNPC(tokenId) && !isGM()),"",showPursuitSkillsOnly(tokenId))]
           </td>
           <td>
-           startX : [r: json.get(item, "startX")]<br>
-           prevX : [r: json.get(item, "prevX")] :: currX : [r: currX]<br>
+           <i>startX : [r: json.get(item, "startX")] m</i><br>
+           prevX : <b>[r: json.get(item, "prevX")] m</b> -&gt; currX : <span style='font-weight:bolder;color:blue'>[r: currX] m</span><br>
             
           </td>
           <td>

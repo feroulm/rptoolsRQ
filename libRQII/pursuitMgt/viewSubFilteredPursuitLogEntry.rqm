@@ -8,7 +8,7 @@
 
 
 [h: tokenId = json.get(logEntry,"tokenId")]
-[h: tokenName = getName(tokenId)]
+[h, if(tokenId == "none") : tokenName = "All";tokenName = getName(tokenId))]
 
 [h: logType = json.get(logEntry,"logType")]
 [h: logCurrMr = json.get(logEntry,"currMr")]
