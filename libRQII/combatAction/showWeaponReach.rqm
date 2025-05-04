@@ -1,0 +1,40 @@
+[h: "<!-- showWeaponReach - Function to display nicely engaged tokens and their respective status fomr a weaponReach object-->"]
+[h: weaponReach = arg(0)]
+
+[r, foreach(item, weaponReach, ""), code: {
+  [h: tokenId = json.get(item,"tokenId")]
+  [h: macroParam = json.set("{}", "tokenId", tokenId,"msg","","tab","combat")]
+  [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+  [h, if(isNPC(tokenId)&&!isGM()): lnkTxt = macroLinktext("openSheetReadOnlyNPC@Lib:RQII", "all",macroParam)]
+  [h: tokenName = "<a class='link-subtoken' href='"+lnkTxt+"'>"+getName(tokenId)+"</a>"]
+  [h: reachStatus = json.get(item,"reachStatus")]
+  [r, switch(reachStatus), code:
+    case "engaged" : {
+     - <i>Engaged</i> with [r: tokenName].<br>
+    };
+    case "closed" : {
+     - <span style="font-weight: bold;color:red">Closed</span> by [r: tokenName].<br>
+     &nbsp;&nbsp;&nbsp; <i>No parry, attack limited to 1d3 dmg.</i><br>
+    };
+    case "closing" : {
+     - <span style="font-weight: 600">Closing</span> [r: tokenName].<br>
+    };
+    case "outranged" : {
+     - <span style="font-weight: bold;color:red">Outranged</span> by [r: tokenName].<br>
+     &nbsp;&nbsp;&nbsp; <i>Can parry but can only attack the opponent weapon.</i><br>
+    };
+    case "outranging" : {
+     - <span style="font-weight: 600">Outranging</span> [r: tokenName].<br>
+    };
+    case "outmanoeuvred" : {
+     - <span style="font-weight: bold;color:red">Outmanoeuvred</span> by [r: tokenName].<br>
+     &nbsp;&nbsp;&nbsp; <i>Cannot attack until next MR.</i><br>
+    };
+    case "outmanoeuvring" : {
+     - <span style="font-weight: 600">Outmanoeuvring</span> [r: tokenName].<br>
+    };
+    default: {
+ 	   <br><b>[r: weaponReach]</b> is not implemented in <i>showWeaponReach</i> !<br>
+    }
+  ]  
+}]

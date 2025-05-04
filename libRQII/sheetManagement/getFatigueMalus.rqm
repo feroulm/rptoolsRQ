@@ -2,11 +2,11 @@
 [h: "<!-- return an empty string -->"]
 
 [h: tokenId = arg(0)]
-[h: fatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
+[h: propFatigueLevels = getLibProperty("fatigueLevel","Lib:RQII")]
 [h: propFatigue = getProperty("fatigue",tokenId)]
 
-[h: fatigueLevel = json.get(propFatigue,"level")]
-[h: fatigueMalusPath = fatigueLevel+".skillGrade"]
-[h: fatigueMalus = fatigueLevel+" : <b>"+json.path.read(fatigueLevels,fatigueMalusPath)+" %</b>"]
+[h: tokFatigueLevel = json.get(propFatigue,"level")]
+[h: fatigueMalusPath = tokFatigueLevel+".skillGrade"]
+[h: fatigueMalus = tokFatigueLevel+" : <b>"+json.path.read(propFatigueLevels,fatigueMalusPath)+" %</b>"]
 
-[r, if(fatigueLevel != "Fresh") : fatigueMalus] 
+[r, if(tokFatigueLevel != "Fresh") : fatigueMalus] 

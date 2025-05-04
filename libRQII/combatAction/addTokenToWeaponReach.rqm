@@ -1,0 +1,45 @@
+[h: "<!-- addTokenToWeaponReach - Function that add engaged token(s) in to weaponReach attribute of the engagingTokenId -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   newTokenLst : a list of tokenID to be added (including the engagingTokenId) -->"]
+[h: "<!--   engagingTokenId : the token that will be modified (used to prevent self addition of the engagingTokenId in its own weaponReach attr) -->"]
+[h: "<!--   weaponReach : a weaponReach jsonArray to be updated with new tokens  -->"]
+[h: "<!--   descEngagement : a short desc of the engagement  -->"]
+[h: "<!-- return a tokens jsonStructure to be updated in a pursuitToken's pursuit property -->"]
+
+[h: newTokenLst = arg(0)]
+[h: engagingTokenId = arg(1)]
+[h: weaponReach = arg(2)]
+[h, if(json.isEmpty(weaponReach)) : weaponReach = '[]']
+
+[h: fctResult = json.set("{}", "weaponReach", weaponReach, "logMsg", "")]
+[h: descEngagement = arg(3)]
+[h: logMsg = ""]
+
+[h: engagingTokenName = getName(engagingTokenId)] 
+
+[h, foreach(tokenId, newTokenLst, ""), code: {
+  
+  [h: tokenName = getName(tokenId)] 
+  [h: tokenType = getPropertyType(tokenId)]
+  [h: tokenExist = '[]']
+  [h: existCond = true]
+  [h: tokenExist = json.path.read(weaponReach, "[?(@.tokenId == '"+tokenId+"')]")]
+  [h, if(json.isEmpty(tokenExist)) : existCond = false]
+
+  [h, if((tokenType != "RQ_Human")&&(tokenType != "RQ_Monster")||(existCond == true)||(tokenId == engagingTokenId) ), code: {  
+        [h: "<!-- Wrong token type or exist already in the weaponReach attr or is the engaging token : do not add -->"]
+  };{
+   
+    [h: newToken = json.set("{}", "tokenId", tokenId, "reachStatus", "engaged", "descEngagement",descEngagement)]
+    [h: weaponReach = json.append(weaponReach, newToken)]
+    
+    [h: logMsg = logMsg+engagingTokenName+" engaged with "+tokenName+"<br>"]
+  }]
+
+}]
+
+[h, if( logMsg == "") : logMsg = " No tokens engaged.<br>"]
+[h: fctResult = json.set(fctResult,"weaponReach",weaponReach)]
+
+[h: fctResult = json.set(fctResult,"logMsg",logMsg)]
+[r: fctResult]

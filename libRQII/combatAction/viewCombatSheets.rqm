@@ -98,6 +98,9 @@
   [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
   [h: currentCombatLog = getProperty("combatLog",tokenId)]
   [h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+  [h: "<!-- reset to a jsonArray (previous usage of weaponReach -->"]
+  [h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+  
   [h: activeTurn = json.get(currentCombatStatus,"activeTurn")]
   [h: situationMod = json.get(currentCombatStatus,"situationMod")]
   [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
@@ -107,9 +110,7 @@
 
   <!-- concat various condition situationMod, range, charging -->
   [h: tokenOtherStatus = ""]
-  [h, if(weaponReach != "ok"): tokenOtherStatus=tokenOtherStatus+"<br>- "+weaponReach]
-  [h, if(situationMod != "none"): tokenOtherStatus=tokenOtherStatus+"<br>- "+situationMod]
-  [h, if(chargeStatus != "none"): tokenOtherStatus=tokenOtherStatus+"<br>- "+chargeStatus]
+  [h, if(chargeStatus != "none"): tokenOtherStatus=tokenOtherStatus+"- "+chargeStatus+"<br>"]
   
   [h,if(activeTurn) : cssSelector = "active"; cssSelector = ""]
 
@@ -123,6 +124,7 @@
     </td>
     <td>
       <a id="[r:cssSelector]" class="link-token pure-menu-link" href="[r: lnkTxt]">[r: getName(tokenId)] <i>[r: getLabel(tokenId)]</i></a> 
+      [r: getAllMalus(tokenId)]
       [r: tokenOtherStatus ]
     </td>
     <td>
@@ -140,7 +142,7 @@
     <br>- [r: json.get(currentCombatLog,"lastTokenChange")]
     </td>
     <td>
-       <!-- todo - list of current oppononents -->
+       [r: showWeaponReach(weaponReach)]
     </td>
   </tr>
 }]

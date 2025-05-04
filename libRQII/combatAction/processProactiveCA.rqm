@@ -1,0 +1,22 @@
+[h: "<!-- processProactiveCA - Function to recompute CA and combatStatus values after a reactive Action -->"]
+[h: "<!-- return an updated CombatStatus JSON object -->"]
+[h: newCombatStatus = arg(0)]
+[h: tokenId = arg(1)]
+
+[h: activeCA = json.get(newCombatStatus,"activeCA")]
+[h: proactiveCA = json.get(newCombatStatus,"proactiveCA")]
+
+[h: remainingCA = activeCA - 1]
+[h: newCombatStatus = json.set(newCombatStatus,"activeCA",remainingCA)]
+
+[h: "<!-- proactiveCA indicate the nb of CA spent for proactive action-->"]
+[h: proactiveCA = proactiveCA + 1]
+[h: newCombatStatus = json.set(newCombatStatus,"proactiveCA",proactiveCA)]
+
+[h, if (remainingCA == 0): newCombatStatus = json.set(newCombatStatus,"turnStatus","out");newCombatStatus = json.set(newCombatStatus,"turnStatus","off")]
+[h, if (remainingCA == 0): setState("Out", 1, tokenId)]
+
+[h: "<!-- set activeTurn to 0 to indicate that token played is turn -->"]
+[h: newCombatStatus = json.set(newCombatStatus,"activeTurn",0)]
+
+[r: newCombatStatus]

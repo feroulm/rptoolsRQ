@@ -1,0 +1,49 @@
+[h: "<!-- changeWeaponReachBetweenToken - Function that remove engaged token(s) in to weaponReach attribute of all the token it is engaged with -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   attTokenId : the token who initiate the change Range -->"]
+[h: "<!--   defTokenId : the token who fail to resist the Change Range -->"]
+[h: "<!--   attNewReachStatus : the New reachStatus gained by the attacker -->"]
+[h: "<!-- return a tokens jsonStructure with a logMsg -->"]
+
+
+[h: attTokenId = arg(0)]
+[h: defTokenId = arg(1)]
+[h: attNewReachStatus = arg(2)]
+
+[h: "<!-- defNewReachStatus is defined based attNewReachStatus -->"]
+[h, switch(attNewReachStatus):
+	case "engaged": defNewReachStatus="engaged";
+  case "closing": defNewReachStatus="closed";
+  case "outranging": defNewReachStatus="outranged";
+  case "outmanoeuvring": defNewReachStatus="outmanoeuvred";
+	default: "none"
+]
+
+[h: attCombatStatusProp = getProperty("combatStatus",attTokenId)]
+[h: fctResult = json.set("{}", "attLogMsg", "","defLogMsg", "","attCombatStatusProp",attCombatStatusProp)]
+[h: attLogMsg = ""]
+[h: defLogMsg = ""]
+
+[h: attTokenName = getName(attTokenId)] 
+[h: defTokenName = getName(defTokenId)] 
+
+[h: "<!-- Change reachStatus for defTokenId on attTokenId weaponReach attr -->"]
+
+[h: attWeaponReach = json.get(attCombatStatusProp,"weaponReach")]
+[h: attWeaponReach = json.path.set(attWeaponReach, "[?(@.tokenId == '"+defTokenId+"')].reachStatus",attNewReachStatus)]
+[h: attCombatStatusProp = json.set(attCombatStatusProp,"weaponReach",attWeaponReach)]
+[h: setProperty("combatStatus",attCombatStatusProp,attTokenId)]
+  
+[h: defLogMsg = defLogMsg+defTokenName+" reachStatus has been set to <i>"+defNewReachStatus+"</i><br>"]
+
+[h: "<!-- Change reachStatus for attTokenId on defTokenId weaponReach attr -->"]
+[h: defCombatStatusProp = getProperty("combatStatus",defTokenId)]
+[h: defWeaponReach = json.get(defCombatStatusProp,"weaponReach")]
+[h: defWeaponReach = json.path.set(defWeaponReach, "[?(@.tokenId == '"+attTokenId+"')].reachStatus",defNewReachStatus)]
+[h: defCombatStatusProp = json.set(defCombatStatusProp,"weaponReach",defWeaponReach)]
+[h: setProperty("combatStatus",defCombatStatusProp,defTokenId)]
+  
+[h: attLogMsg = attLogMsg+attTokenName+" reachStatus has been set to <i>"+attNewReachStatus+"</i><br>"]
+
+[h: fctResult = json.set(fctResult,"attLogMsg",attLogMsg,"defLogMsg", defLogMsg,"attCombatStatusProp",attCombatStatusProp)]
+[r: fctResult]

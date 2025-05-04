@@ -1,0 +1,42 @@
+[h: "<!-- removeTokenFromWeaponReach - Function that remove engaged token(s) in to weaponReach attribute of all the token it is engaged with -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   disengagingTokenId : the token that will be removed -->"]
+[h: "<!-- return a tokens jsonStructure with a logMsg -->"]
+
+
+[h: disengagingTokenId = arg(0)]
+
+[h: fctResult = json.set("{}", "logMsg", "")]
+[h: logMsg = ""]
+
+[h: disengagingTokenName = getName(disengagingTokenId)] 
+
+[h: "<!-- Build the list of opponents for the disengagingTokenId based on its weaponReach attr -->"]
+[h: disCombatStatusProp = getProperty("combatStatus",disengagingTokenId)]
+[h: tokenLst = json.get(disCombatStatusProp,"weaponReach")]
+
+[h, foreach(item, tokenLst, ""), code: {
+  
+  [h: tokenId = json.get(item,"tokenId")]
+  [h: tokenName = getName(tokenId)] 
+
+  [h: "<!-- Remove the disengagingTokenId on its opponent weaponReach attr -->"]
+  [h: combatStatusProp = getProperty("combatStatus",tokenId)]
+  [h: weaponReach = json.get(combatStatusProp,"weaponReach")]
+  
+  [h: weaponReach = json.path.delete(weaponReach, "[?(@.tokenId == '"+disengagingTokenId+"')]")]
+  
+  [h: combatStatusProp = json.set(combatStatusProp,"weaponReach",weaponReach)]
+  [h: setProperty("combatStatus",combatStatusProp,tokenId)]
+  
+  [h: logMsg = logMsg+disengagingTokenName+" disengaged from "+tokenName+"<br>"]
+}]
+
+[h: "<!-- Clear - empty disengagingTokenId weaponReach attr -->"]
+[h: disCombatStatusProp = json.set(disCombatStatusProp,"weaponReach","[]")]
+[h: setProperty("combatStatus",disCombatStatusProp,disengagingTokenId)]
+
+[h, if( logMsg == "") : logMsg = " No tokens engaged. None removed.<br>"]
+
+[h: fctResult = json.set(fctResult,"logMsg",logMsg)]
+[r: fctResult]

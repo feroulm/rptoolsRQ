@@ -92,6 +92,12 @@ label {
 	font-weight: bold;
 }
 
+.link-subtoken {
+	color: #0078e7;
+	font-weight: 600;
+  text-decoration: none;
+}
+
 .link-token#active {
 	color: #FFFFFF;
 	font-weight: bold;

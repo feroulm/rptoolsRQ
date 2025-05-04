@@ -2,11 +2,11 @@
 [h: "<!-- if = none, return an empty string -->"]
 
 [h: tokenId = arg(0)]
-[h: situationMods = getLibProperty("situationMod","Lib:RQII")]
+[h: propSituationMods = getLibProperty("situationMod","Lib:RQII")]
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
-[h: situationMod = json.get(currentCombatStatus,"situationMod")]
+[h: tokSituationMod = json.get(currentCombatStatus,"situationMod")]
 
-[h: situationModMalusPath = situationMod+".skillGrade"]
-[h: situationModMalus = situationMod+" : <b>"+json.path.read(situationMods,situationModMalusPath)+" %</b>"]
+[h: situationModMalusPath = tokSituationMod+".skillGrade"]
+[h: situationModMalus = tokSituationMod+" : <b>"+json.path.read(propSituationMods,situationModMalusPath)+" %</b>"]
 
-[r, if(situationMod != "none") : situationModMalus] 
+[r, if(tokSituationMod != "none") : situationModMalus] 

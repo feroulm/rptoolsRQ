@@ -1,0 +1,71 @@
+[h: "<!-- Infos for testing -->"]
+TEST tokens array management
+[h: thugTokenId = "457D6AE642AC4C2386067D1B4729204C"]
+[h: lizardTokenId = "B2C6803A77C04871A989E38CAF377DDE"]
+[h: warriorTokenId = "050FF7DD7FEE4D1994AD53D44589AA52"]
+[h: wizardTokenId = "D1DDA762D82144C6845C4AEEDDBBEDB7"]
+
+<br><br>
+<b>Test add warriorTokenId & wizardTokenId to thugTokenId </b>
+<br>
+
+[h: tokenLst = '457D6AE642AC4C2386067D1B4729204C,050FF7DD7FEE4D1994AD53D44589AA52,D1DDA762D82144C6845C4AEEDDBBEDB7']
+[h: engagedTokenId = thugTokenId]
+[h: descEngagement = "thugTokenId contre warriorTokenId, wizardTokenId"]
+
+[r, foreach(engagedTokenId, tokenLst, ""), code: {
+  
+  Updating [r: getName(engagedTokenId)] <br>
+  [h: combatStatusProp = getProperty("combatStatus",engagedTokenId)]
+  [h: weaponReach = json.get(combatStatusProp,"weaponReach")]
+
+  [h: "<!-- reset to a jsonArray (previous usage of weaponReach -->"]
+  [h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+  [h: fctResult = addTokenToWeaponReach(tokenLst,engagedTokenId,weaponReach,descEngagement)]
+  
+  [h: newWeaponReach = json.get(fctResult,"weaponReach")]
+  [h: combatStatusProp = json.set(combatStatusProp,"weaponReach",newWeaponReach)]
+  [h: setProperty("combatStatus",combatStatusProp,engagedTokenId)]
+  [r: json.get(fctResult,"logMsg")]
+}]
+
+[h: tokenLst = tokenLst+","+lizardTokenId]
+<br>Ajout de lizardTokenId (fake - sans MAJ reelle du token)<br>
+
+[r, foreach(engagedTokenId, tokenLst, ""), code: {
+  
+  Updating [r: getName(engagedTokenId)] <br>
+  [h: combatStatusProp = getProperty("combatStatus",engagedTokenId)]
+  [h: weaponReach = json.get(combatStatusProp,"weaponReach")]
+
+  [h: "<!-- reset to a jsonArray (previous usage of weaponReach -->"]
+  [h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+  [h: fctResult = addTokenToWeaponReach(tokenLst,engagedTokenId,weaponReach,descEngagement)]
+  [r: json.get(fctResult,"logMsg")]
+}]
+
+[h:"<!-- get current combat token -->"]
+[h: CurrCLogTokenId = findCurrentCombatToken()]
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId",CurrCLogTokenId)]
+[h: lnkTxt = macroLinkText("openCombatSheets@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
+
+[h: isWaiting = input("junk|<html>Pause : before disengaging <i>warriorTokenId</></html>|ignored|LABEL|SPAN=true")]
+
+<br>Disengage  warriorTokenId :<br>
+[h: fctResult = removeTokenFromWeaponReach(warriorTokenId)]
+[r: json.get(fctResult,"logMsg")]
+
+<br>thugTokenId is closing wizardTokenId<br>
+[h: fctResult = changeWeaponReachBetweenToken(thugTokenId,wizardTokenId,"closing")]
+[r: json.get(fctResult,"logMsg")]
+
+[h: macroParam = json.set("{}", "tab", "main","cLogTokenId",CurrCLogTokenId)]
+[h: lnkTxt = macroLinkText("openCombatSheets@Lib:RQII", "all",macroParam)]
+[h: execLink(lnkTxt,0,"all")]
+
+[h: isWaiting = input("junk|<html>Pause : before outranging <i>wizardTokenId</></html>|ignored|LABEL|SPAN=true")]
+
+<br>wizardTokenId removeClosing and get back to outranging thugTokenId <br>
+[h: fctResult = changeWeaponReachBetweenToken(wizardTokenId,thugTokenId,"outranging")]
+[r: json.get(fctResult,"logMsg")]

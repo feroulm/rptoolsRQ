@@ -16,11 +16,18 @@
 [h: logComment = ""]
 [h: msg = ""]
 
+[h: tokenName = getName(tokenId)]
+
 [h: "<!-- some action can refresh another token and will change this value -->"]
 [h: refreshTokenId = tokenId]
 
 
+
 [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+[h: "<!-- Grab list of opponent from weaponReach for action Owner (tokenId) -->"]
+[h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+[h: "<!-- reset to a jsonArray (this to support not yet migrated token with previous usage of weaponReach -->"]
+[h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
 
 [r, switch(action), code:
   case "disable" : {
@@ -47,6 +54,13 @@
     }]
 		[h: logMsg = msg]
   };
+  case "disengage" :{
+    [h: res = input("junk|<html>"+tokenName+" is disengaging. This will clear its opponents list. Are you sure ?</html>|ignored|LABEL|SPAN=true")]
+    [h, if (res != 0), code:{
+      [h: fctResult = removeTokenFromWeaponReach(tokenId)]
+      [h: logMsg = logMsg+json.get(fctResult,"logMsg")]
+    }]      
+  };
   case "enable" : {
   	[h: "<!-- when joining a combat, token always came back into fight as out and can act only after next mr event-->"]
     [h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
@@ -65,6 +79,31 @@
 
     [h: msg = "Token join the combat."]
 		[h: logMsg = msg]
+  };
+  case "engage" :{
+    [h: tokenLst = getSelected()]
+    [h: msgNoTokenId = strformat("No token selected")]
+    [h: assert((tokenLst != ""),msgNoTokenId,0)]
+    
+    [h: "<!-- the actionOwner must be in the list, even if not selected -->"]
+    [h: tokenLst = tokenLst+","+tokenId]
+    [h: descEngagement = "not yet managed, may not needed"]
+    
+    [r, foreach(engagedTokenId, tokenLst, ""), code: {
+    
+      [h: combatStatusProp = getProperty("combatStatus",engagedTokenId)]
+      [h: weaponReach = json.get(combatStatusProp,"weaponReach")]
+      
+      [h: "<!-- reset to a jsonArray (previous usage of weaponReach -->"]
+      [h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+      [h: fctResult = addTokenToWeaponReach(tokenLst,engagedTokenId,weaponReach,descEngagement)]
+      
+      [h: newWeaponReach = json.get(fctResult,"weaponReach")]
+      [h: combatStatusProp = json.set(combatStatusProp,"weaponReach",newWeaponReach)]
+      [h: setProperty("combatStatus",combatStatusProp,engagedTokenId)]
+      [h: logMsg = logMsg+json.get(fctResult,"logMsg")]
+     
+    }]   
   };
   case "nxtturn" : {
     [h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
@@ -91,60 +130,40 @@
     }]
    
   };
-  case "outmanoeuvred" : {
-  	[h: "<!-- when outmanoeuvred, token cannot attack nor take proactive action for this MR -->"]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","outmanoeuvred")]
-    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+  case "changereach" : {
+    [h:"<!-- Action similar to proactiveAction with the same name. To be used when a change of reach is gained from a combat manoeuvre, NO CA & no rolls are needed. -->"]   
+    [h, if (json.isEmpty(weaponReach)), code:{
+			[h: mpMsg = strformat("%{logMsg} No opponents to be closed. Engage some opponent first or choose another action.")]
+			[h: input("junkVar|<html>"+mpMsg+"</html>|ignored|LABEL|SPAN=true")]
+			[h: addCombatLogEntry(tokenId,"proactiveAction",mpMsg,"Change reach has been cancelled. No CA lost")]
+			[h: abort(0)]
+		};{}]
     
-    [h: setState("Outmanoeuvred", 1, tokenId)]
+    [h: opponentArray = '[]']
+    [h: selectOpponent = '[]']
+    [r, foreach(item, weaponReach, ""), code: {
+      [h: oppTokenId = json.get(item,"tokenId")]
+      [h: oppTokenName = getName(oppTokenId)]
+      [h: opponentArray = json.append(opponentArray, oppTokenId)]
+      [h: selectOpponent = json.append(selectOpponent, oppTokenName)]
+    }]
     
-    [h: logMsg = "Token is outmanoeuvred."]
-    [h: logCombatAction(tokenId,"change",logMsg)]
-
-    [h: msg = logMsg]
+    [h: inputStr = strformat("tip|Select an opponent and the change Reach action:)||LABEL|SPAN=TRUE")]
+    [h: inputStr = json.append(inputStr, strformat("oppIdx|"+selectOpponent+"|Engaged opponents|LIST|VALUE=NUMBER DELIMITER=JSON"))]
+    [h: inputStr = json.append(inputStr, strformat("changeReach|closing,outranging,outmanoeuvring,engaged|<html>Change reach :</html>|RADIO|VALUE=STRING ORIENT=V SELECT=0"))]
+    [h: abort(input(json.toList(inputStr,"##")))] 
+    
+    [h: logMsg = strformat("%{logMsg} %{changeReach} is done (no roll, no CA spent).<br>")]
+    [h: selectedId = json.get(opponentArray,oppIdx)]
+    
+    [h: fctResult = changeWeaponReachBetweenToken(tokenId,selectedId,changeReach)]
+    [h: attLogMsg = json.get(fctResult,"attLogMsg")]
+    [h: defLogMsg = json.get(fctResult,"defLogMsg")]
+    [h: logMsg = logMsg + attLogMsg + defLogMsg]
+    [h: logCombatAction(tokenId,"change",attLogMsg)]
+    [h: logCombatAction(selectedId,"change",defLogMsg)]
   };
-  case "outranged" : {
-  	[h: "<!-- when outranged, token cannot only attack the weapon or limb -->"]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","outranged")]
-    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    
-    [h: setState("Outranged", 1, tokenId)]
-    
-    [h: logMsg = "Token is outranged"]
-    [h: logCombatAction(tokenId,"change",logMsg)]
 
-    [h: msg = "Token is out ranged and can only attack the opponent weapon or limb.<br>"]
-  };
-  case "closed" : {
-  	[h: "<!-- when closed, token cannot parry and only attack with 1d3 dmg -->"]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","closed")]
-    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    
-    [h: setState("Closed", 1, tokenId)]
-    
-    [h: logMsg = "Token is closed"]
-    [h: logCombatAction(tokenId,"change",logMsg)]
-
-    [h: msg = "Token is closed, attack is limited to 1d3 dmg and parry is not possible.<br>"]
-  };
-  case "delreachmalus" : {
-  	[h: "<!-- remove outmanoeuvred, closed or outranged status -->"]
-  	[h: previousMalus = json.get(currentCombatStatus,"weaponReach")]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
-    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-
-    [h, switch(previousMalus):
-      case "outmanoeuvred": setState("Outmanoeuvred", 0, tokenId);
-      case "outranged" : setState("Outranged", 0, tokenId);
-      case "closed": setState("Closed", 0, tokenId);
-    ]
-    
-    [h: logMsg = "Remove "+previousMalus]
-    [h: logCombatAction(tokenId,"change",logMsg)]
-
-    [h: msg = "Token is no more "+previousMalus]
-    [h: actionLabel = logMsg]
-  };
   case "delprone" : {
     [h: currentCombatStatus = json.set(currentCombatStatus,"situationMod","none")]
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]

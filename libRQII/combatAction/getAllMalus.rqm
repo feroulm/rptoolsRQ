@@ -1,0 +1,17 @@
+[h: "<!-- getAllMalus - Function to return all Malus (fatigue, situation like prone, etc.) -->"]
+[h: "<!-- if = none, return an empty string -->"]
+
+[h: tokenId = arg(0)]
+[h: tokenMap = getCurrentMapName()]
+
+[h: malusInfo = ""]
+
+[h: fatMalus = getFatigueMalus(tokenId)]
+[h, if(fatMalus!=""): malusInfo = fatMalus+" ";""]
+
+[h: smodMalus = getSituationModMalus(tokenId)]
+[h, if(smodMalus!=""): malusInfo = malusInfo+smodMalus+" ";""]
+
+[r, if(malusInfo != ""), code:{
+  <span style="font-weight: bold;color:red">Malus :</span> [r: malusInfo]<br><br>
+};{}]

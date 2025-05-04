@@ -30,6 +30,11 @@
 [h: firstEvade = json.get(currentCombatStatus,"firstEvade")]
 [h: chargeStatus = json.get(currentCombatStatus,"chargeStatus")]
 
+[h: "<!-- Grab list of opponent from weaponReach -->"]
+[h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+[h: "<!-- reset to a jsonArray (this to support not yet migrated token with previous usage of weaponReach -->"]
+[h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+
 [h: switchToNextToken = 1]
 
 [h: "<!-- Check and Warn if the chosen action is breaking a current spell casting"]
@@ -82,12 +87,7 @@
   case "Outmanoeuvre" : {
   	[h: res = input("junk|Outmanoeuvre - Group opposed test of Evade skills are done ?|ignored|LABEL|SPAN=true")]
     [h: abort(res)]
-  	[h: action = "attack"]
-  };
-  case "changeRange" : {
-  	[h: res = input("junk|Change Range - Group opposed test of Evade skills is done ?|ignored|LABEL|SPAN=true")]
-    [h: abort(res)]
-  	[h: action = "attack"]
+  	[h: action = "changereach"]
   };
   case "chargeCrash" : {
   	<!-- charge is finished -->
@@ -152,7 +152,7 @@
 			[h: abort(0)]
 		}]
 		
-    [h: "<!-- decrement lostProCA if a parry or an evade is done as a delayed action-->"]
+    [h: "<!-- decrement lostProCA , when a parry or an evade is done as a delayed action , we use the attack action-->"]
     [h, if (lostProCA > 0), code: {
       [h: lostProCA = lostProCA -1 ]
       [h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",lostProCA)]	
@@ -161,19 +161,54 @@
     
 		[h: logMsg = strformat("%{logMsg} %{logTokenStatus}")]
 		
-    [h: remainingCA = activeCA - 1]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
-    [h: proactiveCA = proactiveCA + 1]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
-    
-    [h, if (remainingCA == 0): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","out");currentCombatStatus = json.set(currentCombatStatus,"turnStatus","off")]
-    [h, if (remainingCA == 0): setState("Out", 1, tokenId)]
-    
-		[h: "<!-- set activeTurn to 0 to indicate that token played is turn - mandatory (this is checked in onInitiativeChangeRequest -->"]
-    [h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]
+    [h: currentCombatStatus = processProactiveCA(currentCombatStatus,tokenId)]
     
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
   
+  };
+  case "changereach" : {
+    [h, if (json.isEmpty(weaponReach)), code:{
+			[h: mpMsg = strformat("%{logMsg} No opponents. Engage some opponent first or choose another action.")]
+			[h: input("junkVar|<html>"+mpMsg+"</html>|ignored|LABEL|SPAN=true")]
+			[h: addCombatLogEntry(tokenId,"proactiveAction",mpMsg,"Change reach has been cancelled. No CA lost")]
+			[h: abort(0)]
+		};{}]
+    
+    [h: attLogMsg = ""]
+    [h: defLogMsg = ""]
+    [h: opponentArray = '[]']
+    [h: selectOpponent = '[]']
+    [r, foreach(item, weaponReach, ""), code: {
+      [h: oppTokenId = json.get(item,"tokenId")]
+      [h: oppTokenName = getName(oppTokenId)]
+      [h: opponentArray = json.append(opponentArray, oppTokenId)]
+      [h: selectOpponent = json.append(selectOpponent, oppTokenName)]
+    }]
+    
+    [h: inputStr = strformat("tip|Select an opponent and the change Reach action:)||LABEL|SPAN=TRUE")]
+    [h: inputStr = json.append(inputStr, strformat("oppIdx|"+selectOpponent+"|Engaged opponents|LIST|VALUE=NUMBER DELIMITER=JSON"))]
+    [h: inputStr = json.append(inputStr, strformat("changeReach|closing,outranging,outmanoeuvring|<html>Change reach :</html>|RADIO|VALUE=STRING ORIENT=V SELECT=0"))]
+    [h: inputStr = json.append(inputStr, strformat("actionResult|Critical,Success,Failure,Fumble|<html><br><br>What do you achieve ?&nbsp;</html>|RADIO|VALUE=STRING ORIENT=V SELECT=1"))]
+    [h: abort(input(json.toList(inputStr,"##")))]
+    
+    
+    [h: logMsg = strformat("%{logMsg} %{changeReach} is a %{actionResult}.<br>")]
+    [h: selectedId = json.get(opponentArray,oppIdx)]
+    [h: selectedTokenName = json.get(selectOpponent,oppIdx)]
+    [h, if((actionResult == "Critical") || (actionResult == "Success")),code :{
+      [h: fctResult = changeWeaponReachBetweenToken(tokenId,selectedId,changeReach)]
+      [h: currentCombatStatus = json.get(fctResult,"attCombatStatusProp")]
+      [h: attLogMsg = json.get(fctResult,"attLogMsg")]
+      [h: defLogMsg = json.get(fctResult,"defLogMsg")]
+      [h: logCombatAction(tokenId,"change",attLogMsg)]
+      [h: logCombatAction(selectedId,"change",defLogMsg)]
+    }]
+     
+    [h: currentCombatStatus = processProactiveCA(currentCombatStatus,tokenId)]
+    [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
+    [h, if(changeReach == "outmanoeuvring"),code :{
+      [h: inputStr = strformat("tip|%{selectedTokenName} is now outmanoeuvred. <br>If other opponents also failed their roll, use to action <i>Change Reach</i> in the section <i>Change after combat action</i> to modify their status without impacting the CA:)||LABEL|SPAN=TRUE")]
+    }]
   };
   case "chargeRiposte" : {
 		[h: actionResult = askActionResult(tokenId,logMsg,actionLabel)]
@@ -300,7 +335,8 @@
 		[h, if ((actionResultType == "Failure") || (actionResultType == "Fumble")) : castCA = 1 ]
 		[h: remainingCastCA = castCA - 1]
 		[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",remainingCastCA)]
-		[h: remainingCA = activeCA - 1]
+		
+    [h: remainingCA = activeCA - 1]
 		[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",remainingCA)]
 		[h: proactiveCA = proactiveCA + 1]
 		[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",proactiveCA)]
@@ -464,6 +500,8 @@
 	[h: caStatus = json.get(currentCombatStatus,"activeCA")+"/"+json.get(currentCombatStatus,"ccCA")]
 	[h: commentMsg = "Remaining CA :"+caStatus]
 	[h: logComment = strformat("%{commentMsg}<br>%{logComment}")]
+  
+  [h, if (action == "changereach") : logMsg = logMsg + attLogMsg + defLogMsg]
   [h, if (action == "firstCast"), code:{
     [h: "<!-- We log also to the tokenLog -->"]
     [h: addCombatLogEntry(tokenId,"proactiveAction",logMsg,logComment,"1")]

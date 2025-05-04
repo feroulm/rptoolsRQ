@@ -36,6 +36,9 @@
 [h: lostCA = json.get(tCombatStatus,"lostCA")]
 [h: firstEvade = json.get(tCombatStatus,"firstEvade")]
 [h: weaponReach = json.get(tCombatStatus,"weaponReach")]
+[h: "<!-- reset to a jsonArray (this to support not yet migrated token with  previous usage of weaponReach -->"]
+  [h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+[h: weaponReachStatus = "ok"]
 [h: currWeaponNb = json.get(tCombatStatus,"currWeaponNb")]
 [h: defWeaponNb = json.get(tCombatStatus,"defWeaponNb")]
 
@@ -51,8 +54,7 @@
 [h, if(castCA > 0): castAction = "pursueCast"]
 [h, if(reloadCA == 0): rangeAction = "Shoot"]
 [h, if(reloadCA > 0): rangeAction = "Reload"]
-[h, if(weaponReach == "outranged"): changeRangeAction = "Closing"]
-[h, if(weaponReach == "closed"): changeRangeAction = "Disengaging"]
+[h, if(weaponReachStatus == "outranged"): changeRangeAction = "Closing"; changeRangeAction = "Disengaging"]
 [h, if(chargeStatus == "prepareCharge"): chargeAction = "Continue Charging"]
 [h, if(chargeStatus == "passageDone"): chargeAction = "Finishing Charge Passage"]
 
@@ -64,6 +66,7 @@
   <div class="pure-u-1">
     <table class="content pure-table table-striped-custom">
       <tbody>
+      [h: notEngagedMsg = "- Not engaged."]
       [r, if (activeTurn), code:{      
         <tr class="active">
           <td><img src="[r: getTokenPortrait(70,tokenId,tokenMap)]"></img></td>
@@ -80,6 +83,7 @@
             }]
           </td>
           <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
+          <td>Close combat : <br>[r: showWeaponReach(weaponReach)]</td>
         </tr>
       };{
         <tr>
@@ -94,10 +98,11 @@
             }]
           </td>
           <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
+          <td>Close combat : <br>[r, if(json.isEmpty(weaponReach)) : notEngagedMsg ; showWeaponReach(weaponReach)]</td>
         </tr>
       }]
       <tr>
-        <td colspan="4">
+        <td colspan="5">
           [r,if(isGM()): getGMNotes(tokenId,tokenMap)+getNotes(tokenId,tokenMap); getNotes(tokenId,tokenMap)]
         </td>  
       </tr>
@@ -110,8 +115,8 @@
 
 <div class="container pure-g">
   <div class="pure-u-1">
-    [r, if(weaponReach != "ok"),code:{
-      Token is currently <i>[r: weaponReach]</i>.<br>
+    [r, if(weaponReachStatus != "ok"),code:{
+      Token is currently <i>[r: weaponReachStatus]</i>.<br>
     }]
     [r, if(situationMod == "prone"): "<b>Token is prone, -20% malus on fighting action</b>"]<br>
     
@@ -132,7 +137,7 @@
 [h: noProactiveActionMsg = ""]
 
 <!-- token can do a proactive action when it is his turn, if he has some CA left, if he has not played already during this cycle and if he has not lose proactiveCA -->
-[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReach != "outmanoeuvred")&&(chargeStatus == "none")),code:{
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReachStatus != "outmanoeuvred")&&(chargeStatus == "none")),code:{
   [h: showProactiveAction = 1]
   [h: showNoAction = 0]
 }]
@@ -147,7 +152,7 @@
   [h: showNoAction = 0]
 }]
 <!-- case when outmanoeuvred -->
-[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(weaponReach == "outmanoeuvred")),code:{
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(weaponReachStatus == "outmanoeuvred")),code:{
   [h: showNoProactiveAction = 1]
   [h: showNoAction = 0]
 }]
@@ -175,7 +180,7 @@
 <!-- Reason for noProactive action -->
 [h, if (lostProCA>0): noProactiveActionMsg = noProactiveActionMsg + "<li>You have still "+lostProCA+ " lost proactive CA because of an event, you can only do reactive actions for this turn</li>"]
 [h, if (firstEvade>0): noProactiveActionMsg = noProactiveActionMsg + "<li>first Evade done in previous turn, no proactive action for this turn</li>"]
-[h, if (weaponReach == "outmanoeuvred"): noProactiveActionMsg = noProactiveActionMsg + "<li>token is outmanoeuvred, no proactive action for this MR</li>"]
+[h, if (weaponReachStatus == "outmanoeuvred"): noProactiveActionMsg = noProactiveActionMsg + "<li>token is outmanoeuvred, no proactive action for this MR</li>"]
 [h, if (turnStatus == "disabled"): noActionMsg = noActionMsg + "<li>turn is disabled, token is out of combat</li>"]
 [h, if (turnStatus == "off"): noActionMsg = noActionMsg + "<li>Token has already play his turn during this cycle</li>"]
 
@@ -199,7 +204,7 @@
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
              <option>Move</option>
-             [r, if(weaponReach != "ok"): "<option>"+changeRangeAction+"</option>"]
+             [r, if(weaponReachStatus != "ok"): "<option>"+changeRangeAction+"</option>"]
              <option>Delay</option>
              <option>Dither</option>
              <option>Ready Weapon</option>
@@ -228,7 +233,7 @@
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
              <option>Move</option>
-             [r, if(weaponReach != "ok"): "<option>"+changeRangeAction+"</option>"]
+             [r, if(weaponReachStatus != "ok"): "<option>"+changeRangeAction+"</option>"]
              <option>Delay</option>
              <option>Dither</option>
              <option>Ready Weapon</option>
@@ -291,13 +296,6 @@
         [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
         <a class="button-small pure-button" href="[r: link]">Outmanoeuvre</a>
       </td>
-      [r, if(weaponReach != "ok"), code:{
-      <td>
-        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","changeRange","actionLabel",changeRangeAction,"srcWindow",srcWindow)]
-        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
-        <a class="button-small pure-button" href="[r: link]">[r:changeRangeAction]</a>
-      </td>
-      }]
       [r, if(chargeStatus == "none"), code:{
       <td>
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","chargePrepare","actionLabel","Charging","srcWindow",srcWindow)]
@@ -333,6 +331,11 @@
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","regainFooting","actionLabel","Regain Footing","srcWindow",srcWindow)]
         [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
         <a class="button-small pure-button" href="[r: link]">Regain Footing</a>
+      </td>
+      <td>
+        [h: macroParam = json.set("{}", "tokenId", tokenId,"action","changereach","actionLabel","changeReach","srcWindow",srcWindow)]
+        [h: link = macroLinkText("updateCombatProactive@Lib:RQII", "all",macroParam)]
+        <a class="button-small pure-button" href="[r: link]">Closing / Outranging</a>
       </td>
       <td>
         [h: macroParam = json.set("{}", "tokenId", tokenId,"action","proactiveNodice","actionLabel","Ready Weapon","srcWindow",srcWindow)]
@@ -533,21 +536,18 @@
           [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow",srcWindow)]
           [h: link = macroLinkText("openHumCombatAttr@Lib:RQII", "all",macroParam)]
           <a class="button-small pure-button" href="[r: link]">Change Charac & Weapon</a>
-        </td>
-      [r, if(weaponReach != "outmanoeuvred"), code:{
+        </td>    
         <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","outmanoeuvred","srcWindow",srcWindow)]
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","changereach","srcWindow",srcWindow)]
           [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Outmanoeuvred</a>
+          <a class="button-small pure-button" href="[r: link]">Change reach</a>
         </td>
-      }]
-      [r, if(weaponReach != "outranged"), code:{
+      
         <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","outranged","srcWindow",srcWindow)]
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","engage","srcWindow",srcWindow)]
           [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Outranged</a>
-        </td>
-      }]            
+          <a class="button-small pure-button" href="[r: link]">Engage</a>
+        </td>       
       </tr>
       <tr>
         <td>
@@ -583,13 +583,12 @@
           <a class="button-small pure-button" href="[r: link]">Enable</a>
         </td>
       }]
-      [r, if(weaponReach != "closed"), code:{
+      
         <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","closed","srcWindow",srcWindow)]
+          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","disengage","srcWindow",srcWindow)]
           [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Closed</a>
-        </td>
-      }]     
+          <a class="button-small pure-button" href="[r: link]">Disengage</a>
+        </td>      
       </tr>
       <tr>
       [r, if(spellReady>0), code:{
@@ -599,13 +598,7 @@
           <a class="button-small pure-button" href="[r: link]">Release Spell</a>
         </td>
       }]
-      [r, if(weaponReach != "ok"), code:{
-        <td>
-          [h: macroParam = json.set("{}", "tokenId", tokenId,"action","delreachmalus","srcWindow",srcWindow)]
-          [h: link = macroLinkText("updateCombat@Lib:RQII", "all",macroParam)]
-          <a class="button-small pure-button" href="[r: link]">Remove reach malus</a>
-        </td>
-      }]
+    
       </tr>
     </table>
   </div>
@@ -667,7 +660,7 @@
         <td>situationMod</td><td>[r: situationMod]</td>
         <td>reactiveCA</td><td> [r: reactiveCA] </td>
         <td>magicCA</td><td> [r: magicCA] </td>
-        <td>weaponReach</td><td> [r: weaponReach]</td>
+        <td>weaponReach</td><td> </td>
         <td>defWeaponNb</td><td> [r: defWeaponNb]</td>
       </tr>
       <tr>

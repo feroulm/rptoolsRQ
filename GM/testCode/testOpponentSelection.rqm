@@ -1,0 +1,28 @@
+
+[h: thugTokenId = "457D6AE642AC4C2386067D1B4729204C"]
+
+[h: "<!-- Grab list of opponent from weaponREach -->"]
+[h: combatStatusProp = getProperty("combatStatus",thugTokenId)]
+[h: weaponReach = json.get(combatStatusProp,"weaponReach")]
+
+[h: "<!-- The trick is that the arrays have the same order so opponentArray[1] is the id of the tokenName in selectOpponent[1] -->"]
+[h: opponentArray = '[]']
+[h: selectOpponent = '[]']
+[r, foreach(item, weaponReach, ""), code: {
+  [h: oppTokenId = json.get(item,"tokenId")]
+  [h: oppTokenName = getName(oppTokenId)]
+  [h: opponentArray = json.append(opponentArray, oppTokenId)]
+  [h: selectOpponent = json.append(selectOpponent, oppTokenName)]
+}]
+
+
+[h: inputStr = strformat("tip|Select an opponent for closing action:)||LABEL|SPAN=TRUE")]
+[h: inputStr = json.append(inputStr, strformat("oppIdx|"+selectOpponent+"|Engaged opponents|LIST|VALUE=NUMBER DELIMITER=JSON"))]
+[h: inputStr = json.append(inputStr, strformat("attRoll|0|Att (Combat Style) roll|Text"))]
+[h: inputStr = json.append(inputStr, strformat("defRoll|0|Def (Evade) roll |Text"))]
+[h: abort(input(json.toList(inputStr,"##")))]
+
+Select Index : [r: oppIdx]<br>
+Correspond to oppTokenID : [r: selectedId = json.get(opponentArray,oppIdx)]<br>
+TokenName using the id from opponentArray : [r: getName(selectedId)]<br>
+TokenName using the oppIdx from selectOpponent array : [r: json.get(selectOpponent,oppIdx)]<br>
