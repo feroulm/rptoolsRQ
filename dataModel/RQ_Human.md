@@ -3,6 +3,7 @@
 Current version : v1.0.2
 
 History :
+- v1.0.3 : modify the format of the weaponReach attribute in the combatStatus property. No need to patch the token it will be done the first time a new engage / disengage action is achieved.
 - v1.0.2 : update combatStatus property to manage holdmagic action
 - v1.0.1 : add modelVersion property
 - v1.0.0 : First stable version (including all improvment to manage combat, pnj sheet, etc.)
@@ -99,20 +100,20 @@ Used on each token during a combat to track various status
     "lostProCA": 0,
     "lostCA": 0,
     "firstEvade": 0,
-    "weaponReach": "ok",
+    "weaponReach": [],
     "currWeaponNb": 1,
     "defWeaponNb": 1
 }
 ```
 
 
-TST_WARRIOR1 (two weapon + magCA + bon CA + activeTur = 1) : 
+TST_WARRIOR1 (two weapon + magCA + bon CA + activeTur = 1 + no opponent in weaponReach) : 
 ```
- {"activeCA":5,"ccCA":5,"baseCA":2,"bonusCA":1,"weaponCA":1,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":1,"weaponReach":"ok","currWeaponNb":2,"defWeaponNb":2}
+ {"activeCA":5,"ccCA":5,"baseCA":2,"bonusCA":1,"weaponCA":1,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":1,"weaponReach":[],"currWeaponNb":2,"defWeaponNb":2}
 ```
-TST_WARRIOR2 (one weapon + magCA) :
+TST_WARRIOR2 (one weapon + magCA + no opponent in weaponReach) :
 ```
-{"activeCA":3,"ccCA":3,"baseCA":2,"bonusCA":0,"weaponCA":0,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":0,"weaponReach":"ok","currWeaponNb":1,"defWeaponNb":1}
+{"activeCA":3,"ccCA":3,"baseCA":2,"bonusCA":0,"weaponCA":0,"magicCA":1,"proactiveCA":0,"reactiveCA":0,"castCA":0,"reloadCA":0,,"lostProCA":0,"lostCA":0,"turnStatus":"on","activeTurn":0,"weaponReach":[],"currWeaponNb":1,"defWeaponNb":1}
 ```
 
 * **activeCA** : current remaining CA
@@ -133,12 +134,18 @@ TST_WARRIOR2 (one weapon + magCA) :
   * (out) : token is out for this cycle (because is has no more remaining CA)
   * (disabled) : token can do nothing because is totally out of the combat : incapacitate, dead, etc.
 * **activeTurn** : 1 if it is the turn of the token , 0 otherwise.
-* **weaponReach** : indicate wether the token can strike or not.
-  * **ok** : nothing special. Default value.
-  * **outmanoeuvred** : the token can't attack nor take proactive action for this MR
-  * **closed** : the token cannot parry because is weapon is to long, he can only attack with a damage of 1d3+1 (representing the pommel / hilt of his weapon)
-  * **outranged** : the token can only attack the weapon of its opponent (or limb of the huge creature i.e a tentacle)
-* **situationMod** : indicate situation Combat modifier which can change during a combat (no global situation like darkness, etc.).
+* **weaponReach** : json array of engaged opponent with the reachStatus
+  * **tokenId** : nothing special. Default value.
+  * **descEngagement** : not use yet, in case we want to describe an engagement.
+  * **reachStatus** : status of the opponent from the point of vue of the token
+    * **engaged** : not enough difference between the weapon reach to enable closing or outraning. Require a disengage action to stop the engagement.
+    * **outranging** : Engaged against an opponent with shorter weapon. The opponent is outranged. This status enable to stop the engagement without the need for disengage action (on the contrary the outranged opponent can't do that).
+    * **outranged** : Engaged by an opponent with a longer weapon. Can only parry and Require a disengage action to stop the engagement.
+    * **closing** : Engaged closely against an opponent with a longer weapon.
+    * **closed** : Engaged by an opponent with a shorter weapon. Attack is limited to 1d3 damage. Require a disengage action to stop the engagement.
+    * **outmanoeuvring** : Engaged agains an opponent who can't execute an attack.
+    * **outmanoeuvred** : Engaged by an opponent , without being able to attack him. Do not require a disengage action to stop the engagement on the next MR.
+**situationMod** : indicate situation Combat modifier which can change during a combat (no global situation like darkness, etc.).
   * **none** : nothing special. Default value.
   * **prone** : -20% malus for attack and parry
   * **blinded** : -80% malus for attack and parry
@@ -151,6 +158,21 @@ TST_WARRIOR2 (one weapon + magCA) :
 * **defWeaponNb** : def nb of weapon usually hold by the token (usually set during charchetr creation adn use to reste a token combat status before a new combat
 * **spellReady** : indicate if a spell is ready (1) but not yet cast because the token is using holdmagic
 
+weaponReach example :
+```
+"weaponReach":   [
+    {
+      "tokenId": "457D6AE642AC4C2386067D1B4729204C"
+      "reachStatus ": "engaged",
+      "descEngagement": "Duel TST_WARRIOR1 & TST_THUG1"     
+    },
+   {
+      "tokenId": "050FF7DD7FEE4D1994AD53D44589AA52"
+      "reachStatus ": "closing",
+      "descEngagement": "Duel TST_WARRIOR1 & TST_THUG1"   
+    }
+  ]
+```
 
 ### combatLog
 

@@ -161,3 +161,61 @@ graph LR
 | ---- | ---- |
 | processReactiveCA | UDF : decrease remaining CA and increase nb of reactive CA spent.<br> Update the state & turnStatus if token is out of CA.|
 | another UDF | |
+
+## Engage & Disengage opponent
+
+### Principle
+
+We use the the *weaponReach* attribute of the *combatStatus* to manage opponent.
+
+*weaponReach* example :
+```
+"weaponReach":   [
+    {
+      "tokenId": "457D6AE642AC4C2386067D1B4729204C"
+      "reachStatus ": "engaged",
+      "descEngagement": "Duel TST_WARRIOR1 & TST_THUG1"     
+    },
+   {
+      "tokenId": "050FF7DD7FEE4D1994AD53D44589AA52"
+      "reachStatus ": "closing",
+      "descEngagement": "Duel TST_WARRIOR1 & TST_THUG1"   
+    }
+  ]
+```
+
+All the actions, related to engagement, are from the *Combat* tab on the *View Sheet* window using action button.
+* These buttons are implemented in *combatAction/editCombatAction* (for the view).
+
+Engaging an opponent is done by using the button **Engage** and by selecting the token you want to engage on the map.
+* This logic is implemented in *combatAction/updateCombat*.
+  * This action update the *weaponReach* attribute of all the opponents, including the action owner.
+* If no token are selected , nothing happens.
+
+Disengaging an opponent is done by using the button **Disengage** 
+* This logic is implemented in *combatAction/updateCombat*.
+  * This action clear the weaponReach attr of the action owner and remove its record from the *weaponReach* attribute of all its opponents.
+
+Closing / Outranging / Outmanoeuvre are done using :
+* Buttons *Outmanoeuvre* & *Closing / Outranging* : As a proactive action (meaning its cost some CA)
+  * This logic is implemented in *combatAction/updateCombatProactive*.
+* Button *Change reach* : To be used when the change reach costs no CA (for exemple for the initial outranging condition based on the weapon size, or if the change reach is gained as a combat manoeuvre, etc.)
+  * This logic is implemented in *combatAction/updateCombat*.  
+
+### Macros and functions
+
+libRQII/combatAction/editCombatAction.rqm : view
+libRQII/combatAction/viewCombatSheets.rqm : view
+libRQII/combatAction/updateCombat.rqm : action logic
+libRQII/combatAction/updateCombatProactive.rqm : action logic
+
+libRQII/eventHandler/onCampaignLoad.rqm : Function
+ - libRQII/combatAction/addTokenToWeaponReach.rqm
+ - libRQII/combatAction/changeWeaponReachBetweenToken.rqm
+ - libRQII/combatAction/removeTokenFromWeaponReach.rqm
+ - libRQII/combatAction/showWeaponReach.rqm
+
+libRQII/combatAction/testEngagementMgt.rqm : test
+GM/testCode/testOpponentSelection.rqm : test
+
+libRQII/yCommon/rqCss.rqm : Design

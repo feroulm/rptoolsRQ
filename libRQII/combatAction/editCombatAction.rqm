@@ -37,8 +37,8 @@
 [h: firstEvade = json.get(tCombatStatus,"firstEvade")]
 [h: weaponReach = json.get(tCombatStatus,"weaponReach")]
 [h: "<!-- reset to a jsonArray (this to support not yet migrated token with  previous usage of weaponReach -->"]
-  [h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
-[h: weaponReachStatus = "ok"]
+[h, if (json.type(weaponReach) != "ARRAY") : weaponReach = '[]']
+
 [h: currWeaponNb = json.get(tCombatStatus,"currWeaponNb")]
 [h: defWeaponNb = json.get(tCombatStatus,"defWeaponNb")]
 
@@ -54,7 +54,6 @@
 [h, if(castCA > 0): castAction = "pursueCast"]
 [h, if(reloadCA == 0): rangeAction = "Shoot"]
 [h, if(reloadCA > 0): rangeAction = "Reload"]
-[h, if(weaponReachStatus == "outranged"): changeRangeAction = "Closing"; changeRangeAction = "Disengaging"]
 [h, if(chargeStatus == "prepareCharge"): chargeAction = "Continue Charging"]
 [h, if(chargeStatus == "passageDone"): chargeAction = "Finishing Charge Passage"]
 
@@ -83,7 +82,7 @@
             }]
           </td>
           <td>[r: if((isNPC(tokenId) && !isGM()),"",showActionSkillsOnly(tokenId))]</td>
-          <td>Close combat : <br>[r: showWeaponReach(weaponReach)]</td>
+          <td>Close combat : <br>[r, if(json.isEmpty(weaponReach)) : notEngagedMsg ; showWeaponReach(weaponReach)]</td>
         </tr>
       };{
         <tr>
@@ -115,9 +114,6 @@
 
 <div class="container pure-g">
   <div class="pure-u-1">
-    [r, if(weaponReachStatus != "ok"),code:{
-      Token is currently <i>[r: weaponReachStatus]</i>.<br>
-    }]
     [r, if(situationMod == "prone"): "<b>Token is prone, -20% malus on fighting action</b>"]<br>
     
     <!-- Show last action result (erased at each refresh) -->
@@ -137,7 +133,7 @@
 [h: noProactiveActionMsg = ""]
 
 <!-- token can do a proactive action when it is his turn, if he has some CA left, if he has not played already during this cycle and if he has not lose proactiveCA -->
-[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(weaponReachStatus != "outmanoeuvred")&&(chargeStatus == "none")),code:{
+[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(firstEvade<=0)&&(chargeStatus == "none")),code:{
   [h: showProactiveAction = 1]
   [h: showNoAction = 0]
 }]
@@ -151,11 +147,7 @@
   [h: showNoProactiveAction = 1]
   [h: showNoAction = 0]
 }]
-<!-- case when outmanoeuvred -->
-[h, if ((activeTurn)&&(activeCA>0)&&(turnStatus == "on")&&(lostProCA<=0)&&(weaponReachStatus == "outmanoeuvred")),code:{
-  [h: showNoProactiveAction = 1]
-  [h: showNoAction = 0]
-}]
+
 [h, if ((activeTurn)&&(turnStatus == "disabled")),code:{
   [h: showProactiveAction = 0]
   [h: showNoProactiveAction = 0]
@@ -180,7 +172,6 @@
 <!-- Reason for noProactive action -->
 [h, if (lostProCA>0): noProactiveActionMsg = noProactiveActionMsg + "<li>You have still "+lostProCA+ " lost proactive CA because of an event, you can only do reactive actions for this turn</li>"]
 [h, if (firstEvade>0): noProactiveActionMsg = noProactiveActionMsg + "<li>first Evade done in previous turn, no proactive action for this turn</li>"]
-[h, if (weaponReachStatus == "outmanoeuvred"): noProactiveActionMsg = noProactiveActionMsg + "<li>token is outmanoeuvred, no proactive action for this MR</li>"]
 [h, if (turnStatus == "disabled"): noActionMsg = noActionMsg + "<li>turn is disabled, token is out of combat</li>"]
 [h, if (turnStatus == "off"): noActionMsg = noActionMsg + "<li>Token has already play his turn during this cycle</li>"]
 
@@ -204,7 +195,7 @@
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
              <option>Move</option>
-             [r, if(weaponReachStatus != "ok"): "<option>"+changeRangeAction+"</option>"]
+             <option>Closing / Outranging</option>
              <option>Delay</option>
              <option>Dither</option>
              <option>Ready Weapon</option>
@@ -233,7 +224,7 @@
              <option>[r: castAction]</option>
              <option>[r: rangeAction]</option>
              <option>Move</option>
-             [r, if(weaponReachStatus != "ok"): "<option>"+changeRangeAction+"</option>"]
+             <option>Closing / Outranging</option>
              <option>Delay</option>
              <option>Dither</option>
              <option>Ready Weapon</option>
