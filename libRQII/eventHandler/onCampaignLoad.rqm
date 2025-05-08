@@ -23,6 +23,7 @@
 [h: defineFunction("showWeaponReach","showWeaponReach@Lib:RQII")]
 [h: defineFunction("removeTokenFromWeaponReach","removeTokenFromWeaponReach@Lib:RQII")]
 [h: defineFunction("changeWeaponReachBetweenToken","changeWeaponReachBetweenToken@Lib:RQII")]
+[h: defineFunction("resetWeaponReachOutmanoeuvred","resetWeaponReachOutmanoeuvred@Lib:RQII")]
 
 [h: "<!-- Pursuit Management UDFs -->"]
 [h: defineFunction("createNewPursuitToken","createNewPursuitToken@Lib:RQII")]

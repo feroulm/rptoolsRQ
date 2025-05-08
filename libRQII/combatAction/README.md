@@ -166,7 +166,7 @@ graph LR
 
 ### Principle
 
-We use the the *weaponReach* attribute of the *combatStatus* to manage opponent.
+We use the the *weaponReach* attribute of the *combatStatus* to manage opponents.
 
 *weaponReach* example :
 ```
@@ -184,7 +184,7 @@ We use the the *weaponReach* attribute of the *combatStatus* to manage opponent.
   ]
 ```
 
-All the actions, related to engagement, are from the *Combat* tab on the *View Sheet* window using action button.
+All the actions, related to engagement, are done from the *Combat* tab on the *View Sheet* window using action button.
 * These buttons are implemented in *combatAction/editCombatAction* (for the view).
 
 Engaging an opponent is done by using the button **Engage** and by selecting the token you want to engage on the map.
@@ -213,6 +213,7 @@ libRQII/eventHandler/onCampaignLoad.rqm : Function
  - libRQII/combatAction/addTokenToWeaponReach.rqm
  - libRQII/combatAction/changeWeaponReachBetweenToken.rqm
  - libRQII/combatAction/removeTokenFromWeaponReach.rqm
+ - libRQII/combatAction/resetWeaponReachOutmanoeuvred : used to when switching to nextmr
  - libRQII/combatAction/showWeaponReach.rqm
 
 libRQII/combatAction/testEngagementMgt.rqm : test

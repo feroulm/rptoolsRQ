@@ -13,7 +13,7 @@
 	[h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
 	[h: currentCombatStatus = json.set(currentCombatStatus,"reloadCA",0)]
 	[h: currentCombatStatus = json.set(currentCombatStatus,"firstEvade",0)]
-	[h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
+	[h: currentCombatStatus = json.set(currentCombatStatus,"weaponReach","[]")]
 	[h: currentCombatStatus = json.set(currentCombatStatus,"lostProCA",0)]
 	[h: currentCombatStatus = json.set(currentCombatStatus,"lostCA",0)]
 	[h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]

@@ -53,8 +53,8 @@
     "lostProCA": 0,
     "lostCA": 0,
     "firstEvade": 0,
-    "weaponReach": "ok",
-    "currWeaponNb": 1,
+    "weaponReach": "[]",
+    "currWeaponNb": 0,
     "defWeaponNb": 1,
 		"cLogTokenId": "none",
 		"versionTag" : "v3.0.0"

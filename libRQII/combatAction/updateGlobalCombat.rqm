@@ -57,6 +57,10 @@
     [h, foreach(item, tokens, ""), code: {
       [h: tokenId = json.get(item, "tokenId")]
 			[h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+      
+      [h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
+      [h: fctResult = resetWeaponReachOutmanoeuvred(tokenId,weaponReach)]
+      [h: currentCombatStatus = json.get(fctResult,"attCombatStatusProp")]
 			
 			[h: ccCA = json.get(currentCombatStatus,"ccCA")]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",ccCA)]
@@ -64,9 +68,6 @@
 			[h: currentCombatStatus = json.set(currentCombatStatus,"proactiveCA",0)]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
 				
-			[h: weaponReach = json.get(currentCombatStatus,"weaponReach")]
-			[h, if(weaponReach == "outmanoeuvred"): currentCombatStatus = json.set(currentCombatStatus,"weaponReach","ok")]
-			
 			[h: turnStatus = json.get(currentCombatStatus,"turnStatus")]
 			[h, if(turnStatus != "disabled"): currentCombatStatus = json.set(currentCombatStatus,"turnStatus","on")]
 			[h: currentCombatStatus = json.set(currentCombatStatus,"activeTurn",0)]

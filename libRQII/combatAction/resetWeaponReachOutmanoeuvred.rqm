@@ -1,0 +1,26 @@
+[h: "<!-- resetWeaponReachOutmanoeuvred - Function that reset outmanoeuvred token to engaged -->"]
+[h: "<!-- Params : -->"]
+[h: "<!--   attTokenId : the token who is being changed -->"]
+[h: "<!--   weaponReach : weaponReach prop of the token -->"]
+[h: "<!-- return a tokens jsonStructure with a logMsg -->"]
+
+[h: tokenId = arg(0)]
+[h: weaponReach = arg(1)]
+
+[h: logMsg = ""]
+
+[h, foreach(item, weaponReach, ""), code: {
+  [h: oppTokenId = json.get(item,"tokenId")]
+  [h: reachStatus = json.get(item,"reachStatus")]
+  [h, if((reachStatus == "outmanoeuvring")), code: {
+    [h: fctResult = changeWeaponReachBetweenToken(tokenId,oppTokenId,"engaged")]
+    [h: attLogMsg = json.get(fctResult,"attLogMsg")]
+    [h: defLogMsg = json.get(fctResult,"defLogMsg")]
+    [h: logMsg = logMsg + attLogMsg + defLogMsg]
+  }]
+}]
+
+[h: attCombatStatusProp = getProperty("combatStatus",tokenId)]
+[h: fctResult = json.set("{}", "logMsg", logMsg,"attCombatStatusProp",attCombatStatusProp)]
+
+[r: fctResult]
