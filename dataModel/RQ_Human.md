@@ -133,6 +133,7 @@ TST_WARRIOR2 (one weapon + magCA + no opponent in weaponReach) :
   * (delay) : token has delayed it to keep a reactive action, 
   * (out) : token is out for this cycle (because is has no more remaining CA)
   * (disabled) : token can do nothing because is totally out of the combat : incapacitate, dead, etc.
+  * (notjoined) : token is not disabled but has been removed from current combat while having been join to it first.
 * **activeTurn** : 1 if it is the turn of the token , 0 otherwise.
 * **weaponReach** : json array of engaged opponent with the reachStatus
   * **tokenId** : nothing special. Default value.

@@ -31,7 +31,32 @@
 
 [r, switch(action), code:
   case "disable" : {
-    [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","disabled")] 
+    [h: inputStr = strformat("tip|Disabling and / or remove token from the combat)||LABEL|SPAN=TRUE")]
+    [h: inputStr = json.append(inputStr, strformat("disableOption|Disable and remove from combat,Disable but keep in combat,Remove from combat without disabling|<html>Choose :</html>|RADIO|VALUE=NUMBER ORIENT=V SELECT=0"))]
+    [h: abort(input(json.toList(inputStr,"##")))] 
+    
+    [h: fctResult = removeTokenFromWeaponReach(tokenId)]
+    [h: "<!-- We grab combatStatus again , because it was modified by removeTokenFromWeaponreach -->"]
+    [h: currentCombatStatus = getProperty("combatStatus",tokenId)]
+    
+    [h, if (disableOption == 0), code:{
+      [h: setState("Disabled", 1, tokenId)] 
+      [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","disabled")] 
+      [h: removeFromInitiative(tokenId)]
+      [h: msg = "Token is disabled and removed from combat."]
+    }]
+    [h, if (disableOption == 1), code:{
+      [h: setState("Disabled", 1, tokenId)] 
+      [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","disabled")] 
+      [h: initiative = getInitiative(tokenId)]
+      [h: setInitiativeHold(initiative, tokenId)]
+      [h: msg = "Token is disabled but kept in combat."]
+    }]
+    [h, if (disableOption == 2), code:{
+      [h: currentCombatStatus = json.set(currentCombatStatus,"turnStatus","notjoined")] 
+      [h: removeFromInitiative(tokenId)]
+      [h: msg = "Token is removed from combat but not disabled."]
+    }]
 
     [h: currentCombatStatus = json.set(currentCombatStatus,"activeCA",0)]
     [h: currentCombatStatus = json.set(currentCombatStatus,"castCA",0)]
@@ -39,19 +64,7 @@
     [h: currentCombatStatus = json.set(currentCombatStatus,"reactiveCA",0)]
 
     [h: setProperty("combatStatus",currentCombatStatus,tokenId)]
-    [h: setState("Out", 0, tokenId)]
-    [h: setState("Disabled", 1, tokenId)]
 
-    [h: initiative = getInitiative(tokenId)]
-    [h: setInitiativeHold(initiative, tokenId)]
-
-    [h: msg = "Token is disabled."]
- 
-    [h: res = input("junk|<html>Token will be removed from the Initiative List. Choose <i>Cancel</i> if you want to keep it</html>|ignored|LABEL|SPAN=true")]
-    [h, if (res != 0), code:{
-      [h: removeFromInitiative(tokenId)]
-      [h: msg = "Token is disabled and removed from combat."]
-    }]
 		[h: logMsg = msg]
   };
   case "disengage" :{

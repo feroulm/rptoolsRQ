@@ -9,6 +9,9 @@
     
   [h: msgWrongTokenType = strformat("Token %{tokenName} must be of type RQ_Human to be added to a combat")]
   [h: assert((tokenType == "RQ_Human"),msgWrongTokenType,0)]
+  
+  [h: srcWindow = json.get(arguments,"srcWindow")]
+  [h, if(srcWindow == "") : srcWindow = "none"]
 }]
 
 [h:"<!-- Don't add token if it is already in -->"]
@@ -54,4 +57,12 @@
 	
 	[h: setInitiative(initiative,tokenId)]
 	[h: sortInitiative()]
+  
+  [h: execFunction("refreshCombatSheets", json.append("[]",cLogTokenId), 0, "all")]
+  
+  [h, if(srcWindow == "openSheet"), code:{    
+    [h: macroParam = json.set("{}", "tokenId", tokenId,"msg",logMsg,"tab","combat")]
+    [h: lnkTxt = macroLinktext("openSheet@Lib:RQII", "all",macroParam)]
+    [h: execLink(lnkTxt,0,"all")]
+  }]
 }]

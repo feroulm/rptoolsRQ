@@ -220,3 +220,15 @@ libRQII/combatAction/testEngagementMgt.rqm : test
 GM/testCode/testOpponentSelection.rqm : test
 
 libRQII/yCommon/rqCss.rqm : Design
+
+## Join & remove from current combat
+
+### principle
+
+To be considered join to a current combat a token must :
+ * be in the initiative list 
+ * be linked to the current combat token (which means the *cLogTokenId* attr of its combatStatus prop must match the current combat token id
+ 
+When a token was joined to the current combat and then removed
+* the *turnStatus* attr in *combatStatus* prop is set to **notjoined**
+* the token is no more in the initiative list

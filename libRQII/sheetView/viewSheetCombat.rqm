@@ -7,9 +7,54 @@
 [h: macroParam = json.set("{}", "tokenId", tokenId,"tokenMap", tokenMap,"tab","combat")]
 [r, macro("subViewSheetMenu@Lib:RQII"): macroParam]
 
-[h: param = json.set("{}", "tokenId", tokenId, "msg", msg, "srcWindow", srcWindow)]
-[r, if(isNPC(tokenId) && !isGM()), code: {
-  [r, macro("editCombatActionReadOnly@Lib:RQII"): param]
+[h: isInCombat = isNumber(getInitiative(tokenId))]
+[h:"<!-- get current combat token -->"]
+[h: cLogTokenId = findCurrentCombatToken()]
+[r, if(isInCombat), code:{ 
+  [h: param = json.set("{}", "tokenId", tokenId, "msg", msg, "srcWindow", srcWindow)]
+  [r, if(isNPC(tokenId) && !isGM()), code: {
+    [r, macro("editCombatActionReadOnly@Lib:RQII"): param]
+  };{
+    [r, macro("editCombatAction@Lib:RQII"): param]
+  }]
 };{
-  [r, macro("editCombatAction@Lib:RQII"): param]
+  <div class="container pure-g">
+    <div class="pure-u-1">
+    [r, if(cLogTokenId != "none"), code:{
+      [h: currentCombatProp = getProperty("combat",cLogTokenId)]
+
+      <table class="content pure-table">
+        <thead>
+          <tr>
+            <th>Combat</th>
+            <th><span style='font-weight: bold;color:red'>[r: getName(tokenId)] is not joined to current combat on this map</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>    
+            <td>[r: json.get(currentCombatProp,"desc")]</td>  
+            <td>
+              [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow", srcWindow)]
+              [h: link = macroLinkText("addTokenToCombat@Lib:RQII", "all",macroParam)]
+              <a class="pure-button pure-button-primary" href="[r: link]">Join combat</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      };{
+       No current Combat on this map - Create a combat first
+       
+      [h: initList = json.merge("{}",getInitiativeList())]
+      [h: tokens = json.get(initList, "tokens")]
+
+      [h: macroParam = json.set("{}", "tokens", tokens, "action", "reset","cLogTokenId",cLogTokenId)]
+      [h: link = macroLinkText("updateGlobalCombat@Lib:RQII", "all",macroParam)]
+      <a class="button-warning pure-button" href="[r: link]">Create new combat</a>
+
+    }]
+    </div>
+  </div>
+  
+  [h: macroParam = json.set("{}", "tokenId", tokenId,"srcWindow", srcWindow)]
+  [r, macro("subViewCombatInfo@Lib:RQII"): macroParam]
 }]
