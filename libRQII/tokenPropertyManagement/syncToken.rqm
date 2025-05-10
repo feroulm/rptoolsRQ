@@ -1,0 +1,84 @@
+[h: "<!-- syncToken- Sync Curr HP DMG, current lost MP and notes (for current Spell) from srcToken ot dstToken -->"]
+[h: "<!-- TO-DO : check the number of loc to prevent the case where srcLocNbprop > : currently produce an error -->"]
+[h: arguments = macro.args] 
+[r, if(json.isEmpty(arguments)), code: {
+  [h: "<!-- Id for testing on _Main_AE-->"]
+  [h: thugTokenId = "457D6AE642AC4C2386067D1B4729204C"]
+  [h: lizardTokenId = "B2C6803A77C04871A989E38CAF377DDE"]
+
+  [h: srcTokenId = lizardTokenId]
+  [h: dstTokenId = thugTokenId]
+
+};{
+  [h: srcTokenId = json.get(arguments, "srcTokenId")]
+  [h: dstTokenId = json.get(arguments, "dstTokenId")]
+}]
+
+[h: tokenMap = getCurrentMapName()]
+
+[h: "<!-- Sync Curr HP DMG, token should have the same loc number & structure-->"]
+[h: "<!-- Identify if there a dmg for each loc on srcToken and apply the same dmg on the same loc on dstToken -->"]
+[h: srcLocHPprop = getProperty("locHP",srcTokenId)]
+[h: srcLocHPorigProp = getProperty("locHPorig",srcTokenId)]
+[h: srcLocNbprop = getProperty("locNb", srcTokenId)]
+
+[h: dstLocHPprop = getProperty("locHP",dstTokenId)]
+[h: dstLocHPorigProp = getProperty("locHPorig",dstTokenId)]
+[h: dstLocNbprop = getProperty("locNb", dstTokenId)]
+[h: logMsg = "Sync "+getName(srcTokenId)+" to "+getName(dstTokenId)+"<br><i>HP Sync</i> :<br>"]
+
+[for(i,1,srcLocNbprop+1,1,""), code:{
+  [h: locOrigValue = getStrProp(srcLocHPorigProp, strformat("loc%{i}"))]
+  [h: locCurrentValue = getStrProp(srcLocHPprop, strformat("loc%{i}"))]
+  [h, if((locCurrentValue < 0)), code: {
+     [h: locDmg = abs(locCurrentValue) + locOrigValue]
+     [h: logMsg = logMsg + "Dmg to apply in loc("+i+") is :"+locDmg+"<br>"]
+   };{
+     [h: locDmg = locOrigValue - locCurrentValue]
+     [h: msgWrongLoc = strformat("- <i>not applied</i> : destination token do not have enough location to update loc%{i}<br>")]
+     [h, if(locDmg != 0) : logMsg = logMsg + "Dmg to apply in loc("+i+") is :"+locDmg+"<br>"]
+     [h, if((locDmg != 0)&&(i > dstLocNbprop)) : logMsg = logMsg + msgWrongLoc]
+   }]
+   [h, if((locDmg != 0)&&(i <= dstLocNbprop)), code:{     
+     [h: dstLocOrigValue = getStrProp(dstLocHPorigProp, strformat("loc%{i}"))]
+     [h: dstLocCurrentValue = dstLocOrigValue - locDmg]
+     [h: dstLocHPprop = setStrProp(dstLocHPprop,strformat("loc%{i}"),dstLocCurrentValue)]     
+     [h: setProperty("locHP", dstLocHPprop, dstTokenId)]
+   }]
+}]
+
+[h: "<!-- Sync Curr lost MP -->"]
+[h: logMsg = logMsg + "<br><i>MP sync</i> :<br>"]
+
+[h: propSrcMagicPoint = getProperty("MagicPoint",srcTokenId)]
+[h: baseMPsrc = json.path.read(propSrcMagicPoint,"MP.base")]
+[h: currMPsrc = json.path.read(propSrcMagicPoint,"MP.current")]
+
+[h: propDstMagicPoint = getProperty("MagicPoint",dstTokenId)]
+[h: baseMPdst = json.path.read(propDstMagicPoint,"MP.base")]
+
+[h: lostMP = baseMPsrc - currMPsrc]
+[h: logMsg = logMsg + "MP to be removed :"+lostMP+"<br>"]
+
+[h: newCurrMP = baseMPdst - abs(lostMP)]
+[h, if(newCurrMP < 0), code:{
+  [h: logMsg = logMsg + "New MP :"+newCurrMP+" "+getName(dstTokenId)+" should be inconscious...<br>"]
+}]
+
+[h: propDstMagicPoint = json.path.set(propDstMagicPoint,"MP.current",newCurrMP)]
+[h: setProperty("MagicPoint",propDstMagicPoint,dstTokenId)]
+
+[h: "<!-- Concat PJ notes - we do not remove in case theyre different infos..clean manually -->"]
+[h: tokenNotesSrc = getNotes(srcTokenId)]
+[h: tokenNotesDst = getNotes(dstTokenId)]
+[h: newTokenNotes = "Sync from <i>"+getName(srcTokenId)+"</i> ---------<br>"]
+[h: newTokenNotes = tokenNotesDst + newTokenNotes + tokenNotesSrc]
+
+[h: tokenLabelSrc = getLabel(srcTokenId)]
+[h: tokenLabelDst = getLabel(dstTokenId)]
+[h: newTokenLabel = tokenLabelDst + tokenLabelSrc]
+
+[h: setLabel(newTokenLabel,dstTokenId)]
+[h: setNotes(newTokenNotes,dstTokenId)]
+
+[r: logMsg]

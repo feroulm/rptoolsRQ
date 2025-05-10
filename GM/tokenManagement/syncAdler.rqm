@@ -1,0 +1,26 @@
+[h: "<!-- syncAdler - sync with its dragonNewt form -->"]
+
+[h: adlerTokenId = "C18FE51C63A44E29A4297FE29E9E84D8"]
+[h: adlerDragonewtTokenId = "E2963B9DE3184EDEBA4053D5025036A7"]
+
+[h: isAdlerOnMap = findToken(adlerTokenId)]
+[h: assert((isAdlerOnMap != ""),"Adler is not the map !",0)]
+[h: isAdlerDragonewtOnMap = findToken(adlerDragonewtTokenId)]
+[h: assert((isAdlerDragonewtOnMap != ""),"Adler Dragonewt is not the map !",0)]
+
+[h: inputStr = strformat("tip|Sync dmg taken and lost MP between Adler & adlerDragonNewt)||LABEL|SPAN=TRUE")]
+[h: inputStr = json.append(inputStr, strformat("disableOption|From Adler to Dragonewt,From Dragonewt to Adler|<html>Choose :</html>|RADIO|VALUE=NUMBER ORIENT=V SELECT=0"))]
+[h: abort(input(json.toList(inputStr,"##")))] 
+
+[h, if (disableOption == 0), code:{
+  [h: srcTokenId = adlerTokenId]
+  [h: dstTokenId = adlerDragonewtTokenId]
+}]
+
+[h, if (disableOption == 1), code:{
+  [h: srcTokenId = adlerDragonewtTokenId]
+  [h: dstTokenId = adlerTokenId]
+}]
+
+[h: macroParam = json.set("{}", "srcTokenId", srcTokenId,"dstTokenId",dstTokenId)]
+[r, macro("syncToken@Lib:RQII"): macroParam] 
